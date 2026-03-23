@@ -275,7 +275,34 @@ def dashboard():
         else:
             trend_summary.append({'metric': 'potassium', 'status': 'Normal', 'message': tr('trend_potassium_normal'), 'color': 'success'})
 
-    return render_template('dashboard.html', user=user, latest_record=latest_record, history=history, trends=trend_summary)
+    # Enhanced Intelligent Dietary Guidance System
+    dietary_tips = []
+    food_guidance = []
+    
+    if latest_record:
+        risk_lower = latest_record.risk_score.lower()
+        if "high" in risk_lower:
+            dietary_tips = ["Avoid high potassium foods like banana, orange", "Reduce salt intake", "Limit fluid intake to prescribed level", "Eat more low potassium foods like apple, cabbage"]
+        elif "moderate" in risk_lower or "medium" in risk_lower:
+            dietary_tips = ["Limit high sodium foods", "Drink controlled water", "Maintain balanced diet and regular tracking"]
+        else:
+            dietary_tips = ["Maintain current diet", "Follow regular monitoring", "Stay hydrated appropriately"]
+            
+        if latest_record.potassium > 5.5:
+            food_guidance.append({"name": "Banana", "status": "Avoid", "reason": "High potassium", "color": "danger"})
+            food_guidance.append({"name": "Orange", "status": "Avoid", "reason": "High potassium", "color": "danger"})
+        else:
+            food_guidance.append({"name": "Apple", "status": "Safe", "reason": "Low potassium", "color": "safe"})
+            food_guidance.append({"name": "Rice", "status": "Safe", "reason": "Low sodium", "color": "safe"})
+            
+        if latest_record.sodium > 150:
+            food_guidance.append({"name": "Pickle", "status": "Avoid", "reason": "Extremely high sodium", "color": "danger"})
+            food_guidance.append({"name": "Salted snacks", "status": "Avoid", "reason": "High sodium content", "color": "danger"})
+        else:
+            food_guidance.append({"name": "Fresh Vegetables", "status": "Safe", "reason": "Natural low sodium", "color": "safe"})
+            food_guidance.append({"name": "Milk", "status": "Limited", "reason": "Moderate potassium", "color": "warning"})
+
+    return render_template('dashboard.html', user=user, latest_record=latest_record, history=history, trends=trend_summary, dietary_tips=dietary_tips, food_guidance=food_guidance)
 
 @app.route('/health-entry', methods=['GET', 'POST'])
 def health_entry():

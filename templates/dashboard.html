@@ -152,12 +152,47 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="card dietary-tip-card">
-                    <h3>{{ _('dietary_tip') }}</h3>
-                    <p style="color: #164e63;">{{ _('dietary_tip_content') }}</p>
-                    <a href="/food" class="btn btn-outline"
-                        style="margin-top: 1.5rem; width: 100%; text-align: center; border-radius: 10px;">{{
-                        _('view_food_list') }}</a>
+                <div class="card" style="grid-column: span 1; display: flex; flex-direction: column; gap: 1rem;">
+                    <h3><i class="fas fa-brain" style="color:var(--primary);"></i> AI Dietary Guidance</h3>
+                    
+                    {% if dietary_tips %}
+                    <div style="background: rgba(37, 99, 235, 0.05); padding: 1.25rem; border-radius: 1rem; border: 1px solid rgba(37, 99, 235, 0.2);">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: #1e3a8a;"><i class="fas fa-lightbulb"></i> Personalized Tips</h4>
+                        <ul style="padding-left: 1.25rem; font-size: 0.85rem; color: #334155; margin-bottom: 0;">
+                            {% for tip in dietary_tips %}
+                            <li style="margin-bottom: 0.4rem;">{{ tip }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if food_guidance %}
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;"><i class="fas fa-utensils"></i> Food Recommendation</h4>
+                        <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; color: var(--text-muted);">
+                                    <th style="padding: 0.5rem 0; text-align: left;">Food</th>
+                                    <th style="padding: 0.5rem 0; text-align: left;">Status</th>
+                                    <th style="padding: 0.5rem 0; text-align: left;">Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for food in food_guidance %}
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 0.6rem 0; font-weight: 600;">{{ food.name }}</td>
+                                    <td style="padding: 0.6rem 0;"><span class="risk-badge risk-{{ food.color }}" style="font-size: 0.7rem;">{{ food.status }}</span></td>
+                                    <td style="padding: 0.6rem 0; color: var(--text-muted);">{{ food.reason }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem;">Log health metrics to get AI food guidance.</p>
+                    {% endif %}
+
+                    <a href="/diet-plan" class="btn btn-outline" style="margin-top: auto; padding: 0.5rem; text-align: center; border-radius: 0.75rem; font-size: 0.85rem;">Build Diet Plan</a>
                 </div>
 
                 <div class="card" style="grid-column: span 3; margin-top: 2rem;">
