@@ -1,28 +1,27 @@
 @echo off
-title DialyCare AI - Flask Server
-echo =======================================
-echo     DialyCare AI Application
-echo =======================================
+title DialyCare AI - SMART HEALTH SYSTEM
+color 0B
+echo ===========================================
+echo         DIALYCARE AI - DASHBOARD START      
+echo ===========================================
 echo.
-echo Starting Flask server...
-echo Server will be available at: http://127.0.0.1:5000
-echo.
-echo Press CTRL+C to stop the server.
-echo.
-
+echo [1/3] Navigating to project directory...
 cd /d "%~dp0"
 
-:: Start Flask server in the background
-start "" /B py app.py
+echo [2/3] Starting AI Engine (Flask Server)...
+echo -------------------------------------------
+echo Server will be available at: http://127.0.0.1:5000/dashboard
+echo.
+echo Opening browser... 🚀
+echo.
 
-:: Wait 3 seconds for the server to start, then open browser
+:: Start Browser to the Dashboard directly
 timeout /t 3 /nobreak >nul
-echo Opening browser...
-start "" http://127.0.0.1:5000
+start "" "http://127.0.0.1:5000/dashboard"
 
-:: Keep the window open and show server output
+:: Run the server in foreground so we can see the console logs
 py app.py
 
 echo.
-echo Server stopped.
+echo Server has been stopped. 🛑
 pause
