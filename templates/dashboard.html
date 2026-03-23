@@ -127,8 +127,8 @@
                 </div>
             </div>
 
-            <div class="grid">
-                <div class="card" style="grid-column: span 2;">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div class="card" style="width: 100%;">
                     <h3>{{ _('trend_analysis') }}</h3>
                     <p style="margin-bottom: 2rem;">{{ _('recent_entries_analysis') }}</p>
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -152,7 +152,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="card" style="grid-column: span 1; display: flex; flex-direction: column; gap: 1rem;">
+                <div class="card" style="width: 100%; display: flex; flex-direction: column; gap: 1rem;">
                     <h3><i class="fas fa-brain" style="color:var(--primary);"></i> AI Dietary Guidance</h3>
                     
                     {% if dietary_tips %}
@@ -195,7 +195,7 @@
                     <a href="/diet-plan" class="btn btn-outline" style="margin-top: auto; padding: 0.5rem; text-align: center; border-radius: 0.75rem; font-size: 0.85rem;">Build Diet Plan</a>
                 </div>
 
-                <div class="card" style="grid-column: span 3; margin-top: 2rem;">
+                <div class="card" style="width: 100%;">
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <h3>{{ _('history') }}</h3>
