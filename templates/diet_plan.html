@@ -521,7 +521,40 @@ function onFoodSelect() {
     badge.textContent = d.recommendation;
     document.getElementById('unitDisplay').value = d.unit || 'g';
 
-    const qty = parseFloat(document.getElementById('qtyInput').value) || 100;
+    const qtyInput = document.getElementById('qtyInput');
+    // Enforce limits based on recommendation
+    if (rec === 'limited') {
+        qtyInput.value = 50;
+        qtyInput.max = 50;
+        document.getElementById('previewBadge').innerHTML += ' <span style="font-size:0.65rem; color:#d97706; text-transform:none;">(Max 50g)</span>';
+    } else if (rec === 'avoid') {
+        qtyInput.value = 20;
+        qtyInput.max = 20;
+        document.getElementById('previewBadge').innerHTML += ' <span style="font-size:0.65rem; color:#dc2626; text-transform:none;">(Max 20g)</span>';
+    } else {
+        qtyInput.value = 100;
+        qtyInput.max = 2000;
+        qtyInput.removeAttribute('title');
+    }
+
+    updatePreviewNutrition();
+    document.getElementById('foodPreview').style.display = 'block';
+}
+
+function updatePreviewNutrition() {
+    const sel = document.getElementById('foodSelect');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt || !opt.value) return;
+    const d = opt.dataset;
+    let qty = parseFloat(document.getElementById('qtyInput').value) || 0;
+    
+    // Prevent exceeding max dynamically
+    const maxQty = parseFloat(document.getElementById('qtyInput').max);
+    if (qty > maxQty) {
+        qty = maxQty;
+        document.getElementById('qtyInput').value = maxQty;
+    }
+    
     const ratio = qty / 100;
     const nuts = [
         { label: 'Cal', val: (parseFloat(d.calories) * ratio).toFixed(1), unit: 'kcal' },
@@ -533,13 +566,11 @@ function onFoodSelect() {
     document.getElementById('previewNutrition').innerHTML = nuts.map(n =>
         `<span class="nut-chip">${n.label}: ${n.val}${n.unit}</span>`
     ).join('');
-
-    document.getElementById('foodPreview').style.display = 'block';
 }
 
 // update preview live on qty change
 document.getElementById('qtyInput').addEventListener('input', () => {
-    if (document.getElementById('foodSelect').value) onFoodSelect();
+    if (document.getElementById('foodSelect').value) updatePreviewNutrition();
 });
 
 // ── Add food ──
@@ -547,8 +578,16 @@ function addFood() {
     const sel = document.getElementById('foodSelect');
     const opt = sel.options[sel.selectedIndex];
     if (!opt || !opt.value) { alert('Please select a food first.'); return; }
-    const qty = parseFloat(document.getElementById('qtyInput').value);
+    let qty = parseFloat(document.getElementById('qtyInput').value);
+    const maxQty = parseFloat(document.getElementById('qtyInput').max);
+    
     if (!qty || qty <= 0) { alert('Please enter a valid quantity.'); return; }
+    if (qty > maxQty) { 
+        alert(`Warning! Due to kidney risks, you cannot exceed ${maxQty}g for this item.`); 
+        qty = maxQty;
+        document.getElementById('qtyInput').value = maxQty;
+        return;
+    }
 
     const d = opt.dataset;
     const ratio = qty / 100;
@@ -574,6 +613,7 @@ function addFood() {
     // reset
     sel.selectedIndex = 0;
     document.getElementById('qtyInput').value = 100;
+    document.getElementById('qtyInput').max = 2000;
     document.getElementById('foodPreview').style.display = 'none';
     document.getElementById('unitDisplay').value = 'g';
 }
