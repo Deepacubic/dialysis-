@@ -1,0 +1,188 @@
+food_name,category,recommendation,image_url,calories,protein,potassium,sodium,phosphorus,fluid,unit
+Apple,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Pink_lady_and_cross_section.jpg/500px-Pink_lady_and_cross_section.jpg,52,0.3,107,1,11,85,g
+Papaya,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Carica_papaya_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-029.jpg/500px-Carica_papaya_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-029.jpg,43,0.5,182,8,10,88,g
+Pineapple,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/%E0%B4%95%E0%B5%88%E0%B4%A4%E0%B4%9A%E0%B5%8D%E0%B4%9A%E0%B4%95%E0%B5%8D%E0%B4%95.jpg/500px-%E0%B4%95%E0%B5%88%E0%B4%A4%E0%B4%9A%E0%B5%8D%E0%B4%9A%E0%B4%95%E0%B5%8D%E0%B4%95.jpg,50,0.5,109,1,8,86,g
+Watermelon,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Taiwan_2009_Tainan_City_Organic_Farm_Watermelon_FRD_7962.jpg/500px-Taiwan_2009_Tainan_City_Organic_Farm_Watermelon_FRD_7962.jpg,30,0.6,112,1,11,91,g
+Pear,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Pears.jpg/500px-Pears.jpg,57,0.4,116,1,12,84,g
+Grapes,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Grapes%2C_Rostov-on-Don%2C_Russia.jpg/500px-Grapes%2C_Rostov-on-Don%2C_Russia.jpg,67,0.6,191,2,20,81,g
+Guava,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Guava_pink_fruit.jpg/500px-Guava_pink_fruit.jpg,68,2.6,417,2,40,81,g
+Strawberry,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Garden_strawberry_%28Fragaria_%C3%97_ananassa%29_single2.jpg/500px-Garden_strawberry_%28Fragaria_%C3%97_ananassa%29_single2.jpg,32,0.7,153,1,24,91,g
+Blueberry,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Blueberries.jpg/500px-Blueberries.jpg,57,0.7,77,1,12,84,g
+Peach,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Illustration_Prunus_persica_clean_no_descr.jpg/500px-Illustration_Prunus_persica_clean_no_descr.jpg,39,0.9,190,0,20,89,g
+Plum,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Plums_African_Rose_-_whole%2C_halved_and_slice.jpg/500px-Plums_African_Rose_-_whole%2C_halved_and_slice.jpg,46,0.7,157,0,16,87,g
+Cherry,Fruits,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Cherry_season_%2848216568227%29.jpg/500px-Cherry_season_%2848216568227%29.jpg,63,1.1,222,0,21,82,g
+Mango,Fruits,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Mangos_-_single_and_halved.jpg/500px-Mangos_-_single_and_halved.jpg,60,0.8,168,1,14,83,g
+Pomegranate,Fruits,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Pomegranate_Juice_%282019%29.jpg/500px-Pomegranate_Juice_%282019%29.jpg,83,1.7,236,3,36,78,g
+Kiwi,Fruits,Limited,/static/images/kiwi.jpg,61,1.1,312,3,34,83,g
+Dragon fruit,Fruits,Limited,/static/images/dragon_fruit.jpg,60,1.2,272,39,34,84,g
+Muskmelon,Fruits,Limited,/static/images/muskmelon.jpg,34,0.8,267,16,15,90,g
+Fig,Fruits,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ficus_carica_L%2C_1771.jpg/500px-Ficus_carica_L%2C_1771.jpg,74,0.8,232,1,14,79,g
+Banana,Fruits,Avoid,https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg,89,1.1,358,1,22,75,g
+Orange,Fruits,Avoid,/static/images/orange.jpg,47,0.9,181,0,14,87,g
+Sweet lime,Fruits,Avoid,/static/images/sweet_lime.jpg,43,0.8,190,2,18,87,g
+Jackfruit,Fruits,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Jackfruit_hanging.JPG/500px-Jackfruit_hanging.JPG,95,1.7,448,2,21,74,g
+Custard apple,Fruits,Avoid,/static/images/custard_apple.jpg,94,2.1,382,4,21,72,g
+Avocado,Fruits,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Persea_americana_fruit_2.JPG/500px-Persea_americana_fruit_2.JPG,160,2.0,485,7,52,73,g
+Dry fruits,Fruits,Avoid,/static/images/dry_fruits.png,359,3.8,1162,5,143,15,g
+Cabbage,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Cabbage_and_cross_section_on_white.jpg/500px-Cabbage_and_cross_section_on_white.jpg,25,1.3,170,18,26,92,g
+Cauliflower,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Chou-fleur_02.jpg/500px-Chou-fleur_02.jpg,25,1.9,299,30,44,92,g
+Cucumber,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/ARS_cucumber.jpg/500px-ARS_cucumber.jpg,15,0.7,147,2,24,96,g
+Onion,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Mixed_onions.jpg/500px-Mixed_onions.jpg,40,1.1,146,4,29,89,g
+Capsicum,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Red_capsicum_and_cross_section.jpg/500px-Red_capsicum_and_cross_section.jpg,31,1.0,211,5,26,92,g
+Carrot,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Vegetable-Carrot-Bundle-wStalks.jpg/500px-Vegetable-Carrot-Bundle-wStalks.jpg,41,0.9,320,69,35,88,g
+Beans,Vegetables,Safe,/static/images/beans.jpg,31,1.8,211,6,38,90,g
+Brinjal,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Solanum_melongena_24_08_2012_%281%29.JPG/500px-Solanum_melongena_24_08_2012_%281%29.JPG,25,1.0,229,2,24,92,g
+Bottle gourd,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Courge_encore_verte.jpg/500px-Courge_encore_verte.jpg,14,0.6,150,2,13,96,g
+Ridge gourd,Vegetables,Safe,/static/images/ridge_gourd.jpg,20,1.2,139,3,32,95,g
+Snake gourd,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Trichosanthes_cucumerina_var._anguina_compose.jpg/500px-Trichosanthes_cucumerina_var._anguina_compose.jpg,18,0.5,171,3,26,94,g
+Pumpkin,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/FrenchMarketPumpkinsB.jpg/500px-FrenchMarketPumpkinsB.jpg,26,1.0,340,1,44,92,g
+Radish,Vegetables,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Radish_3371103037_4ab07db0bf_o.jpg/500px-Radish_3371103037_4ab07db0bf_o.jpg,16,0.7,233,39,20,95,g
+Beetroot,Vegetables,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Detroitdarkredbeets.png/500px-Detroitdarkredbeets.png,43,1.6,325,78,40,88,g
+Green peas,Vegetables,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Peas_in_pods_-_Studio.jpg/500px-Peas_in_pods_-_Studio.jpg,81,5.4,244,5,108,79,g
+Sweet corn,Vegetables,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/VegCorn.jpg/500px-VegCorn.jpg,86,3.3,270,15,89,76,g
+Mushroom,Vegetables,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Sparrige_Sch%C3%BCppling_%28Pholiota_squarrosa%29.jpg/500px-Sparrige_Sch%C3%BCppling_%28Pholiota_squarrosa%29.jpg,22,3.1,318,5,86,92,g
+Potato,Vegetables,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Patates.jpg/500px-Patates.jpg,77,2.0,421,6,57,79,g
+Tomato,Vegetables,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Tomato_je.jpg/500px-Tomato_je.jpg,18,0.9,237,5,24,94,g
+Spinach,Vegetables,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Spinacia_oleracea_Spinazie_bloeiend.jpg/500px-Spinacia_oleracea_Spinazie_bloeiend.jpg,23,2.9,558,79,49,91,g
+Drumstick leaves,Vegetables,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/DrumstickFlower.jpg/500px-DrumstickFlower.jpg,37,9.4,259,9,112,83,g
+Sweet potato,Vegetables,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Ipomoea_batatas_006.JPG/500px-Ipomoea_batatas_006.JPG,86,1.6,337,55,47,77,g
+Tapioca,Vegetables,Avoid,/static/images/tapioca.jpg,160,0.2,271,14,21,38,g
+Yam,Vegetables,Avoid,/static/images/yam.jpg,118,1.5,816,9,55,70,g
+Egg white,Non-Veg,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Chicken_egg01_monovular.jpg/500px-Chicken_egg01_monovular.jpg,52,11.0,163,166,15,88,g
+Chicken (boiled),Non-Veg,Safe,https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=500&q=80,165,31.0,220,74,220,65,g
+Fish (grilled),Non-Veg,Safe,https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&q=80,136,26.0,400,65,250,68,g
+Tuna fish,Non-Veg,Safe,https://images.unsplash.com/photo-1574484284002-952d92456975?w=500&q=80,144,30.0,279,50,278,60,g
+Salmon,Non-Veg,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Salmo_salar.jpg/500px-Salmo_salar.jpg,208,20.0,363,59,240,64,g
+Mutton,Non-Veg,Limited,/static/images/mutton.jpg,294,25.0,310,72,190,60,g
+Prawns,Non-Veg,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Penaeus_monodon.jpg/500px-Penaeus_monodon.jpg,106,20.0,185,148,205,76,g
+Crab,Non-Veg,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Cancer_pagurus.jpg/500px-Cancer_pagurus.jpg,97,19.0,329,293,256,79,g
+Egg yolk,Non-Veg,Limited,/static/images/egg_yolk.jpg,322,15.9,109,48,390,49,g
+Processed meat,Non-Veg,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/SelectionOfProcessedMeats.jpg/500px-SelectionOfProcessedMeats.jpg,250,15.0,193,1293,160,55,g
+Sausage,Non-Veg,Avoid,/static/images/sausage.jpg,301,12.0,200,1080,140,55,g
+Bacon,Non-Veg,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Made20bacon.png/500px-Made20bacon.png,541,37.0,565,1717,387,19,g
+Organ meat,Non-Veg,Avoid,/static/images/organ_meat.jpg,135,20.0,313,76,387,68,g
+White rice,Solid Foods,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Half_a_cup_of_rice._Brown_rice_is_the_best_choice.JPG/500px-Half_a_cup_of_rice._Brown_rice_is_the_best_choice.JPG,130,2.7,35,1,43,69,g
+Idli,Solid Foods,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Idli_Sambar.JPG/500px-Idli_Sambar.JPG,68,2.0,60,240,38,58,g
+Dosa,Solid Foods,Safe,/static/images/dosa.jpg,133,5.0,75,380,68,50,g
+Chapati,Solid Foods,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/2_Chapati_warm_and_ready_to_be_eaten.jpg/500px-2_Chapati_warm_and_ready_to_be_eaten.jpg,240,8.0,190,364,120,35,g
+White Bread,Solid Foods,Safe,/static/images/white_bread.jpg,265,9.0,115,491,87,38,g
+Pasta,Solid Foods,Safe,/static/images/pasta.jpg,158,6.0,45,6,81,62,g
+Noodles,Solid Foods,Safe,/static/images/noodles.jpg,138,5.0,52,280,68,65,g
+Brown rice,Solid Foods,Limited,https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=500&q=80,216,5.0,154,8,150,76,g
+Oats,Solid Foods,Limited,/static/images/oats.jpg,389,17.0,429,2,523,8,g
+Millet,Solid Foods,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Grain_millet%2C_early_grain_fill%2C_Tifton%2C_7-3-02.jpg/500px-Grain_millet%2C_early_grain_fill%2C_Tifton%2C_7-3-02.jpg,378,11.0,195,5,285,8,g
+Ragi,Solid Foods,Avoid,/static/images/ragi.jpg,336,7.3,408,11,283,10,g
+Chips,Solid Foods,Avoid,/static/images/chips.jpg,536,7.0,1642,525,135,2,g
+Water,Liquids,Safe,/static/images/water.jpg,0,0.0,2,4,0,100,ml
+Apple juice,Liquids,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Apfelsaft_im_Glas.jpg/500px-Apfelsaft_im_Glas.jpg,46,0.1,101,4,10,88,ml
+Cranberry juice,Liquids,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Cranberry_juice_in_a_cup.jpg/500px-Cranberry_juice_in_a_cup.jpg,46,0.4,77,2,13,88,ml
+Lemon juice,Liquids,Safe,/static/images/lemon_juice.jpg,22,0.4,103,1,11,92,ml
+Milk,Liquids,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Glass_of_Milk_%2833657535532%29.jpg/500px-Glass_of_Milk_%2833657535532%29.jpg,61,3.2,132,44,84,88,ml
+Coffee,Liquids,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Latte_and_dark_coffee.jpg/500px-Latte_and_dark_coffee.jpg,2,0.3,49,2,3,98,ml
+Tea,Liquids,Limited,https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Longjing_tea_steeping_in_gaiwan.jpg/500px-Longjing_tea_steeping_in_gaiwan.jpg,1,0.0,37,7,1,99,ml
+Coconut water,Liquids,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Young_Coconut_Drink.jpg/500px-Young_Coconut_Drink.jpg,19,0.7,250,105,20,95,ml
+Orange juice,Liquids,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Orangejuice.jpg/500px-Orangejuice.jpg,45,0.7,200,1,17,88,ml
+Soft drinks,Liquids,Avoid,/static/images/soft_drinks.jpg,41,0.0,11,10,11,90,ml
+Alcohol,Liquids,Avoid,https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=500&q=80,215,0.1,74,5,0,68,ml
+Paneer,Protein,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Panir_Paneer_Indian_cheese_fresh.jpg/500px-Panir_Paneer_Indian_cheese_fresh.jpg,265,18.3,93,19,471,55,g
+Tofu,Protein,Safe,https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Japanese_SilkyTofu_%28Kinugoshi_Tofu%29.JPG/500px-Japanese_SilkyTofu_%28Kinugoshi_Tofu%29.JPG,76,8.0,121,7,97,82,g
+Processed cheese,Protein,Avoid,https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Eru_goudkuipje_sambal.jpg/500px-Eru_goudkuipje_sambal.jpg,371,22.0,127,1242,490,38,g
+L e t t u c e  
+ G r e e n  
+ L e a f y  
+ F o o d s  
+ S a f e  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / c / c a / L e t t o v 1 . j p g / 5 0 0 p x - L e t t o v 1 . j p g  
+ 1 5  
+ 1 . 4  
+ 1 9 4  
+ 2 8  
+ 2 9  
+ 9 5  
+ g  
+ C o r i a n d e r  
+ l e a v e s  
+ G r e e n  
+ L e a f y  
+ F o o d s  
+ S a f e  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / 4 / 4 0 / C o r i a n d e r _ l e a v e s . j p g / 5 0 0 p x - C o r i a n d e r _ l e a v e s . j p g  
+ 2 3  
+ 2 . 1  
+ 5 2 1  
+ 4 6  
+ 4 8  
+ 9 2  
+ g  
+ F l a x  
+ s e e d s  
+ S e e d s  
+ L i m i t e d  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / 8 / 8 7 / F l a x _ s e e d s . j p g / 5 0 0 p x - F l a x _ s e e d s . j p g  
+ 5 3 4  
+ 1 8  
+ 8 1 3  
+ 3 0  
+ 6 4 2  
+ 7  
+ g  
+ P u m p k i n  
+ s e e d s  
+ S e e d s  
+ L i m i t e d  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / 0 / 0 e / P u m p k i n _ s e e d s . j p g / 5 0 0 p x - P u m p k i n _ s e e d s . j p g  
+ 5 5 9  
+ 3 0  
+ 8 0 9  
+ 7  
+ 1 2 3 3  
+ 5  
+ g  
+ C h i a  
+ s e e d s  
+ S e e d s  
+ L i m i t e d  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / d / d 7 / C h i a - S e e d s - 1 . j p g / 5 0 0 p x - C h i a - S e e d s - 1 . j p g  
+ 4 8 6  
+ 1 7  
+ 4 0 7  
+ 1 6  
+ 8 6 0  
+ 6  
+ g  
+ S u n f l o w e r  
+ s e e d s  
+ S e e d s  
+ L i m i t e d  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / 0 / 0 d / V a r i e t y _ H e l i a n t h u s _ s e e d s . j p g / 5 0 0 p x - V a r i e t y _ H e l i a n t h u s _ s e e d s . j p g  
+ 5 8 4  
+ 2 1  
+ 6 4 5  
+ 9  
+ 6 6 0  
+ 5  
+ g  
+ H e r b a l  
+ t e a  
+ L i q u i d s  
+ S a f e  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / d / d 3 / L o n g j i n g _ t e a _ s t e e p i n g _ i n _ g a i w a n . j p g / 5 0 0 p x - L o n g j i n g _ t e a _ s t e e p i n g _ i n _ g a i w a n . j p g  
+ 0  
+ 0  
+ 9  
+ 2  
+ 0  
+ 9 9  
+ m l  
+ B u t t e r m i l k  
+ L i q u i d s  
+ L i m i t e d  
+ h t t p s : / / u p l o a d . w i k i m e d i a . o r g / w i k i p e d i a / c o m m o n s / t h u m b / 8 / 8 2 / B u t t e r m i l k _ c u r d _ r i c e . j p g / 5 0 0 p x - B u t t e r m i l k _ c u r d _ r i c e . j p g  
+ 4 0  
+ 3  
+ 1 5 0  
+ 1 0 5  
+ 8 9  
+ 9 0  
+ m l  
+ 

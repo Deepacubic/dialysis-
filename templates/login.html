@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DialyCare AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .auth-container {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .auth-card h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .auth-card p {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-block {
+            width: 100%;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <i class="fas fa-heartbeat"></i> DialyCare AI
+                </a>
+                <div class="nav-links">
+                    <div class="lang-selector">
+                        <i class="fas fa-globe"></i>
+                        <select onchange="window.location.href='/set-language/'+this.value">
+                            <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
+                            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
+                            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
+                            <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
+                            <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
+                            <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
+                        </select>
+                    </div>
+                    <a href="/">{{ _('home') }}</a>
+                </div>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            <h2>{{ _('welcome_back') }}</h2>
+            <p>{{ _('enter_credentials') }}</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label>{{ _('email') }}</label>
+                    <input type="email" name="email" class="form-control" placeholder="name@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ _('password') }}</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">{{ _('sign_in') }}</button>
+            </form>
+            <p style="margin-top: 2rem; font-size: 0.9rem;">
+                {{ _('dont_have_account') }} <a href="/register"
+                    style="color: var(--primary); font-weight: 600; text-decoration: none;">{{ _('join_now') }}</a>
+            </p>
+        </div>
+    </main>
+</body>
+
+</html>

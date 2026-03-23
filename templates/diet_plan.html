@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Plan Planner - DialyCare AI</title>
+    <meta name="description" content="Build and track your personalised dialysis diet plan with food quantities and nutrient percentages.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dp-safe: #22c55e;
+            --dp-limited: #f59e0b;
+            --dp-avoid: #ef4444;
+            --dp-primary: #2563eb;
+            --dp-bg: #f0f4ff;
+            --dp-card: #ffffff;
+            --dp-border: #e2e8f0;
+            --dp-text: #0f172a;
+            --dp-muted: #64748b;
+        }
+
+        body { background: var(--dp-bg); font-family: 'Inter', sans-serif; }
+
+        /* ── LAYOUT ── */
+        .dp-wrapper {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .dp-sidebar {
+            background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 100%);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .dp-sidebar .logo { color: #fff; font-size: 1.3rem; font-weight: 800; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.6rem; }
+        .dp-sidebar .sidebar-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; border-radius: 0.75rem; color: rgba(255,255,255,0.75); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
+        .dp-sidebar .sidebar-link:hover, .dp-sidebar .sidebar-link.active { background: rgba(255,255,255,0.15); color: #fff; }
+        .dp-sidebar .sidebar-link i { width: 20px; text-align: center; }
+        .dp-sidebar .logout-link { margin-top: auto; color: #fda4af !important; }
+
+        /* ── MAIN ── */
+        .dp-main { padding: 2rem 2.5rem; }
+
+        .dp-header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb 60%, #7c3aed);
+            border-radius: 1.5rem;
+            padding: 2.5rem 3rem;
+            color: #fff;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dp-header h1 { font-size: 2rem; font-weight: 900; margin-bottom: 0.4rem; }
+        .dp-header p { opacity: 0.85; font-size: 1rem; }
+        .dp-header-icon { font-size: 5rem; opacity: 0.2; }
+
+        /* ── LEGEND PILLS ── */
+        .legend-row { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .legend-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.9rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pill-safe { background: rgba(34,197,94,0.12); color: #16a34a; }
+        .pill-limited { background: rgba(245,158,11,0.12); color: #d97706; }
+        .pill-avoid { background: rgba(239,68,68,0.12); color: #dc2626; }
+
+        /* ── TWO-COLUMN GRID ── */
+        .dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media(max-width:900px){ .dp-grid { grid-template-columns: 1fr; } .dp-wrapper { grid-template-columns: 1fr; } }
+
+        /* ── CARD ── */
+        .dp-card {
+            background: var(--dp-card);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            border: 1px solid var(--dp-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .dp-card h2 { font-size: 1.1rem; font-weight: 700; color: var(--dp-text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .dp-card h2 i { color: var(--dp-primary); }
+
+        /* ── FORM ── */
+        .form-row { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: end; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--dp-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .form-group select,
+        .form-group input {
+            padding: 0.7rem 1rem;
+            border: 2px solid var(--dp-border);
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f8fafc;
+        }
+        .form-group select:focus,
+        .form-group input:focus { border-color: var(--dp-primary); background: #fff; }
+
+        .btn-add {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            border: none;
+            padding: 0.72rem 1.4rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* ── DAILY LIMITS PROGRESS ── */
+        .limits-grid { display: flex; flex-direction: column; gap: 1rem; }
+        .limit-row { }
+        .limit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
+        .limit-name { font-size: 0.85rem; font-weight: 600; color: var(--dp-text); }
+        .limit-values { font-size: 0.78rem; color: var(--dp-muted); }
+        .limit-pct { font-size: 0.85rem; font-weight: 700; }
+        .progress-track {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.5s cubic-bezier(.4,0,.2,1);
+        }
+        .fill-safe { background: linear-gradient(90deg, #22c55e, #86efac); }
+        .fill-warning { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+        .fill-danger { background: linear-gradient(90deg, #ef4444, #fca5a5); }
+
+        /* ── DIET TABLE ── */
+        .diet-table-wrap { overflow-x: auto; }
+        .diet-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        .diet-table thead tr { border-bottom: 2px solid #f1f5f9; }
+        .diet-table th { padding: 0.75rem 1rem; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dp-muted); font-weight: 700; }
+        .diet-table td { padding: 0.85rem 1rem; border-bottom: 1px solid #f8fafc; vertical-align: middle; }
+        .diet-table tbody tr:hover { background: #f8fafc; }
+        .diet-table tbody tr:last-child td { border-bottom: none; }
+
+        .badge-sm { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge-safe { background: rgba(34,197,94,0.1); color: #16a34a; }
+        .badge-limited { background: rgba(245,158,11,0.1); color: #d97706; }
+        .badge-avoid { background: rgba(239,68,68,0.1); color: #dc2626; }
+
+        .pct-bar-mini { width: 80px; height: 7px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 3px; }
+        .pct-fill { height: 100%; border-radius: 99px; }
+
+        .btn-remove { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; padding: 0.2rem 0.4rem; border-radius: 0.4rem; transition: background 0.15s; }
+        .btn-remove:hover { background: rgba(239,68,68,0.1); }
+
+        .empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--dp-muted); }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; display: block; }
+
+        /* ── SUMMARY TOTALS ── */
+        .summary-totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .total-chip { background: #f8fafc; border: 1px solid var(--dp-border); border-radius: 1rem; padding: 1rem; text-align: center; }
+        .total-chip .val { font-size: 1.35rem; font-weight: 800; color: var(--dp-text); }
+        .total-chip .lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dp-muted); font-weight: 600; margin-top: 0.2rem; }
+
+        .section-span { grid-column: 1 / -1; }
+
+        /* ── NUTRITION PER FOOD ── */
+        .nutrition-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; }
+        .nut-chip { font-size: 0.68rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 99px; background: #eff6ff; color: #2563eb; }
+
+        /* Category filter */
+        .cat-filter { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+        .cat-btn { padding: 0.35rem 0.9rem; border-radius: 2rem; border: 2px solid var(--dp-border); background: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; color: var(--dp-muted); }
+        .cat-btn.active, .cat-btn:hover { border-color: var(--dp-primary); background: var(--dp-primary); color: #fff; }
+
+        /* Print button */
+        .btn-print { background: #0f172a; color: #fff; border: none; padding: 0.55rem 1.2rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: opacity 0.2s; }
+        .btn-print:hover { opacity: 0.8; }
+
+        @media print { .dp-sidebar, .btn-add, .btn-remove, .btn-print, .cat-filter { display: none; } .dp-wrapper { display: block; } }
+    </style>
+</head>
+
+<body>
+<div class="dp-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="dp-sidebar">
+        <div class="logo"><i class="fas fa-heartbeat"></i> DialyCare AI</div>
+        <nav>
+            <a href="/dashboard" class="sidebar-link"><i class="fas fa-th-large"></i> {{ _('dashboard') }}</a>
+            <a href="/health-entry" class="sidebar-link"><i class="fas fa-plus-circle"></i> {{ _('health_entry') }}</a>
+            <a href="/diet-plan" class="sidebar-link active"><i class="fas fa-utensils"></i> {{ _('diet_plan') }}</a>
+            <a href="/food" class="sidebar-link"><i class="fas fa-apple-alt"></i> Food Guide</a>
+        </nav>
+        <div style="margin-top: auto;">
+            <div class="lang-selector" style="margin-bottom: 0.75rem;">
+                <i class="fas fa-globe" style="color:rgba(255,255,255,0.6); margin-right:0.4rem;"></i>
+                <select onchange="window.location.href='/set-language/'+this.value"
+                    style="background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 0.85rem; border-radius: 0.5rem; padding: 0.35rem 0.5rem; cursor: pointer;">
+                    <option value="en" {% if current_lang=='en' %}selected{% endif %} style="color:#000;">English</option>
+                    <option value="ta" {% if current_lang=='ta' %}selected{% endif %} style="color:#000;">தமிழ்</option>
+                    <option value="hi" {% if current_lang=='hi' %}selected{% endif %} style="color:#000;">हिंदी</option>
+                    <option value="ko" {% if current_lang=='ko' %}selected{% endif %} style="color:#000;">한국어</option>
+                    <option value="ja" {% if current_lang=='ja' %}selected{% endif %} style="color:#000;">日本語</option>
+                    <option value="zh" {% if current_lang=='zh' %}selected{% endif %} style="color:#000;">简体中文</option>
+                </select>
+            </div>
+            <a href="/logout" class="sidebar-link logout-link"><i class="fas fa-sign-out-alt"></i> {{ _('logout') }}</a>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="dp-main">
+
+        <!-- Hero Header -->
+        <div class="dp-header">
+            <div>
+                <h1><i class="fas fa-leaf"></i> Diet Plan Planner</h1>
+                <p>Select foods, enter quantity and instantly see your daily nutrient percentages.</p>
+                <div class="legend-row" style="margin-top: 1rem;">
+                    <span class="legend-pill pill-safe"><i class="fas fa-circle-check"></i> Safe</span>
+                    <span class="legend-pill pill-limited"><i class="fas fa-triangle-exclamation"></i> Limited</span>
+                    <span class="legend-pill pill-avoid"><i class="fas fa-circle-xmark"></i> Avoid</span>
+                </div>
+            </div>
+            <div class="dp-header-icon"><i class="fas fa-bowl-food"></i></div>
+        </div>
+
+        <!-- Summary totals -->
+        <div class="summary-totals" id="summaryTotals">
+            <div class="total-chip">
+                <div class="val" id="totalCalories">0</div>
+                <div class="lbl">Calories (kcal)</div>
+            </div>
+            <div class="total-chip">
+                <div class="val" id="totalProtein">0g</div>
+                <div class="lbl">Protein</div>
+            </div>
+            <div class="total-chip">
+                <div class="val" id="totalPotassium">0mg</div>
+                <div class="lbl">Potassium</div>
+            </div>
+            <div class="total-chip">
+                <div class="val" id="totalSodium">0mg</div>
+                <div class="lbl">Sodium</div>
+            </div>
+        </div>
+
+        <div class="dp-grid">
+
+            <!-- LEFT: Add Food Panel -->
+            <div class="dp-card">
+                <h2><i class="fas fa-plus-circle"></i> Add Food to Your Plan</h2>
+
+                <!-- Category Filter -->
+                <div class="cat-filter" id="catFilter">
+                    <button class="cat-btn active" onclick="filterCategory('all', this)">All</button>
+                    {% for category in all_categories %}
+                    <button class="cat-btn" onclick="filterCategory('{{ category }}', this)">{{ category }}</button>
+                    {% endfor %}
+                </div>
+
+                <!-- Food selector + Quantity -->
+                <div class="form-row" style="margin-bottom:1.25rem;">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label><i class="fas fa-search"></i> Search / Select Food</label>
+                        <select id="foodSelect" onchange="onFoodSelect()">
+                            <option value="">-- Choose a food --</option>
+                            {% for food in all_foods %}
+                            <option
+                                value="{{ food.food_name }}"
+                                data-category="{{ food.category }}"
+                                data-recommendation="{{ food.recommendation }}"
+                                data-calories="{{ food.calories }}"
+                                data-protein="{{ food.protein }}"
+                                data-potassium="{{ food.potassium }}"
+                                data-sodium="{{ food.sodium }}"
+                                data-phosphorus="{{ food.phosphorus }}"
+                                data-fluid="{{ food.fluid }}"
+                                data-unit="{{ food.unit }}"
+                                data-image="{{ food.image_url }}"
+                            >{{ food.food_name }} ({{ food.category }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-weight"></i> Quantity</label>
+                        <input type="number" id="qtyInput" min="1" max="2000" value="100" placeholder="e.g. 100">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit</label>
+                        <input type="text" id="unitDisplay" readonly value="g" style="background:#f1f5f9; cursor:default; max-width:80px;">
+                    </div>
+                    <button class="btn-add" onclick="addFood()">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+
+                <!-- Selected food preview -->
+                <div id="foodPreview" style="display:none; margin-top:1.25rem; padding:1rem; background:#f0f4ff; border-radius:1rem; border:1px solid #c7d2fe;">
+                    <div style="display:flex; gap:1rem; align-items:flex-start;">
+                        <img id="previewImg" src="" alt="" style="width:70px; height:70px; object-fit:cover; border-radius:0.75rem; flex-shrink:0;">
+                        <div style="flex:1;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong id="previewName" style="font-size:1rem;"></strong>
+                                <span id="previewBadge" class="badge-sm"></span>
+                            </div>
+                            <div class="nutrition-row" id="previewNutrition" style="margin-top:0.5rem;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Daily Limits Progress -->
+            <div class="dp-card">
+                <h2><i class="fas fa-chart-pie"></i> Daily Limit Progress</h2>
+                <div class="limits-grid">
+                    <!-- Calories limit: 1800 kcal for dialysis patients -->
+                    <div class="limit-row">
+                        <div class="limit-header">
+                            <span class="limit-name"><i class="fas fa-fire" style="color:#f59e0b;"></i> Calories</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="limit-values" id="calVal">0 / 1800 kcal</span>
+                                <span class="limit-pct" id="calPct" style="color:#22c55e;">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill fill-safe" id="calBar" style="width:0%"></div></div>
+                    </div>
+                    <!-- Protein limit: 1.2g / kg, using 70g as default -->
+                    <div class="limit-row">
+                        <div class="limit-header">
+                            <span class="limit-name"><i class="fas fa-dumbbell" style="color:#2563eb;"></i> Protein</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="limit-values" id="proVal">0 / 70 g</span>
+                                <span class="limit-pct" id="proPct" style="color:#22c55e;">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill fill-safe" id="proBar" style="width:0%"></div></div>
+                    </div>
+                    <!-- Potassium limit: 2000 mg/day for dialysis -->
+                    <div class="limit-row">
+                        <div class="limit-header">
+                            <span class="limit-name"><i class="fas fa-bolt" style="color:#f59e0b;"></i> Potassium</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="limit-values" id="potVal">0 / 2000 mg</span>
+                                <span class="limit-pct" id="potPct" style="color:#22c55e;">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill fill-safe" id="potBar" style="width:0%"></div></div>
+                    </div>
+                    <!-- Sodium limit: 2000 mg/day for dialysis -->
+                    <div class="limit-row">
+                        <div class="limit-header">
+                            <span class="limit-name"><i class="fas fa-tint" style="color:#06b6d4;"></i> Sodium</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="limit-values" id="sodVal">0 / 2000 mg</span>
+                                <span class="limit-pct" id="sodPct" style="color:#22c55e;">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill fill-safe" id="sodBar" style="width:0%"></div></div>
+                    </div>
+                    <!-- Phosphorus limit: 800 mg/day for dialysis -->
+                    <div class="limit-row">
+                        <div class="limit-header">
+                            <span class="limit-name"><i class="fas fa-atom" style="color:#7c3aed;"></i> Phosphorus</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="limit-values" id="phosVal">0 / 800 mg</span>
+                                <span class="limit-pct" id="phosPct" style="color:#22c55e;">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill fill-safe" id="phosBar" style="width:0%"></div></div>
+                    </div>
+                    <!-- Fluid limit: 1000 ml/day for dialysis -->
+                    <div class="limit-row">
+                        <div class="limit-header">
+                            <span class="limit-name"><i class="fas fa-droplet" style="color:#3b82f6;"></i> Fluid</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="limit-values" id="fluVal">0 / 1000 ml</span>
+                                <span class="limit-pct" id="fluPct" style="color:#22c55e;">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill fill-safe" id="fluBar" style="width:0%"></div></div>
+                    </div>
+                </div>
+
+                <!-- Warning zone -->
+                <div id="warnZone" style="margin-top:1.25rem; display:none;">
+                    <div style="padding:0.85rem 1rem; background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2); border-radius:0.75rem; font-size:0.85rem; color:#dc2626;">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        <span id="warnText"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FULL WIDTH: Diet Plan Table -->
+            <div class="dp-card section-span">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+                    <h2 style="margin-bottom:0;"><i class="fas fa-list-check"></i> My Diet Plan <span id="foodCount" style="font-size:0.85rem; color:var(--dp-muted); font-weight:500;">(0 items)</span></h2>
+                    <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+                        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Plan</button>
+                        <button onclick="clearAll()" style="background:#fff; color:#ef4444; border:2px solid #ef4444; padding:0.5rem 1rem; border-radius:0.75rem; font-size:0.85rem; font-weight:600; cursor:pointer;">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="diet-table-wrap">
+                    <table class="diet-table" id="dietTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Food</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Quantity</th>
+                                <th>Calories</th>
+                                <th>Protein</th>
+                                <th>Potassium %</th>
+                                <th>Sodium %</th>
+                                <th>Phosphorus %</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dietTableBody">
+                            <tr id="emptyRow">
+                                <td colspan="11">
+                                    <div class="empty-state">
+                                        <i class="fas fa-bowl-food"></i>
+                                        <p style="font-weight:600; margin-bottom:0.25rem;">No foods added yet</p>
+                                        <p style="font-size:0.82rem;">Select a food above and click <strong>Add</strong> to build your plan.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+// ── Food data from server ──
+const FOODS = {{ foods_json | tojson }};
+
+// ── Daily Limits (dialysis-specific recommendations) ──
+const LIMITS = {
+    calories:   1800,
+    protein:    70,
+    potassium:  2000,
+    sodium:     2000,
+    phosphorus: 800,
+    fluid:      1000
+};
+
+let plan = []; // array of { food, qty, ... }
+let currentCategory = 'all';
+
+// ── Category filter ──
+function filterCategory(cat, btn) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const sel = document.getElementById('foodSelect');
+    // reset
+    sel.innerHTML = '<option value="">-- Choose a food --</option>';
+    FOODS.forEach(f => {
+        if (cat === 'all' || f.category === cat) {
+            const opt = document.createElement('option');
+            opt.value = f.food_name;
+            opt.dataset.category = f.category;
+            opt.dataset.recommendation = f.recommendation;
+            opt.dataset.calories = f.calories;
+            opt.dataset.protein = f.protein;
+            opt.dataset.potassium = f.potassium;
+            opt.dataset.sodium = f.sodium;
+            opt.dataset.phosphorus = f.phosphorus;
+            opt.dataset.fluid = f.fluid;
+            opt.dataset.unit = f.unit;
+            opt.dataset.image = f.image_url;
+            opt.textContent = f.food_name + ' (' + f.category + ')';
+            sel.appendChild(opt);
+        }
+    });
+    document.getElementById('foodPreview').style.display = 'none';
+}
+
+// ── On food selection ──
+function onFoodSelect() {
+    const sel = document.getElementById('foodSelect');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt.value) {
+        document.getElementById('foodPreview').style.display = 'none';
+        return;
+    }
+    const d = opt.dataset;
+    document.getElementById('previewImg').src = d.image || '/static/images/food-placeholder.png';
+    document.getElementById('previewImg').onerror = function(){ this.src='/static/images/food-placeholder.png'; };
+    document.getElementById('previewName').textContent = opt.value;
+    const rec = d.recommendation.toLowerCase();
+    const badge = document.getElementById('previewBadge');
+    badge.className = 'badge-sm badge-' + (rec === 'safe' ? 'safe' : rec === 'limited' ? 'limited' : 'avoid');
+    badge.textContent = d.recommendation;
+    document.getElementById('unitDisplay').value = d.unit || 'g';
+
+    const qty = parseFloat(document.getElementById('qtyInput').value) || 100;
+    const ratio = qty / 100;
+    const nuts = [
+        { label: 'Cal', val: (parseFloat(d.calories) * ratio).toFixed(1), unit: 'kcal' },
+        { label: 'Pro', val: (parseFloat(d.protein) * ratio).toFixed(1), unit: 'g' },
+        { label: 'K', val: (parseFloat(d.potassium) * ratio).toFixed(1), unit: 'mg' },
+        { label: 'Na', val: (parseFloat(d.sodium) * ratio).toFixed(1), unit: 'mg' },
+        { label: 'P', val: (parseFloat(d.phosphorus) * ratio).toFixed(1), unit: 'mg' },
+    ];
+    document.getElementById('previewNutrition').innerHTML = nuts.map(n =>
+        `<span class="nut-chip">${n.label}: ${n.val}${n.unit}</span>`
+    ).join('');
+
+    document.getElementById('foodPreview').style.display = 'block';
+}
+
+// update preview live on qty change
+document.getElementById('qtyInput').addEventListener('input', () => {
+    if (document.getElementById('foodSelect').value) onFoodSelect();
+});
+
+// ── Add food ──
+function addFood() {
+    const sel = document.getElementById('foodSelect');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt || !opt.value) { alert('Please select a food first.'); return; }
+    const qty = parseFloat(document.getElementById('qtyInput').value);
+    if (!qty || qty <= 0) { alert('Please enter a valid quantity.'); return; }
+
+    const d = opt.dataset;
+    const ratio = qty / 100;
+
+    plan.push({
+        id: Date.now(),
+        name: opt.value,
+        category: d.category,
+        recommendation: d.recommendation,
+        image: d.image || '/static/images/food-placeholder.png',
+        qty: qty,
+        unit: d.unit || 'g',
+        calories:   parseFloat(d.calories)   * ratio,
+        protein:    parseFloat(d.protein)    * ratio,
+        potassium:  parseFloat(d.potassium)  * ratio,
+        sodium:     parseFloat(d.sodium)     * ratio,
+        phosphorus: parseFloat(d.phosphorus) * ratio,
+        fluid:      parseFloat(d.fluid)      * ratio,
+    });
+
+    renderTable();
+    updateProgress();
+    // reset
+    sel.selectedIndex = 0;
+    document.getElementById('qtyInput').value = 100;
+    document.getElementById('foodPreview').style.display = 'none';
+    document.getElementById('unitDisplay').value = 'g';
+}
+
+// ── Remove food ──
+function removeFood(id) {
+    plan = plan.filter(f => f.id !== id);
+    renderTable();
+    updateProgress();
+}
+
+// ── Clear all ──
+function clearAll() {
+    if (plan.length === 0) return;
+    if (!confirm('Clear all foods from your diet plan?')) return;
+    plan = [];
+    renderTable();
+    updateProgress();
+}
+
+// ── Render table ──
+function renderTable() {
+    const tbody = document.getElementById('dietTableBody');
+    tbody.innerHTML = '';
+    document.getElementById('foodCount').textContent = `(${plan.length} item${plan.length !== 1 ? 's' : ''})`;
+
+    if (plan.length === 0) {
+        tbody.innerHTML = `<tr id="emptyRow"><td colspan="11">
+            <div class="empty-state">
+                <i class="fas fa-bowl-food"></i>
+                <p style="font-weight:600; margin-bottom:0.25rem;">No foods added yet</p>
+                <p style="font-size:0.82rem;">Select a food above and click <strong>Add</strong> to build your plan.</p>
+            </div></td></tr>`;
+        return;
+    }
+
+    plan.forEach((f, i) => {
+        const rec = f.recommendation.toLowerCase();
+        const badgeCls = rec === 'safe' ? 'badge-safe' : rec === 'limited' ? 'badge-limited' : 'badge-avoid';
+        const potPct = Math.min(((f.potassium / LIMITS.potassium) * 100), 100).toFixed(1);
+        const sodPct = Math.min(((f.sodium    / LIMITS.sodium)    * 100), 100).toFixed(1);
+        const phosPct= Math.min(((f.phosphorus/ LIMITS.phosphorus)* 100), 100).toFixed(1);
+
+        const barColor = (pct) => pct < 50 ? '#22c55e' : pct < 75 ? '#f59e0b' : '#ef4444';
+
+        tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="color:var(--dp-muted); font-weight:700;">${i+1}</td>
+            <td>
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <img src="${f.image}" alt="${f.name}" style="width:40px; height:40px; border-radius:0.6rem; object-fit:cover; flex-shrink:0;"
+                        onerror="this.src='/static/images/food-placeholder.png'">
+                    <strong style="font-size:0.9rem;">${f.name}</strong>
+                </div>
+            </td>
+            <td><span style="color:var(--dp-muted); font-size:0.83rem;">${f.category}</span></td>
+            <td><span class="badge-sm ${badgeCls}">${f.recommendation}</span></td>
+            <td><strong>${f.qty}</strong> <span style="color:var(--dp-muted); font-size:0.78rem;">${f.unit}</span></td>
+            <td><strong>${f.calories.toFixed(1)}</strong> <span style="color:var(--dp-muted); font-size:0.75rem;">kcal</span></td>
+            <td><strong>${f.protein.toFixed(1)}</strong> <span style="color:var(--dp-muted); font-size:0.75rem;">g</span></td>
+            <td>
+                <div style="font-weight:700; font-size:0.88rem; color:${barColor(potPct)};">${potPct}%</div>
+                <div class="pct-bar-mini"><div class="pct-fill" style="width:${potPct}%; background:${barColor(potPct)};"></div></div>
+                <div style="font-size:0.7rem; color:var(--dp-muted);">${f.potassium.toFixed(1)} mg</div>
+            </td>
+            <td>
+                <div style="font-weight:700; font-size:0.88rem; color:${barColor(sodPct)};">${sodPct}%</div>
+                <div class="pct-bar-mini"><div class="pct-fill" style="width:${sodPct}%; background:${barColor(sodPct)};"></div></div>
+                <div style="font-size:0.7rem; color:var(--dp-muted);">${f.sodium.toFixed(1)} mg</div>
+            </td>
+            <td>
+                <div style="font-weight:700; font-size:0.88rem; color:${barColor(phosPct)};">${phosPct}%</div>
+                <div class="pct-bar-mini"><div class="pct-fill" style="width:${phosPct}%; background:${barColor(phosPct)};"></div></div>
+                <div style="font-size:0.7rem; color:var(--dp-muted);">${f.phosphorus.toFixed(1)} mg</div>
+            </td>
+            <td>
+                <button class="btn-remove" onclick="removeFood(${f.id})" title="Remove"><i class="fas fa-trash-can"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// ── Update progress bars ──
+function updateProgress() {
+    const totals = plan.reduce((acc, f) => {
+        acc.calories   += f.calories;
+        acc.protein    += f.protein;
+        acc.potassium  += f.potassium;
+        acc.sodium     += f.sodium;
+        acc.phosphorus += f.phosphorus;
+        acc.fluid      += f.fluid;
+        return acc;
+    }, { calories:0, protein:0, potassium:0, sodium:0, phosphorus:0, fluid:0 });
+
+    // Summary chips
+    document.getElementById('totalCalories').textContent  = totals.calories.toFixed(0);
+    document.getElementById('totalProtein').textContent   = totals.protein.toFixed(1) + 'g';
+    document.getElementById('totalPotassium').textContent = totals.potassium.toFixed(0) + 'mg';
+    document.getElementById('totalSodium').textContent    = totals.sodium.toFixed(0) + 'mg';
+
+    // Bars
+    setBar('cal', totals.calories,   LIMITS.calories,   'kcal');
+    setBar('pro', totals.protein,    LIMITS.protein,    'g');
+    setBar('pot', totals.potassium,  LIMITS.potassium,  'mg');
+    setBar('sod', totals.sodium,     LIMITS.sodium,     'mg');
+    setBar('phos',totals.phosphorus, LIMITS.phosphorus, 'mg');
+    setBar('flu', totals.fluid,      LIMITS.fluid,      'ml');
+
+    // Warnings
+    const warns = [];
+    if (totals.potassium > LIMITS.potassium) warns.push(`Potassium exceeds daily limit (${totals.potassium.toFixed(0)}mg / ${LIMITS.potassium}mg)`);
+    if (totals.sodium    > LIMITS.sodium)    warns.push(`Sodium exceeds daily limit (${totals.sodium.toFixed(0)}mg / ${LIMITS.sodium}mg)`);
+    if (totals.phosphorus> LIMITS.phosphorus)warns.push(`Phosphorus exceeds daily limit (${totals.phosphorus.toFixed(0)}mg / ${LIMITS.phosphorus}mg)`);
+    if (totals.fluid     > LIMITS.fluid)     warns.push(`Fluid exceeds daily limit (${totals.fluid.toFixed(0)}ml / ${LIMITS.fluid}ml)`);
+    const warnAvoid = plan.filter(f => f.recommendation.toLowerCase() === 'avoid');
+    if (warnAvoid.length > 0) warns.push(`You have ${warnAvoid.length} "Avoid" food(s): ${warnAvoid.map(f=>f.name).join(', ')}`);
+
+    const wz = document.getElementById('warnZone');
+    if (warns.length > 0) {
+        document.getElementById('warnText').innerHTML = warns.join('<br>');
+        wz.style.display = 'block';
+    } else {
+        wz.style.display = 'none';
+    }
+}
+
+function setBar(prefix, val, limit, unit) {
+    const pct = Math.min((val / limit) * 100, 100);
+    const el = document.getElementById(prefix + 'Bar');
+    const pctEl = document.getElementById(prefix + 'Pct');
+    const valEl = document.getElementById(prefix + 'Val');
+
+    el.style.width = pct + '%';
+    pctEl.textContent = pct.toFixed(1) + '%';
+    valEl.textContent = val.toFixed(1) + ' / ' + limit + ' ' + unit;
+
+    // Color
+    el.className = 'progress-fill ' + (pct < 50 ? 'fill-safe' : pct < 80 ? 'fill-warning' : 'fill-danger');
+    pctEl.style.color = pct < 50 ? '#22c55e' : pct < 80 ? '#d97706' : '#dc2626';
+}
+</script>
+</body>
+</html>

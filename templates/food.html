@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Recommendations - DialyCare AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .food-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .food-info {
+            padding: 1.5rem;
+        }
+
+        .food-info h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .diet-header {
+            background: white;
+            padding: 4rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <i class="fas fa-heartbeat"></i> DialyCare AI
+                </a>
+                <div class="nav-links">
+                    <div class="lang-selector">
+                        <i class="fas fa-globe"></i>
+                        <select onchange="window.location.href='/set-language/'+this.value">
+                            <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
+                            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
+                            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
+                            <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
+                            <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
+                            <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
+                        </select>
+                    </div>
+                    {% if session.get('user_id') %}
+                    <a href="/dashboard">{{ _('dashboard') }}</a>
+                    <a href="/logout">{{ _('logout') }}</a>
+                    {% else %}
+                    <a href="/">{{ _('home') }}</a>
+                    <a href="/login" class="btn btn-outline">{{ _('login') }}</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="diet-header">
+            <div class="container">
+                <h1>{{ _('nutritional_guidance') }}</h1>
+                <p>{{ _('food_recs') }}</p>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                    <span class="badge badge-success">{{ _('safe') }}</span>
+                    <span class="badge badge-warning">{{ _('limited') }}</span>
+                    <span class="badge badge-error">{{ _('avoid') }}</span>
+                </div>
+            </div>
+        </section>
+
+        {% for category, foods in categorized_foods.items() %}
+        <section class="container" style="padding: 3rem 2rem 0;">
+            <div class="section-title" style="text-align: left; margin-bottom: 2rem;">
+                <h2 style="border-left: 5px solid var(--primary); padding-left: 1rem;">{{ _(category) }}</h2>
+            </div>
+
+            <div class="food-grid">
+                {% for food in foods %}
+                <div class="food-card">
+                    <img src="{{ food.image_url }}" alt="{{ food.food_name }}" class="food-img"
+                        onerror="this.onerror=null; this.src='/static/images/food-placeholder.png';">
+                    <div class="food-info">
+                        <span class="badge badge-{{ food.color }}">{{ _(food.recommendation) }}</span>
+                        <h3>{{ _(food.food_name) }}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">{{ _('clinical_guidance_tip') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 DialyCare AI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

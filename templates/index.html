@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DialyCare AI - Smart Health & Diet Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    <i class="fas fa-heartbeat"></i> DialyCare AI
+                </a>
+                <div class="nav-links">
+                    <div class="lang-selector">
+                        <i class="fas fa-globe"></i>
+                        <select onchange="window.location.href='/set-language/'+this.value">
+                            <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
+                            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
+                            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
+                            <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
+                            <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
+                            <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
+                        </select>
+                    </div>
+                    {% if session.get('user_id') %}
+                    <a href="/dashboard">{{ _('dashboard') }}</a>
+                    <a href="/logout">{{ _('logout') }}</a>
+                    {% else %}
+                    <a href="/food">{{ _('diet_plan') }}</a>
+                    <a href="/login" class="btn btn-outline">{{ _('login') }}</a>
+                    <a href="/register" class="btn btn-primary">{{ _('register') }}</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-text">
+                    <h1>{{ _('welcome') }}</h1>
+                    <p>{{ _('hero_subtitle') }}</p>
+                    <div class="hero-btns">
+                        <a href="/register" class="btn btn-primary">{{ _('get_started') }}</a>
+                        <a href="#specialized-care" class="btn btn-outline">{{ _('Specialized Care') }}</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1000"
+                        alt="High-Tech Medical Systems">
+                </div>
+            </div>
+        </section>
+
+        <section id="specialized-care" class="specialized-care section-padding">
+            <div class="container">
+                <div class="care-grid">
+                    <div class="care-content">
+                        <h2>Advanced Dialysis Systems</h2>
+                        <p>Experience the next generation of renal care with robotic assistance and holographic
+                            monitoring. Optimized for
+                            unparalleled precision and patient comfort.</p>
+                        <ul class="care-list">
+                            <li><i class="fas fa-microchip"></i> Compatible with AI-Powered Smart Systems</li>
+                            <li><i class="fas fa-water"></i> Integrated Pure Water Filtration</li>
+                            <li><i class="fas fa-heartbeat"></i> Real-time Hemodynamic Analytics</li>
+                        </ul>
+                    </div>
+                    <div class="care-image">
+                        <img src="{{ url_for('static', filename='images/futuristic-dialysis.png') }}"
+                            alt="Advanced Dialysis Machine with Robotic Assistance">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-showcase section-padding" style="background: var(--secondary); color: white;">
+            <div class="container">
+                <div class="care-grid" style="grid-template-columns: 1.2fr 1fr;">
+                    <div class="care-image">
+                        <img src="{{ url_for('static', filename='images/futuristic-dialysis.png') }}"
+                            alt="Ultra-Futuristic AI Dialysis Environment"
+                            style="box-shadow: 0 40px 100px -20px rgba(37, 99, 235, 0.3);">
+                    </div>
+                    <div class="care-content">
+                        <h2 style="color: white;">8K Holographic Renal Care</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Our mission for the high-tech ICU includes
+                            holographic health dashboards and robotic assistance arms that ensure perfect treatment
+                            every time.</p>
+                        <div class="tech-specs">
+                            <div class="spec-item">
+                                <strong>Smart Blood Purification</strong>
+                                <p>Automated electrolyte balancing with AI-driven sensors.</p>
+                            </div>
+                            <div class="spec-item">
+                                <strong>Transparent Dialysis Chambers</strong>
+                                <p>Real-time visual monitoring with glowing filtration indicators.</p>
+                            </div>
+                            <div class="spec-item">
+                                <strong>Robotic Assistance</strong>
+                                <p>Precision fluid management enabled by advanced robotics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>{{ _('features_title') }}</h2>
+                    <p>{{ _('features_subtitle') }}</p>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-utensils"></i></div>
+                        <h3>{{ _('smart_diet_title') }}</h3>
+                        <p>{{ _('smart_diet_desc') }}</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>{{ _('health_tracking_title') }}</h3>
+                        <p>{{ _('health_tracking_desc') }}</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-file-medical"></i></div>
+                        <h3>{{ _('digital_report_title') }}</h3>
+                        <p>{{ _('digital_report_desc') }}</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-bell"></i></div>
+                        <h3>{{ _('risk_alerts_title') }}</h3>
+                        <p>{{ _('risk_alerts_desc') }}</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-user-md"></i></div>
+                        <h3>{{ _('doctor_integration_title') }}</h3>
+                        <p>{{ _('doctor_integration_desc') }}</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <h3>{{ _('weekly_summaries_title') }}</h3>
+                        <p>{{ _('weekly_summaries_desc') }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="guide" class="guide section-padding">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Dialysis Care Guide</h2>
+                    <p>Essential information for patients and caregivers</p>
+                </div>
+                <div class="grid">
+                    <div class="card info-card">
+                        <h3><i class="fas fa-tools"></i> Equipment & Supplies</h3>
+                        <ul>
+                            <li><strong>Dialyzer:</strong> The artificial kidney filter</li>
+                            <li><strong>Bloodlines:</strong> Tubing for blood transport</li>
+                            <li><strong>Fistula Needles:</strong> Specialized access needles</li>
+                            <li><strong>Cycler:</strong> Machine for peritoneal dialysis</li>
+                        </ul>
+                    </div>
+                    <div class="card info-card">
+                        <h3><i class="fas fa-hand-holding-medical"></i> Access Care</h3>
+                        <ul>
+                            <li><strong>Fistula/Graft:</strong> Permanent surgical access</li>
+                            <li><strong>Protective Clothing:</strong> Hoodies with zippers</li>
+                            <li><strong>Care:</strong> Antibacterial soap & antiseptic</li>
+                            <li><strong>Comfort:</strong> Numbing sprays & creams</li>
+                        </ul>
+                    </div>
+                    <div class="card info-card">
+                        <h3><i class="fas fa-pills"></i> Diet & Meds</h3>
+                        <ul>
+                            <li><strong>Binders:</strong> Manage phosphorus levels</li>
+                            <li><strong>EPO:</strong> Hormone for anemia management</li>
+                            <li><strong>Supplements:</strong> Iron, B-complex & Vit C</li>
+                            <li><strong>Low-Sodium:</strong> Kidney-friendly spices</li>
+                        </ul>
+                    </div>
+                    <div class="card info-card">
+                        <h3><i class="fas fa-book-medical"></i> Key Terms</h3>
+                        <ul>
+                            <li><strong>Dry Weight:</strong> Post-session target weight</li>
+                            <li><strong>Exchange:</strong> PD draining/filling process</li>
+                            <li><strong>Kt/V:</strong> Measure of dialysis adequacy</li>
+                            <li><strong>Access:</strong> Site for blood removal</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo" style="color: white;">
+                    <i class="fas fa-heartbeat"></i> DialyCare AI
+                </div>
+                <div class="footer-links">
+                    <a href="#">{{ _('privacy_policy') }}</a>
+                    <a href="#">{{ _('terms_service') }}</a>
+                    <a href="#">{{ _('help_center') }}</a>
+                    <a href="#">{{ _('contact_us') }}</a>
+                </div>
+                <p>&copy; 2026 DialyCare AI. {{ _('advanced_ai_care') }}</p>
+            </div>
+        </div>
+    </footer>
+    {% include 'chatbot.html' %}
+</body>
+
+</html>
