@@ -176,10 +176,28 @@ def food():
     else:
         df = pd.read_csv('data/food_dataset.csv')
         foods_by_category = {}
+        def get_food_side_effects(row):
+            effects = []
+            if row.get('potassium', 0) > 200:
+                effects.append('High Potassium (Risk of Arrhythmia)')
+            if row.get('sodium', 0) > 140:
+                effects.append('High Sodium (Risk of High BP/Edema)')
+            if row.get('phosphorus', 0) > 150:
+                effects.append('High Phosphorus (Bone disease risk)')
+            
+            if str(row.get('recommendation', '')).lower() == 'safe':
+                return 'Generally safe' if not effects else ', '.join(effects)
+            
+            if not effects:
+                return 'Adverse effects on kidneys in large quantities'
+            return ', '.join(effects)
+
+        df['side_effects'] = df.apply(get_food_side_effects, axis=1)
+
         for category in df['category'].unique():
             category_foods = df[df['category'] == category].to_dict('records')
             for f in category_foods:
-                rec = f['recommendation'].lower()
+                rec = str(f.get('recommendation', '')).lower()
                 if rec == 'safe': f['color'] = 'success'
                 elif rec == 'limited': f['color'] = 'warning'
                 else: f['color'] = 'error'
@@ -210,6 +228,20 @@ def diet_plan():
         df = df.fillna(0)
 
         all_foods = []
+        def get_food_side_effects(row):
+            effects = []
+            if row.get('potassium', 0) > 200:
+                effects.append('High Potassium (Risk of Arrhythmia)')
+            if row.get('sodium', 0) > 140:
+                effects.append('High Sodium (Risk of High BP/Edema)')
+            if row.get('phosphorus', 0) > 150:
+                effects.append('High Phosphorus (Bone disease risk)')
+            if str(row.get('recommendation', '')).lower() == 'safe':
+                return 'Generally safe' if not effects else ', '.join(effects)
+            if not effects:
+                return 'Adverse effects on kidneys in large quantities'
+            return ', '.join(effects)
+
         for _, row in df.iterrows():
             food_entry = {
                 'food_name':     str(row.get('food_name', '')),
@@ -223,6 +255,7 @@ def diet_plan():
                 'phosphorus':    float(row.get('phosphorus', 0)),
                 'fluid':         float(row.get('fluid', 0)),
                 'unit':          str(row.get('unit', 'g')),
+                'side_effects':  get_food_side_effects(row)
             }
             all_foods.append(food_entry)
 

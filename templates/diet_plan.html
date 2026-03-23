@@ -292,6 +292,7 @@
                                 data-fluid="{{ food.fluid }}"
                                 data-unit="{{ food.unit }}"
                                 data-image="{{ food.image_url }}"
+                                data-side-effects="{{ food.side_effects }}"
                             >{{ food.food_name }} ({{ food.category }})</option>
                             {% endfor %}
                         </select>
@@ -322,6 +323,11 @@
                                 <span id="previewBadge" class="badge-sm"></span>
                             </div>
                             <div class="nutrition-row" id="previewNutrition" style="margin-top:0.5rem;"></div>
+                            
+                            <div style="margin-top: 0.75rem; background: rgba(255,255,255,0.7); padding: 0.5rem; border-radius: 0.5rem; border-left: 3px solid #2563eb;">
+                                <span style="display: block; font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 0.15rem;">Clinical Effect</span>
+                                <p id="previewSideEffects" style="font-size: 0.75rem; font-weight: 600; color: #0f172a; margin: 0; line-height: 1.2;"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -496,6 +502,7 @@ function filterCategory(cat, btn) {
             opt.dataset.fluid = f.fluid;
             opt.dataset.unit = f.unit;
             opt.dataset.image = f.image_url;
+            opt.dataset.sideEffects = f.side_effects;
             opt.textContent = f.food_name + ' (' + f.category + ')';
             sel.appendChild(opt);
         }
@@ -520,6 +527,7 @@ function onFoodSelect() {
     badge.className = 'badge-sm badge-' + (rec === 'safe' ? 'safe' : rec === 'limited' ? 'limited' : 'avoid');
     badge.textContent = d.recommendation;
     document.getElementById('unitDisplay').value = d.unit || 'g';
+    document.getElementById('previewSideEffects').textContent = d.sideEffects || 'Data unavailable';
 
     const qtyInput = document.getElementById('qtyInput');
     // Enforce limits based on recommendation

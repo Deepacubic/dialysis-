@@ -135,9 +135,17 @@
                     <img src="{{ food.image_url }}" alt="{{ food.food_name }}" class="food-img"
                         onerror="this.onerror=null; this.src='/static/images/food-placeholder.png';">
                     <div class="food-info">
-                        <span class="badge badge-{{ food.color }}">{{ _(food.recommendation) }}</span>
-                        <h3>{{ _(food.food_name) }}</h3>
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">{{ _('clinical_guidance_tip') }}</p>
+                        <span class="badge badge-{{ food.color }}" style="margin-bottom: 0.5rem;">{{ _(food.recommendation) }}</span>
+                        <h3 style="margin-bottom: 0.2rem;">{{ _(food.food_name) }}</h3>
+                        
+                        <div style="background: rgba(0,0,0,0.03); padding: 0.6rem; border-radius: 0.5rem; margin-top: 0.75rem;">
+                            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.2rem;">
+                                <i class="fas fa-stethoscope"></i> Clinical Effect
+                            </span>
+                            <p style="color: {% if food.recommendation|lower == 'safe' %}#16a34a{% else %}#dc2626{% endif %}; font-size: 0.82rem; font-weight: 600; margin: 0; line-height: 1.3;">
+                                {{ food.side_effects }}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
