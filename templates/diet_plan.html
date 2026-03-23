@@ -646,7 +646,6 @@ function clearAll() {
 function renderTable() {
     const tbody = document.getElementById('dietTableBody');
     tbody.innerHTML = '';
-    document.getElementById('foodCount').textContent = `(${plan.length} item${plan.length !== 1 ? 's' : ''})`;
 
     if (plan.length === 0) {
         tbody.innerHTML = `<tr id="emptyRow"><td colspan="11">

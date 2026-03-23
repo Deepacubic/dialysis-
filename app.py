@@ -194,14 +194,22 @@ def food():
 
         df['side_effects'] = df.apply(get_food_side_effects, axis=1)
 
-        for category in df['category'].dropna().astype(str).unique():
+        # Filter out junk categories (0, L, etc) and junk foods
+        cleaned_categories = [c for c in df['category'].dropna().astype(str).unique() if len(c) > 1 and not c.isdigit()]
+        
+        for category in cleaned_categories:
             category_foods = df[df['category'] == category].to_dict('records')
+            valid_foods = []
             for f in category_foods:
-                rec = str(f.get('recommendation', '')).lower()
-                if rec == 'safe': f['color'] = 'success'
-                elif rec == 'limited': f['color'] = 'warning'
-                else: f['color'] = 'error'
-            foods_by_category[category] = category_foods
+                name = str(f.get('food_name', ''))
+                if len(name) > 1 and not name.isdigit():
+                    rec = str(f.get('recommendation', '')).lower()
+                    if rec == 'safe': f['color'] = 'success'
+                    elif rec == 'limited': f['color'] = 'warning'
+                    else: f['color'] = 'error'
+                    valid_foods.append(f)
+            if valid_foods:
+                foods_by_category[category] = valid_foods
     return render_template('food.html', categorized_foods=foods_by_category)
 
 @app.route('/diet-plan')
@@ -243,9 +251,16 @@ def diet_plan():
             return ', '.join(effects)
 
         for _, row in df.iterrows():
+            name = str(row.get('food_name', ''))
+            cat = str(row.get('category', ''))
+            
+            # Skip corrupted rows where name or category is just a digit or empty/short
+            if len(name) <= 1 or name.isdigit() or len(cat) <= 1 or cat.isdigit():
+                continue
+                
             food_entry = {
-                'food_name':     str(row.get('food_name', '')),
-                'category':      str(row.get('category', '')),
+                'food_name':     name,
+                'category':      cat,
                 'recommendation':str(row.get('recommendation', 'Safe')),
                 'image_url':     str(row.get('image_url', '/static/images/food-placeholder.png')),
                 'calories':      float(row.get('calories', 0)),
@@ -259,7 +274,8 @@ def diet_plan():
             }
             all_foods.append(food_entry)
 
-        all_categories = sorted(df['category'].dropna().astype(str).unique().tolist())
+        # Re-derive categories from the cleaned foods list
+        all_categories = sorted(list(set([f['category'] for f in all_foods])))
 
     return render_template(
         'diet_plan.html',
