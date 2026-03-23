@@ -194,7 +194,7 @@ def food():
 
         df['side_effects'] = df.apply(get_food_side_effects, axis=1)
 
-        for category in df['category'].unique():
+        for category in df['category'].dropna().astype(str).unique():
             category_foods = df[df['category'] == category].to_dict('records')
             for f in category_foods:
                 rec = str(f.get('recommendation', '')).lower()
@@ -259,7 +259,7 @@ def diet_plan():
             }
             all_foods.append(food_entry)
 
-        all_categories = sorted(df['category'].dropna().unique().tolist())
+        all_categories = sorted(df['category'].dropna().astype(str).unique().tolist())
 
     return render_template(
         'diet_plan.html',
