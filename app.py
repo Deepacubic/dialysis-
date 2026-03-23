@@ -403,8 +403,45 @@ def chat():
         
     return {"reply": reply}
 
+def seed_database():
+    if not Patient.query.first():
+        hashed_pw = 'password'  # In production, use hashed passwords!
+        test_patient = Patient(
+            name='Test User',
+            email='test@example.com',
+            password=hashed_pw,
+            age=45,
+            gender='Male',
+            weight=70.5,
+            dialysis_type='Hemodialysis',
+            kidney_condition='Chronic Kidney Disease',
+            ckd_stage='Stage 3'
+        )
+        db.session.add(test_patient)
+        db.session.commit()
+        
+        # Add a sample health record
+        test_record = HealthRecord(
+            patient_id=test_patient.id,
+            potassium=4.5,
+            sodium=138.0,
+            fluid_intake=1200.0,
+            weight=70.5,
+            bp_sys=120,
+            bp_dia=80,
+            urea=45.0,
+            creatinine=1.8,
+            sugar=110.0,
+            hgb=11.5,
+            gfr=58.0,
+            risk_score='Low'
+        )
+        db.session.add(test_record)
+        db.session.commit()
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        seed_database()
         train_model()
     app.run(debug=True)
