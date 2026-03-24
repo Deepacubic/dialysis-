@@ -965,85 +965,116 @@ function setBar(prefix, val, limit, unit) {
     @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
 </style>
 
+
+<!-- DIALYBOT 3.0 MULTI-DOMAIN CHATBOT -->
 <div class="chat-bubble" onclick="toggleChat()">
     <i class="fas fa-robot fa-lg"></i>
+    <span style="position:absolute; top:-5px; right:-5px; background:var(--dp-avoid); color:white; font-size:10px; padding:2px 6px; border-radius:10px; font-weight:800;">3.0</span>
 </div>
 
-<div class="chat-window" id="chatWin">
-    <div class="chat-header">
-        <div style="background: rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; justify-content:center; align-items:center;">
-            <i class="fas fa-robot"></i>
+<div class="chat-window" id="chatWin" style="display:none; flex-direction:column; position:fixed; bottom:90px; right:30px; width:360px; height:500px; background:white; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.15); border:1px solid #e2e8f0; z-index:1000; overflow:hidden;">
+    <div class="chat-header" style="background:linear-gradient(135deg, #1e3a8a, #2563eb); color:white; padding:1.25rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+            <div style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; justify-content:center; align-items:center;"><i class="fas fa-robot"></i></div>
+            <div>
+                <div style="font-weight:700; font-size:1rem;">DialyBot 3.0</div>
+                <div style="font-size:0.75rem; opacity:0.8;">Multi-Domain AI Assistant</div>
+            </div>
         </div>
-        <div>
-            <div style="font-size:0.95rem;">DialyBot AI</div>
-            <div style="font-size:0.7rem; font-weight:400; color:rgba(255,255,255,0.8);">Ask about kidney health...</div>
-        </div>
-        <i class="fas fa-times" onclick="toggleChat()" style="margin-left:auto; cursor:pointer; opacity:0.8;"></i>
+        <i class="fas fa-times" onclick="toggleChat()" style="cursor:pointer; font-size:1.2rem;"></i>
     </div>
     
-    <div class="chat-messages" id="chatMsgs">
-        <div class="msg msg-bot">
-            Hello! I am <strong>DialyBot 🤖</strong>. I've analyzed your dialysis health records. How can I help you check your diet today?
+    <div class="chat-messages" id="chatMessages" style="flex:1; padding:1.25rem; overflow-y:auto; display:flex; flex-direction:column; gap:1rem; background:#f8fafc;">
+        <div class="bot-msg" style="background:white; padding:0.8rem 1rem; border-radius:1rem; border-bottom-left-radius:0; box-shadow:0 2px 5px rgba(0,0,0,0.05); font-size:0.9rem; max-width:85%;">
+            Hello! I am **DialyBot 3.0** 🤖. I can analyze your **Lab Reports**, suggest **Safe Foods**, and give **Risk Alerts**. How can I help today?
         </div>
-    </div>
-    
-    <div class="typing" id="typingIndicator">
-        <span>DialyBot is thinking</span> <div class="dot"></div> <div class="dot"></div> <div class="dot"></div>
     </div>
 
-    <div class="chat-input-area">
-        <input type="text" id="chatIn" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendChat()">
-        <button class="btn-send" onclick="sendChat()">
-            <i class="fas fa-paper-plane"></i>
-        </button>
+    <!-- Quick Suggestions -->
+    <div style="padding: 0.5rem 1rem; display: flex; gap: 0.5rem; overflow-x: auto; white-space: nowrap; border-top: 1px solid #f1f5f9; background:#fff;">
+        <button onclick="sendQuickMsg('Analyze my reports')" style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.4rem 0.8rem; font-size: 0.75rem; cursor: pointer;">📊 Analyze Report</button>
+        <button onclick="sendQuickMsg('Can I eat banana?')" style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.4rem 0.8rem; font-size: 0.75rem; cursor: pointer;">🍽️ Nutri Check</button>
+        <button onclick="simulateImageScan()" style="background: #fff0f7; border: 1px solid #ffccdf; border-radius: 12px; padding: 0.4rem 0.8rem; font-size: 0.75rem; cursor: pointer; color: #db2777; font-weight:600;"><i class="fas fa-camera"></i> AI Scan</button>
+    </div>
+
+    <div class="chat-input-area" style="padding:1rem; border-top:1px solid #f1f5f9; display:flex; gap:0.5rem; background:white;">
+        <input type="text" id="chatInput" placeholder="Ask about diet or reports..." style="flex:1; padding:0.6rem 1rem; border-radius:20px; border:1px solid #e2e8f0; outline:none; font-size:0.9rem;" onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()" style="background:var(--dp-primary); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; display:flex; justify-content:center; align-items:center;"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
 
 <script>
-function toggleChat() {
-    const win = document.getElementById('chatWin');
-    win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
-}
-
-function addMsg(text, type) {
-    const msgs = document.getElementById('chatMsgs');
-    const d = document.createElement('div');
-    d.className = 'msg msg-' + type;
-    
-    let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    d.innerHTML = html;
-    
-    msgs.appendChild(d);
-    msgs.scrollTop = msgs.scrollHeight;
-}
-
-async function sendChat() {
-    const input = document.getElementById('chatIn');
-    const msg = input.value.trim();
-    if(!msg) return;
-    
-    addMsg(msg, 'user');
-    input.value = '';
-    
-    const typing = document.getElementById('typingIndicator');
-    typing.style.display = 'flex';
-    document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
-
-    try {
-        const res = await fetch('/chat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ message: msg })
-        });
-        const data = await res.json();
-        
-        typing.style.display = 'none';
-        addMsg(data.reply, 'bot');
-    } catch(err) {
-        typing.style.display = 'none';
-        addMsg("Sorry, I'm having trouble connecting right now. 🛑 Please try again.", 'bot');
+    function toggleChat() {
+        const win = document.getElementById('chatWin');
+        win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+        if(win.style.display === 'flex') scrollToBottom();
     }
-}
+
+    async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        appendMessage(text, 'user-msg');
+        input.value = '';
+        
+        const typingId = 'typing-' + Date.now();
+        const typingDiv = document.createElement('div');
+        typingDiv.id = typingId;
+        typingDiv.className = 'bot-msg';
+        typingDiv.style = "background:#f1f5f9; padding:0.5rem 1rem; border-radius:1rem; font-size:0.8rem; align-self:flex-start;";
+        typingDiv.innerHTML = "Thinking...";
+        document.getElementById('chatMessages').appendChild(typingDiv);
+        scrollToBottom();
+
+        try {
+            const resp = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ message: text })
+            });
+            const data = await resp.json();
+            document.getElementById(typingId).remove();
+            appendMessage(data.reply, 'bot-msg');
+        } catch(e) {
+            document.getElementById(typingId).remove();
+            appendMessage("⚠️ Error connecting to AI. Please try again.", 'bot-msg');
+        }
+    }
+
+    function sendQuickMsg(val) {
+        document.getElementById('chatInput').value = val;
+        sendMessage();
+    }
+
+    function simulateImageScan() {
+        appendMessage("<i class='fas fa-camera'></i> *Initializing AI Food Vision Scan...*", 'user-msg');
+        setTimeout(() => {
+            appendMessage("🔍 **AI Vision Result:** Detected **Banana** 🍌\n\n❌ **Status:** Avoid\n\n💡 **Reason:** extremely high potassium (358mg/100g). Safe alternative: **Apple** 🍎.", 'bot-msg');
+        }, 1500);
+    }
+
+    function appendMessage(text, className) {
+        const container = document.getElementById('chatMessages');
+        const d = document.createElement('div');
+        d.className = className;
+        
+        // Dynamic styles
+        if(className === 'user-msg') {
+            d.style = "background:#2563eb; color:white; padding:0.8rem 1rem; border-radius:1rem; border-bottom-right-radius:0; font-size:0.9rem; align-self:flex-end; max-width:85%;";
+        } else {
+            d.style = "background:white; padding:0.8rem 1rem; border-radius:1rem; border-bottom-left-radius:0; box-shadow:0 2px 5px rgba(0,0,0,0.05); font-size:0.9rem; align-self:flex-start; max-width:85%;";
+        }
+        
+        d.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        container.appendChild(d);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const c = document.getElementById('chatMessages');
+        c.scrollTop = c.scrollHeight;
+    }
 </script>
 </body>
 </html>

@@ -474,6 +474,210 @@ def health_entry():
         
     return render_template('health_entry.html')
 
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = Patient.query.get(session['user_id'])
+    # Get all records for history
+    history = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).all()
+    # Get latest health record if exists
+    latest_record = history[0] if history else None
+    
+    # AI Trend Analysis
+    trend_summary = []
+    if len(history) >= 2:
+        latest = history[0]
+        previous = history[1]
+        
+        # Creatinine Trend
+        if latest.creatinine > previous.creatinine * 1.1:
+            trend_summary.append({'metric': 'creatinine', 'status': 'Worsening', 'message': tr('trend_creatinine_up'), 'color': 'error'})
+        elif latest.creatinine < previous.creatinine * 0.9:
+            trend_summary.append({'metric': 'creatinine', 'status': 'Improving', 'message': tr('trend_creatinine_down'), 'color': 'success'})
+        else:
+            trend_summary.append({'metric': 'creatinine', 'status': 'Stable', 'message': tr('trend_creatinine_stable'), 'color': 'info'})
+            
+        # eGFR Trend
+        if latest.gfr and previous.gfr:
+            if latest.gfr < previous.gfr * 0.9:
+                trend_summary.append({'metric': 'egfr', 'status': 'Decreasing', 'message': tr('trend_gfr_down'), 'color': 'error'})
+            elif latest.gfr > previous.gfr * 1.1:
+                trend_summary.append({'metric': 'egfr', 'status': 'Increasing', 'message': tr('trend_gfr_up'), 'color': 'success'})
+        
+        # Potassium Trend
+        if latest.potassium > 5.5:
+            trend_summary.append({'metric': 'potassium', 'status': 'High', 'message': tr('trend_potassium_high'), 'color': 'error'})
+        elif latest.potassium < 3.5:
+            trend_summary.append({'metric': 'potassium', 'status': 'Low', 'message': tr('trend_potassium_low'), 'color': 'warning'})
+        else:
+            trend_summary.append({'metric': 'potassium', 'status': 'Normal', 'message': tr('trend_potassium_normal'), 'color': 'success'})
+
+    # Enhanced Intelligent Dietary Guidance System
+    dietary_tips = []
+    food_guidance = []
+    
+    if latest_record:
+        risk_lower = latest_record.risk_score.lower()
+        if "high" in risk_lower:
+            dietary_tips = ["Avoid high potassium foods like banana, orange", "Reduce salt intake", "Limit fluid intake to prescribed level", "Eat more low potassium foods like apple, cabbage"]
+        elif "moderate" in risk_lower or "medium" in risk_lower:
+            dietary_tips = ["Limit high sodium foods", "Drink controlled water", "Maintain balanced diet and regular tracking"]
+        else:
+            dietary_tips = ["Maintain current diet", "Follow regular monitoring", "Stay hydrated appropriately"]
+            
+        if latest_record.potassium > 5.5:
+            food_guidance.append({"name": "Banana", "status": "Avoid", "reason": "High potassium", "color": "danger"})
+            food_guidance.append({"name": "Orange", "status": "Avoid", "reason": "High potassium", "color": "danger"})
+        else:
+            food_guidance.append({"name": "Apple", "status": "Safe", "reason": "Low potassium", "color": "safe"})
+            food_guidance.append({"name": "Rice", "status": "Safe", "reason": "Low sodium", "color": "safe"})
+            
+        if latest_record.sodium > 150:
+            food_guidance.append({"name": "Pickle", "status": "Avoid", "reason": "Extremely high sodium", "color": "danger"})
+            food_guidance.append({"name": "Salted snacks", "status": "Avoid", "reason": "High sodium content", "color": "danger"})
+        else:
+            food_guidance.append({"name": "Fresh Vegetables", "status": "Safe", "reason": "Natural low sodium", "color": "safe"})
+            food_guidance.append({"name": "Milk", "status": "Limited", "reason": "Moderate potassium", "color": "warning"})
+
+    return render_template('dashboard.html', user=user, latest_record=latest_record, history=history, trends=trend_summary, dietary_tips=dietary_tips, food_guidance=food_guidance)
+
+@app.route('/health-entry', methods=['GET', 'POST'])
+def health_entry():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        user = Patient.query.get(session['user_id'])
+        age = user.age or 52
+        
+        # AI Prediction Data
+        potassium = float(request.form.get('potassium'))
+        sodium = float(request.form.get('sodium'))
+        fluid = float(request.form.get('fluid'))
+        creatinine = float(request.form.get('creatinine'))
+        urea = float(request.form.get('urea'))
+        sugar = float(request.form.get('sugar'))
+        hgb = float(request.form.get('hgb'))
+        
+        # Calculate eGFR (Simplified MDRD)
+        gfr = round(175 * (creatinine**-1.154) * (age**-0.203), 1)
+        
+        # New Medical Data
+        data = {
+            'patient_id': session['user_id'],
+            'potassium': potassium,
+            'sodium': sodium,
+            'fluid_intake': fluid,
+            'weight': float(request.form.get('weight')),
+            'bp_sys': int(request.form.get('bp_sys')),
+            'bp_dia': int(request.form.get('bp_dia')),
+            'urea': urea,
+            'platelets': float(request.form.get('platelets')),
+            'chloride': float(request.form.get('chloride')),
+            'creatinine': creatinine,
+            'cholesterol': float(request.form.get('cholesterol')),
+            'iron': float(request.form.get('iron')),
+            'calcium': float(request.form.get('calcium')),
+            'bilirubin': float(request.form.get('bilirubin')),
+            'sugar': sugar,
+            'hcv_status': request.form.get('hcv_status'),
+            'wbc': float(request.form.get('wbc')),
+            'rbc': float(request.form.get('rbc')),
+            'hgb': hgb,
+            'gfr': gfr,
+            'risk_score': predict_risk(
+                potassium, 
+                sodium, 
+                fluid, 
+                urea=urea, 
+                creatinine=creatinine,
+                sugar=sugar,
+                hgb=hgb,
+                gfr=gfr
+            )
+        }
+        
+        new_record = HealthRecord(**data)
+        db.session.add(new_record)
+        db.session.commit()
+        
+        flash(f'Comprehensive record added! Risk Level: {data["risk_score"]}', 'info')
+        return redirect(url_for('dashboard'))
+        
+    return render_template('health_entry.html')
+
+
+@app.route('/diet-plan')
+def diet_plan():
+    # Public route - personalized if logged in, general tool if guest
+    user = None
+    last_record = None
+    if 'user_id' in session:
+        user = Patient.query.get(session['user_id'])
+        if user:
+            last_record = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).first()
+
+    if not os.path.exists('data/food_dataset.csv'):
+        all_foods = []
+        all_categories = []
+    else:
+        df = pd.read_csv('data/food_dataset.csv')
+        df = df.fillna(0)
+        
+        def clean_val(v):
+            return str(v).strip()
+
+        def is_real_text(s):
+            s = clean_val(s)
+            if not s or s == "0" or s == "nan" or len(s) < 2: return False
+            if s.replace('.','',1).isdigit(): return False
+            return True
+
+        def get_food_side_effects(row):
+            effects = []
+            if float(row.get('potassium', 0)) > 200:
+                effects.append('High Potassium (Risk of Arrhythmia)')
+            if float(row.get('sodium', 0)) > 140:
+                effects.append('High Sodium (Risk of High BP/Edema)')
+            if float(row.get('phosphorus', 0)) > 150:
+                effects.append('High Phosphorus (Bone disease risk)')
+            rec = str(row.get('recommendation', '')).lower()
+            if rec == 'safe':
+                return 'Generally safe' if not effects else ', '.join(effects)
+            if not effects:
+                return 'Adverse effects on kidneys in large quantities'
+            return ', '.join(effects)
+
+        all_foods = []
+        for _, row in df.iterrows():
+            name = clean_val(row.get('food_name', ''))
+            cat = clean_val(row.get('category', ''))
+            
+            if not is_real_text(name) or not is_real_text(cat):
+                continue
+                
+            food_entry = {
+                'food_name':     name,
+                'category':      cat,
+                'recommendation':str(row.get('recommendation', 'Safe')),
+                'image_url':     str(row.get('image_url', '/static/images/food-placeholder.png')),
+                'calories':      float(row.get('calories', 0)),
+                'protein':       float(row.get('protein', 0)),
+                'potassium':     float(row.get('potassium', 0)),
+                'sodium':        float(row.get('sodium', 0)),
+                'phosphorus':    float(row.get('phosphorus', 0)),
+                'fluid':         float(row.get('fluid', 0)),
+                'unit':          str(row.get('unit', 'g')),
+                'side_effects':  get_food_side_effects(row)
+            }
+            all_foods.append(food_entry)
+
+        all_categories = sorted(list(set([f['category'] for f in all_foods])))
+
+    return render_template('diet_plan.html', all_foods=all_foods, all_categories=all_categories, user=user, last_record=last_record)
+
 @app.route('/anime-dashboard')
 def anime_dashboard():
     if 'user_id' not in session:
@@ -489,68 +693,88 @@ def chat():
     low_message = user_message.lower()
     
     # 1. Fetch Patient Context
-    patient_context = ""
+    patient_context_str = ""
+    history = None
     if 'user_id' in session:
         user = Patient.query.get(session['user_id'])
         if user:
             history = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).first()
             if history:
-                patient_context = f"(Patient: {user.name}, K: {history.potassium}, Na: {history.sodium}, GFR: {history.gfr}, Risk: {history.risk_score})"
+                patient_context_str = f"(Patient: {user.name}, K: {history.potassium}, Na: {history.sodium}, GFR: {history.gfr}, Urea: {history.urea}, Creatinine: {history.creatinine}, Risk: {history.risk_score})"
 
-    # 2. Rule-Based Engine (Fallback/Primary for Demo)
-    replies = {
-        "banana": "❌ **Banana is high in potassium (358mg/100g).** Avoid it to prevent Arrhythmia. Try small portions of apple or grapes.",
-        "apple": "✅ **Apple is safe!** It's low in potassium and contains fibers that are good for kidney patients.",
-        "potassium": "Potassium is critical for heart rhythm. Your safe daily limit is usually 1500-2000mg. Focus on 'Safe' foods from the guide.",
-        "sodium": "High sodium causes water retention (Edema). Stick to fresh foods; avoid canned items, salt, and pickles.",
-        "risk": f"Based on your latest record, your risk level is {history.risk_score if 'history' in locals() and history else 'Unknown'}. Please stick to 'Safe' foods.",
-        "help": "I'm DialyBot! I can help you check if a food is safe, explain your health reports, or give you diet tips. Try: 'Can I eat banana?'"
-    }
-    
-    # Simple keyword match for quick fallback
+    # 2. Multi-Domain Logic Engine
     reply = ""
-    for key, val in replies.items():
-        if key in low_message:
-            reply = val
-            break
-            
-    if not reply:
-        if any(word in low_message for word in ["hi", "hello", "hey"]):
-            reply = "Hello! I am **DialyBot 🤖**, your specialized AI dialysis assistant. How can I help you with your diet today?"
+    
+    # --- DOMAIN: Report Analyzer ---
+    if any(word in low_message for word in ["report", "analyze", "explain", "result", "my data"]):
+        if not history:
+            reply = "I don't see any lab reports in your file yet! 📁 Please use the **Health Entry** page to log your data first."
         else:
-            reply = "I'm DialyBot! For complex queries, please consult your doctor. But feel free to ask me if a specific food (like banana or apple) is safe! try 'help' to see my features."
+            status = "Low Risk" if history.risk_score < 40 else "Moderate Risk" if history.risk_score < 70 else "High Risk"
+            reply = f"""📊 **Your Lab Report Summary:**
+- **Status:** {status} ({history.risk_score}/100)
+- **Creatinine:** {history.creatinine} mg/dL (Indicates kidney filtration)
+- **Urea:** {history.urea} mg/dL (Indicates protein waste levels)
+- **BP:** {history.bp_sys}/{history.bp_dia} mmHg
+- **Advice:** {"Your values look stable. Stick to current diet." if history.risk_score < 50 else "⚠️ Warning: Your waste levels are elevating. Please restrict fluids and skip high-protein meals."}"""
 
-    # 3. Try LLM if available (and skip rules if it works)
+    # --- DOMAIN: Diet Assistant ---
+    elif any(word in low_message for word in ["banana", "apple", "potato", "eat", "food", "diet", "drink"]):
+        if "banana" in low_message:
+            reply = "❌ **Banana** is high in potassium (358mg/100g). For a dialysis patient, this can trigger arrhythmia. **Avoid it.** Try grapes instead!"
+        elif "apple" in low_message:
+            reply = "✅ **Apple** is a perfect low-potassium choice. Safe to eat!"
+        elif "potato" in low_message:
+            reply = "⚠️ **Potato** is high in potassium. If you eat it, soak sliced potatoes in water for 2 hours (leaching) to remove some potassium."
+        elif "water" in low_message or "fluid" in low_message:
+            limit = history.fluid_intake if history else 1000 # Corrected from history.fluid to history.fluid_intake
+            reply = f"💧 **Fluid Management:** Based on your needs, keep fluid intake below **{limit}ml/day**. This includes water, tea, and soups."
+        else:
+            reply = "🍽️ Use the **Diet Plan** tool to build your meal! I recommend Low-Sodium and Low-Potassium foods for your condition."
+
+    # --- DOMAIN: General/Risk ---
+    elif any(word in low_message for word in ["risk", "danger", "potassium", "sodium"]):
+        if history and history.potassium > 5.5:
+             reply = f"⚠️ **CRITICAL ALERT:** Your potassium is {history.potassium}. This is dangerous for your heart rhythm. **Avoid ALL fruits except apples/grapes.**"
+        else:
+             reply = "Kidney health depends on 3 pillars: Low Potassium, Low Sodium, and Fluid Control. Stay in the 'Safe' zone of my charts!"
+
+    # --- DOMAIN: Hello/Help ---
+    elif any(word in low_message for word in ["hi", "hello", "hey", "help"]):
+        reply = "Hello! I am **DialyBot AI 🤖**, your Multi-Domain assistant. I can:\n\n1. 📊 **Explain your Reports**\n2. 🍽️ **Suggest Safe Foods**\n3. ⚠️ **Give Risk Alerts**\n\nWhat would you like to know?"
+    else:
+        reply = "I'm DialyBot! I can help with diet or health data. Try asking: *'Explain my report'* or *'Can I eat potatoes?'*"
+
+    # 3. LLM Priority (If enabled)
     try:
         import openai
-        import os # Ensure os is imported for os.environ.get
-        # Set your key in environment variable for security
-        if os.environ.get("OPENAI_API_KEY") or (hasattr(openai, "api_key") and openai.api_key and openai.api_key != "YOUR_API_KEY"):
+        import os
+        api_key = os.environ.get("OPENAI_API_KEY") or (hasattr(openai, "api_key") and openai.api_key and openai.api_key != "YOUR_API_KEY")
+        if api_key:
             system_prompt = f"""
-            You are DialyBot, a specialized medical AI assistant for Dialysis patients.
-            Context: {patient_context if patient_context else 'New Patient (No data)'}
+            You are 'DialyBot', a Multi-Domain Medical AI for Dialysis.
+            Patient Data Context: {patient_context_str if patient_context_str else 'Public Guest'}
+            Domains: [Diet Assistant, Lab Report Explainer, Risk Alert, Health Tips].
             Rules:
-            - Suggest foods as 'Safe', 'Limited', or 'Avoid' based on kidney health standards.
-            - Potassium limit: <2000mg/day. Sodium: <2000mg/day.
-            - If potassium is high in query, warn about Arrhythmia.
-            - If sodium is high, warn about Edema/Blood Pressure.
-            - Be concise, empathetic, and professional.
+            - If user's Potassium or Sodium in context is High, start with a warning.
+            - Potassium limit: <2000mg. Sodium: <2000mg. Fluid: <1000ml.
+            - Keep replies professional and empathetic.
+            - Mention specific lab values if explaining report.
             """
-            
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message}
-                ],
-                max_tokens=200
+                messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_message}],
+                max_tokens=250
             )
             reply = response['choices'][0]['message']['content']
     except Exception as e:
         print(f"LLM Error: {e}")
-        # Stick to the rule-based reply derived above
 
     return {"reply": reply}
+
+@app.route('/health')
+def health():
+    return "OK"
 
 # End of file logic below. Global init already handles seeding.
 
