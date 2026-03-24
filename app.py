@@ -217,87 +217,107 @@ def food():
         foods_by_category = {}
     else:
         df = pd.read_csv('data/food_dataset.csv')
+        df = df.fillna(0)
+        
+        def clean_val(v):
+            return str(v).strip()
+
+        # SUPER-CLEANING logic: Only keep categories and food names that are real text
+        def is_real_text(s):
+            s = clean_val(s)
+            if not s or s == "0" or s == "nan" or len(s) < 2: return False
+            if s.replace('.','',1).isdigit(): return False # rejects "0", "15", "0.0" etc
+            return True
+
         foods_by_category = {}
+        
         def get_food_side_effects(row):
             effects = []
-            if row.get('potassium', 0) > 200:
+            if float(row.get('potassium', 0)) > 200:
                 effects.append('High Potassium (Risk of Arrhythmia)')
-            if row.get('sodium', 0) > 140:
+            if float(row.get('sodium', 0)) > 140:
                 effects.append('High Sodium (Risk of High BP/Edema)')
-            if row.get('phosphorus', 0) > 150:
+            if float(row.get('phosphorus', 0)) > 150:
                 effects.append('High Phosphorus (Bone disease risk)')
             
-            if str(row.get('recommendation', '')).lower() == 'safe':
+            rec = str(row.get('recommendation', '')).lower()
+            if rec == 'safe':
                 return 'Generally safe' if not effects else ', '.join(effects)
-            
             if not effects:
                 return 'Adverse effects on kidneys in large quantities'
             return ', '.join(effects)
 
-        df['side_effects'] = df.apply(get_food_side_effects, axis=1)
-
-        # Filter out junk categories (0, L, etc) and junk foods
-        cleaned_categories = [c for c in df['category'].dropna().astype(str).unique() if len(c) > 1 and not c.isdigit()]
-        
-        for category in cleaned_categories:
+        # Categorize
+        for category in df['category'].dropna().unique():
+            cat_str = clean_val(category)
+            if not is_real_text(cat_str): continue
+            
             category_foods = df[df['category'] == category].to_dict('records')
             valid_foods = []
             for f in category_foods:
-                name = str(f.get('food_name', ''))
-                if len(name) > 1 and not name.isdigit():
+                fname = clean_val(f.get('food_name', ''))
+                if is_real_text(fname):
                     rec = str(f.get('recommendation', '')).lower()
                     if rec == 'safe': f['color'] = 'success'
                     elif rec == 'limited': f['color'] = 'warning'
                     else: f['color'] = 'error'
+                    f['side_effects'] = get_food_side_effects(f)
                     valid_foods.append(f)
+            
             if valid_foods:
-                foods_by_category[category] = valid_foods
+                foods_by_category[cat_str] = valid_foods
+
     return render_template('food.html', categorized_foods=foods_by_category)
 
 @app.route('/diet-plan')
 def diet_plan():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    import json
+    # Public route - personalized if logged in, general tool if guest
+    user = None
+    last_record = None
+    if 'user_id' in session:
+        user = Patient.query.get(session['user_id'])
+        if user:
+            last_record = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).first()
 
     nutrition_cols = ['calories', 'protein', 'potassium', 'sodium', 'phosphorus', 'fluid', 'unit']
-    default_nutrition = {'calories': 0, 'protein': 0, 'potassium': 0, 'sodium': 0, 'phosphorus': 0, 'fluid': 0, 'unit': 'g'}
-
+    
     if not os.path.exists('data/food_dataset.csv'):
         all_foods = []
         all_categories = []
     else:
         df = pd.read_csv('data/food_dataset.csv')
-        # Fill missing nutritional columns with 0/defaults
-        for col in nutrition_cols[:-1]:  # skip 'unit'
-            if col not in df.columns:
-                df[col] = 0
-        if 'unit' not in df.columns:
-            df['unit'] = 'g'
         df = df.fillna(0)
+        
+        def clean_val(v):
+            return str(v).strip()
 
-        all_foods = []
+        def is_real_text(s):
+            s = clean_val(s)
+            if not s or s == "0" or s == "nan" or len(s) < 2: return False
+            if s.replace('.','',1).isdigit(): return False
+            return True
+
         def get_food_side_effects(row):
             effects = []
-            if row.get('potassium', 0) > 200:
+            if float(row.get('potassium', 0)) > 200:
                 effects.append('High Potassium (Risk of Arrhythmia)')
-            if row.get('sodium', 0) > 140:
+            if float(row.get('sodium', 0)) > 140:
                 effects.append('High Sodium (Risk of High BP/Edema)')
-            if row.get('phosphorus', 0) > 150:
+            if float(row.get('phosphorus', 0)) > 150:
                 effects.append('High Phosphorus (Bone disease risk)')
-            if str(row.get('recommendation', '')).lower() == 'safe':
+            rec = str(row.get('recommendation', '')).lower()
+            if rec == 'safe':
                 return 'Generally safe' if not effects else ', '.join(effects)
             if not effects:
                 return 'Adverse effects on kidneys in large quantities'
             return ', '.join(effects)
 
+        all_foods = []
         for _, row in df.iterrows():
-            name = str(row.get('food_name', ''))
-            cat = str(row.get('category', ''))
+            name = clean_val(row.get('food_name', ''))
+            cat = clean_val(row.get('category', ''))
             
-            # Skip corrupted rows where name or category is just a digit or empty/short
-            if len(name) <= 1 or name.isdigit() or len(cat) <= 1 or cat.isdigit():
+            if not is_real_text(name) or not is_real_text(cat):
                 continue
                 
             food_entry = {
@@ -316,15 +336,9 @@ def diet_plan():
             }
             all_foods.append(food_entry)
 
-        # Re-derive categories from the cleaned foods list
         all_categories = sorted(list(set([f['category'] for f in all_foods])))
 
-    return render_template(
-        'diet_plan.html',
-        all_foods=all_foods,
-        all_categories=all_categories,
-        foods_json=all_foods
-    )
+    return render_template('diet_plan.html', all_foods=all_foods, all_categories=all_categories, user=user, last_record=last_record)
 
 @app.route('/dashboard')
 def dashboard():
@@ -468,57 +482,74 @@ def anime_dashboard():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get('message', '').lower()
-    reply = ""
+    user_message = request.json.get('message', '').strip()
+    if not user_message:
+        return {"reply": "Please ask me something!"}
+        
+    low_message = user_message.lower()
     
-    # Advanced logic bridging patient context if logged in
-    user_context = ""
+    # 1. Fetch Patient Context
+    patient_context = ""
     if 'user_id' in session:
         user = Patient.query.get(session['user_id'])
         if user:
             history = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).first()
             if history:
-                user_context = f" Patient Data - K: {history.potassium}, Na: {history.sodium}, Risk: {history.risk_score}"
+                patient_context = f"(Patient: {user.name}, K: {history.potassium}, Na: {history.sodium}, GFR: {history.gfr}, Risk: {history.risk_score})"
 
-    # Rule-Based Engine (Fallback from LLM)
-    if "banana" in user_message:
-        reply = "❌ **Banana is high in potassium.** Avoid it. Try apple or grapes instead."
-    elif "apple" in user_message:
-        reply = "✅ **Apple is safe!** Great choice for your kidney diet."
-    elif "potassium" in user_message and any(x in user_message for x in ["6.", "high", "danger", "my potassium is"]):
-        reply = "⚠️ **High risk!** Your potassium level indicates danger. Avoid high potassium foods immediately and consult your doctor."
-    elif "sodium" in user_message or "report" in user_message:
-        reply = "Based on standard kidney diets, your sodium is a critical factor. Reduce salt intake to stay within safe bounds."
-    elif "diet" in user_message or "safe food" in user_message:
-        reply = "For your safety, stick to low-potassium foods like apples, cabbage, and white bread. Drink fluids strictly as prescribed."
-    elif any(word in user_message for word in ["hi", "hello", "hey"]):
-        reply = "Hello! I am DialyBot 🤖. How can I help you with your health or diet today?"
-    else:
-        reply = "I'm DialyBot! For complex queries, please consult your doctor. But feel free to ask me if a specific food (like banana or apple) is safe!"
+    # 2. Rule-Based Engine (Fallback/Primary for Demo)
+    replies = {
+        "banana": "❌ **Banana is high in potassium (358mg/100g).** Avoid it to prevent Arrhythmia. Try small portions of apple or grapes.",
+        "apple": "✅ **Apple is safe!** It's low in potassium and contains fibers that are good for kidney patients.",
+        "potassium": "Potassium is critical for heart rhythm. Your safe daily limit is usually 1500-2000mg. Focus on 'Safe' foods from the guide.",
+        "sodium": "High sodium causes water retention (Edema). Stick to fresh foods; avoid canned items, salt, and pickles.",
+        "risk": f"Based on your latest record, your risk level is {history.risk_score if 'history' in locals() and history else 'Unknown'}. Please stick to 'Safe' foods.",
+        "help": "I'm DialyBot! I can help you check if a food is safe, explain your health reports, or give you diet tips. Try: 'Can I eat banana?'"
+    }
+    
+    # Simple keyword match for quick fallback
+    reply = ""
+    for key, val in replies.items():
+        if key in low_message:
+            reply = val
+            break
+            
+    if not reply:
+        if any(word in low_message for word in ["hi", "hello", "hey"]):
+            reply = "Hello! I am **DialyBot 🤖**, your specialized AI dialysis assistant. How can I help you with your diet today?"
+        else:
+            reply = "I'm DialyBot! For complex queries, please consult your doctor. But feel free to ask me if a specific food (like banana or apple) is safe! try 'help' to see my features."
 
-    # Append personalized context if relevant
-    if user_context and ("my" in user_message or "report" in user_message or "risk" in user_message):
-        reply += f"\n\n*(Note: Your recent record shows {user_context.strip()})*"
-
-    # Try LLM if available
+    # 3. Try LLM if available (and skip rules if it works)
     try:
         import openai
-        if hasattr(openai, "api_key") and openai.api_key and openai.api_key != "YOUR_API_KEY":
-            sys_message = "You are a dialysis diet assistant. Suggest safe foods and warn about risks."
-            if user_context:
-                sys_message += f"\nHere is the user's latest data: {user_context}"
+        import os # Ensure os is imported for os.environ.get
+        # Set your key in environment variable for security
+        if os.environ.get("OPENAI_API_KEY") or (hasattr(openai, "api_key") and openai.api_key and openai.api_key != "YOUR_API_KEY"):
+            system_prompt = f"""
+            You are DialyBot, a specialized medical AI assistant for Dialysis patients.
+            Context: {patient_context if patient_context else 'New Patient (No data)'}
+            Rules:
+            - Suggest foods as 'Safe', 'Limited', or 'Avoid' based on kidney health standards.
+            - Potassium limit: <2000mg/day. Sodium: <2000mg/day.
+            - If potassium is high in query, warn about Arrhythmia.
+            - If sodium is high, warn about Edema/Blood Pressure.
+            - Be concise, empathetic, and professional.
+            """
             
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": sys_message},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
-                ]
+                ],
+                max_tokens=200
             )
             reply = response['choices'][0]['message']['content']
-    except Exception:
-        pass
-        
+    except Exception as e:
+        print(f"LLM Error: {e}")
+        # Stick to the rule-based reply derived above
+
     return {"reply": reply}
 
 # End of file logic below. Global init already handles seeding.

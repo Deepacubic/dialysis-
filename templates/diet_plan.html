@@ -218,7 +218,11 @@
                     <option value="zh" {% if current_lang=='zh' %}selected{% endif %} style="color:#000;">简体中文</option>
                 </select>
             </div>
+            {% if user %}
             <a href="/logout" class="sidebar-link logout-link"><i class="fas fa-sign-out-alt"></i> {{ _('logout') }}</a>
+            {% else %}
+            <a href="/login" class="sidebar-link" style="color: #fff;"><i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
         </div>
     </aside>
 
@@ -228,8 +232,12 @@
         <!-- Hero Header -->
         <div class="dp-header">
             <div>
-                <h1><i class="fas fa-leaf"></i> Diet Plan Planner</h1>
-                <p>Select foods, enter quantity and instantly see your daily nutrient percentages.</p>
+                <h1><i class="fas fa-leaf"></i> Diet Plan Planner 
+                    {% if user %}<span style="font-size:0.9rem; background:rgba(255,255,255,0.2); padding:0.2rem 0.6rem; border-radius:1rem; margin-left:1rem;">Patient: {{ user.name }}</span>{% endif %}
+                </h1>
+                <p>Select foods and track your dialysis-healthy meal plan in real-time. 
+                    {% if not user %}<br><strong style="color:#fbbf24;">Note:</strong> Log in for personalized health context.{% endif %}
+                </p>
                 <div class="legend-row" style="margin-top: 1rem;">
                     <span class="legend-pill pill-safe"><i class="fas fa-circle-check"></i> Safe</span>
                     <span class="legend-pill pill-limited"><i class="fas fa-triangle-exclamation"></i> Limited</span>
@@ -414,6 +422,34 @@
                 </div>
             </div>
 
+            <!-- AI Safety Analysis Card -->
+            <div class="dp-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h2 style="margin:0;"><i class="fas fa-shield-heart" style="color:#22c55e;"></i> AI Safety Status</h2>
+                    <span id="overallSafetyBadge" class="badge-sm badge-safe" style="padding:0.4rem 0.8rem; font-size:0.85rem;">Optimal</span>
+                </div>
+                
+                <div style="text-align:center; padding:1.5rem 0;">
+                    <div style="position:relative; display:inline-block;">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e2e8f0" stroke-width="12" />
+                            <circle id="safetyScoreCircle" cx="60" cy="60" r="54" fill="none" stroke="#22c55e" stroke-width="12" 
+                                stroke-dasharray="339.29" stroke-dashoffset="339.29" stroke-linecap="round" style="transition: stroke-dashoffset 1s ease; transform: rotate(-90deg); transform-origin: 50% 50%;" />
+                        </svg>
+                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+                            <div id="safetyScoreText" style="font-size:1.75rem; font-weight:800; color:#1e293b;">100%</div>
+                            <div style="font-size:0.65rem; color:#64748b; font-weight:600; text-transform:uppercase;">Safety</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#f8fafc; border-radius:1rem; padding:1rem; border:1px solid #e2e8f0;">
+                    <p id="safetyAdvice" style="font-size:0.85rem; color:#475569; margin:0; line-height:1.5; text-align:center;">
+                        Initializing analysis... add foods to see your plan's safety score.
+                    </p>
+                </div>
+            </div>
+
             <!-- FULL WIDTH: Diet Plan Table -->
             <div class="dp-card section-span">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
@@ -464,7 +500,7 @@
 
 <script>
 // ── Food data from server ──
-const FOODS = {{ foods_json | tojson }};
+const FOODS = {{ all_foods | tojson }};
 
 // ── Daily Limits (dialysis-specific recommendations) ──
 const LIMITS = {
@@ -732,12 +768,34 @@ function updateProgress() {
 
     // Warnings
     const warns = [];
-    if (totals.potassium > LIMITS.potassium) warns.push(`Potassium exceeds daily limit (${totals.potassium.toFixed(0)}mg / ${LIMITS.potassium}mg)`);
-    if (totals.sodium    > LIMITS.sodium)    warns.push(`Sodium exceeds daily limit (${totals.sodium.toFixed(0)}mg / ${LIMITS.sodium}mg)`);
-    if (totals.phosphorus> LIMITS.phosphorus)warns.push(`Phosphorus exceeds daily limit (${totals.phosphorus.toFixed(0)}mg / ${LIMITS.phosphorus}mg)`);
-    if (totals.fluid     > LIMITS.fluid)     warns.push(`Fluid exceeds daily limit (${totals.fluid.toFixed(0)}ml / ${LIMITS.fluid}ml)`);
+    let safetyPoints = 100;
+
+    if (totals.potassium > LIMITS.potassium) {
+        warns.push(`Potassium exceeds daily limit (${totals.potassium.toFixed(0)}mg / ${LIMITS.potassium}mg)`);
+        safetyPoints -= 25;
+    }
+    if (totals.sodium > LIMITS.sodium) {
+        warns.push(`Sodium exceeds daily limit (${totals.sodium.toFixed(0)}mg / ${LIMITS.sodium}mg)`);
+        safetyPoints -= 25;
+    }
+    if (totals.phosphorus > LIMITS.phosphorus) {
+        warns.push(`Phosphorus exceeds daily limit (${totals.phosphorus.toFixed(0)}mg / ${LIMITS.phosphorus}mg)`);
+        safetyPoints -= 15;
+    }
+    if (totals.fluid > LIMITS.fluid) {
+        warns.push(`Fluid exceeds daily limit (${totals.fluid.toFixed(0)}ml / ${LIMITS.fluid}ml)`);
+        safetyPoints -= 20;
+    }
+    
     const warnAvoid = plan.filter(f => f.recommendation.toLowerCase() === 'avoid');
-    if (warnAvoid.length > 0) warns.push(`You have ${warnAvoid.length} "Avoid" food(s): ${warnAvoid.map(f=>f.name).join(', ')}`);
+    if (warnAvoid.length > 0) {
+        warns.push(`You have ${warnAvoid.length} "Avoid" food(s): ${warnAvoid.map(f=>f.name).join(', ')}`);
+        safetyPoints -= (warnAvoid.length * 15);
+    }
+    
+    // Calculate final safety score
+    const finalScore = Math.max(0, safetyPoints);
+    updateSafetyUI(finalScore, warns.length);
 
     const wz = document.getElementById('warnZone');
     if (warns.length > 0) {
@@ -745,6 +803,36 @@ function updateProgress() {
         wz.style.display = 'block';
     } else {
         wz.style.display = 'none';
+    }
+}
+
+function updateSafetyUI(score, warnCount) {
+    const circle = document.getElementById('safetyScoreCircle');
+    const text = document.getElementById('safetyScoreText');
+    const badge = document.getElementById('overallSafetyBadge');
+    const advice = document.getElementById('safetyAdvice');
+    
+    // Update Circle (circumference is ~339.29)
+    const offset = 339.29 - (score / 100) * 339.29;
+    circle.style.strokeDashoffset = offset; // Changed from .strokeDashoffset to .style.strokeDashoffset
+    text.textContent = score + '%';
+    
+    // Update Badge & Colors
+    if (score >= 90) {
+        badge.textContent = "Optimal";
+        badge.className = "badge-sm badge-safe";
+        circle.setAttribute('stroke', '#22c55e');
+        advice.innerHTML = "✨ Your current diet plan is **excellent** and follows all kidney health guidelines perfectly.";
+    } else if (score >= 70) {
+        badge.textContent = "Moderate";
+        badge.className = "badge-sm badge-limited";
+        circle.setAttribute('stroke', '#f59e0b');
+        advice.innerHTML = "⚠️ Your plan is acceptable, but try to **reduce high potassium/sodium items** for better safety.";
+    } else {
+        badge.textContent = "High Risk";
+        badge.className = "badge-sm badge-avoid";
+        circle.setAttribute('stroke', '#ef4444');
+        advice.innerHTML = "🛑 **Warning:** This plan poses a high risk to your kidneys. Consult DialyBot for safer alternatives.";
     }
 }
 
@@ -763,5 +851,201 @@ function setBar(prefix, val, limit, unit) {
     pctEl.style.color = pct < 50 ? '#22c55e' : pct < 80 ? '#d97706' : '#dc2626';
 }
 </script>
+
+<!-- DIALYCARE AI: FLOATING CHATBOT UI -->
+<style>
+    .chat-bubble {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+        cursor: pointer;
+        z-index: 1000;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid white;
+    }
+    .chat-bubble:hover { transform: scale(1.1) rotate(5deg); }
+    
+    .chat-window {
+        position: fixed;
+        bottom: 5.5rem;
+        right: 2rem;
+        width: 350px;
+        height: 480px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 1.5rem;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 1000;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.3s ease;
+        animation: slideUp 0.4s ease forwards;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .chat-header {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+    }
+    .chat-messages {
+        flex: 1;
+        padding: 1.25rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        background: #f8fafc;
+    }
+    .chat-input-area {
+        padding: 1rem;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 0.5rem;
+    }
+    .chat-input-area input {
+        flex: 1;
+        border: 1px solid #e2e8f0;
+        padding: 0.6rem 1rem;
+        border-radius: 0.75rem;
+        outline: none;
+        font-size: 0.9rem;
+    }
+    .btn-send {
+        background: var(--primary);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .msg {
+        max-width: 85%;
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.88rem;
+        line-height: 1.4;
+    }
+    .msg-bot {
+        background: white;
+        color: #1e293b;
+        align-self: flex-start;
+        border-bottom-left-radius: 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .msg-user {
+        background: var(--primary);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0;
+    }
+    .typing { display: none; align-items: center; gap: 4px; font-size: 0.75rem; color: #64748b; margin-top: -0.5rem; padding-left: 0.5rem; }
+    .dot { width: 6px; height: 6px; background: #cbd5e1; border-radius: 50%; animation: bounce 1s infinite alternate; }
+    .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+</style>
+
+<div class="chat-bubble" onclick="toggleChat()">
+    <i class="fas fa-robot fa-lg"></i>
+</div>
+
+<div class="chat-window" id="chatWin">
+    <div class="chat-header">
+        <div style="background: rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; justify-content:center; align-items:center;">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div>
+            <div style="font-size:0.95rem;">DialyBot AI</div>
+            <div style="font-size:0.7rem; font-weight:400; color:rgba(255,255,255,0.8);">Ask about kidney health...</div>
+        </div>
+        <i class="fas fa-times" onclick="toggleChat()" style="margin-left:auto; cursor:pointer; opacity:0.8;"></i>
+    </div>
+    
+    <div class="chat-messages" id="chatMsgs">
+        <div class="msg msg-bot">
+            Hello! I am <strong>DialyBot 🤖</strong>. I've analyzed your dialysis health records. How can I help you check your diet today?
+        </div>
+    </div>
+    
+    <div class="typing" id="typingIndicator">
+        <span>DialyBot is thinking</span> <div class="dot"></div> <div class="dot"></div> <div class="dot"></div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" id="chatIn" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendChat()">
+        <button class="btn-send" onclick="sendChat()">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+function toggleChat() {
+    const win = document.getElementById('chatWin');
+    win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function addMsg(text, type) {
+    const msgs = document.getElementById('chatMsgs');
+    const d = document.createElement('div');
+    d.className = 'msg msg-' + type;
+    
+    let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    d.innerHTML = html;
+    
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendChat() {
+    const input = document.getElementById('chatIn');
+    const msg = input.value.trim();
+    if(!msg) return;
+    
+    addMsg(msg, 'user');
+    input.value = '';
+    
+    const typing = document.getElementById('typingIndicator');
+    typing.style.display = 'flex';
+    document.getElementById('chatMsgs').scrollTop = document.getElementById('chatMsgs').scrollHeight;
+
+    try {
+        const res = await fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        
+        typing.style.display = 'none';
+        addMsg(data.reply, 'bot');
+    } catch(err) {
+        typing.style.display = 'none';
+        addMsg("Sorry, I'm having trouble connecting right now. 🛑 Please try again.", 'bot');
+    }
+}
+</script>
 </body>
 </html>
+
+
