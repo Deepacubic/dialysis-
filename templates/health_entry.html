@@ -1,238 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Health Data - DialyCare AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            background: var(--secondary);
-            color: white;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            transition: var(--transition);
-        }
-
-        .sidebar-link:hover,
-        .sidebar-link.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .main-content {
-            padding: 3rem;
-            background: #f1f5f9;
-        }
-
-        .form-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            font-size: 1rem;
-        }
+        body { font-family: 'Outfit', sans-serif; }
     </style>
 </head>
+<body class="bg-blue-50/50 min-h-screen">
 
-<body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="logo" style="color: white; font-size: 1.2rem;"><i class="fas fa-heartbeat"></i> DialyCare AI
-            </div>
-            <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 1rem;">
-                <a href="/dashboard" class="sidebar-link"><i class="fas fa-th-large"></i> {{ _('dashboard') }}</a>
-                <a href="/health-entry" class="sidebar-link active"><i class="fas fa-plus-circle"></i> {{
-                    _('health_entry') }}</a>
-                <a href="/diet-plan" class="sidebar-link"><i class="fas fa-utensils"></i> {{ _('diet_plan') }}</a>
-                <a href="/logout" class="sidebar-link" style="color: var(--error); margin-top: 2rem;"><i
-                        class="fas fa-sign-out-alt"></i> {{ _('logout') }}</a>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <div>
-                    <h1 style="font-size: 1.75rem; font-weight: 800;">{{ _('health_entry') }}</h1>
-                </div>
-                <div class="lang-selector">
-                    <i class="fas fa-globe"></i>
-                    <select onchange="window.location.href='/set-language/'+this.value">
-                        <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
-                        <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
-                        <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
-                        <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
-                        <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
-                        <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
-                    </select>
-                </div>
-            </header>
-
-            <div class="form-card">
-                <h2 style="margin-bottom: 0.5rem; font-weight: 800;">{{ _('log_today_data') }}</h2>
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">{{ _('enter_clinical_params') }}</p>
-
-                <form action="/health-entry" method="POST">
-                    <h3
-                        style="margin: 2rem 0 1rem; color: var(--primary); font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
-                        {{ _('basic_vitals') }}</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>{{ _('potassium') }} (mg/dL)</label>
-                            <input type="number" step="0.1" name="potassium" class="form-control" placeholder="4.5"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('sodium') }} (mEq/L)</label>
-                            <input type="number" step="0.1" name="sodium" class="form-control" placeholder="140"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('fluid') }} (ml)</label>
-                            <input type="number" name="fluid" class="form-control" placeholder="1000" required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('weight') }} (kg)</label>
-                            <input type="number" step="0.1" name="weight" class="form-control" placeholder="70"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('blood_pressure') }} ({{ _('sys') }} / {{ _('dia') }})</label>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <input type="number" name="bp_sys" class="form-control" placeholder="120" required>
-                                <input type="number" name="bp_dia" class="form-control" placeholder="80" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3
-                        style="margin: 2rem 0 1rem; color: var(--primary); font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
-                        {{ _('biochem_lab') }}</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Urea (mg/dL)</label>
-                            <input type="number" step="0.1" name="urea" class="form-control" placeholder="40" required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('creatinine') }} (mg/dL)</label>
-                            <input type="number" step="0.1" name="creatinine" class="form-control" placeholder="1.2"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('chloride') }} (mEq/L)</label>
-                            <input type="number" step="0.1" name="chloride" class="form-control" placeholder="100"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('sugar') }} (mg/dL)</label>
-                            <input type="number" step="0.1" name="sugar" class="form-control" placeholder="100"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('cholesterol') }} (mg/dL)</label>
-                            <input type="number" step="0.1" name="cholesterol" class="form-control" placeholder="200"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('calcium') }} (mg/dL)</label>
-                            <input type="number" step="0.1" name="calcium" class="form-control" placeholder="9.5"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('iron') }} (mcg/dL)</label>
-                            <input type="number" step="0.1" name="iron" class="form-control" placeholder="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('bilirubin') }} (mg/dL)</label>
-                            <input type="number" step="0.1" name="bilirubin" class="form-control" placeholder="1.0"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('hcv_status') }}</label>
-                            <select name="hcv_status" class="form-control">
-                                <option value="Negative">Negative</option>
-                                <option value="Positive">Positive</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <h3
-                        style="margin: 2rem 0 1rem; color: var(--primary); font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
-                        {{ _('cbc_count') }}</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>{{ _('wbc') }} (x10³/µL)</label>
-                            <input type="number" step="0.1" name="wbc" class="form-control" placeholder="4.5" required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('rbc') }} (x10⁶/µL)</label>
-                            <input type="number" step="0.1" name="rbc" class="form-control" placeholder="4.7" required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('hgb') }} (g/dL)</label>
-                            <input type="number" step="0.1" name="hgb" class="form-control" placeholder="14" required>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ _('platelets') }} (x10³/µL)</label>
-                            <input type="number" step="0.1" name="platelets" class="form-control" placeholder="150"
-                                required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary"
-                        style="width: 100%; margin-top: 3rem; padding: 1.25rem; font-size: 1.1rem; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);">{{
-                        _('clinical_report') }}</button>
-                </form>
-            </div>
-        </main>
+    <!-- Mobile Top Nav -->
+    <div class="md:hidden flex items-center justify-between p-6 bg-white border-b border-blue-100 sticky top-0 z-50">
+        <h1 class="text-xl font-black text-blue-600">DialyCare AI</h1>
+        <a href="/dashboard" class="text-slate-400 text-xl"><i class="fas fa-times"></i></a>
     </div>
-</body>
 
+    <main class="max-w-4xl mx-auto p-6 md:p-12">
+        <header class="mb-10 flex justify-between items-center">
+            <div>
+                <h1 class="text-4xl font-black text-slate-800 mb-2">Health Log</h1>
+                <p class="text-slate-400 font-medium italic">Enter your clinic lab results for smart analysis</p>
+            </div>
+            <a href="/dashboard" class="hidden md:flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-blue-600 transition-all">
+                <i class="fas fa-arrow-left"></i> BACK TO DASHBOARD
+            </a>
+        </header>
+
+        <form action="/health-entry" method="POST" class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-blue-100/30 border border-blue-50 space-y-12">
+            
+            <!-- SECTION 1: BASIC VITALS -->
+            <section class="space-y-6">
+                <h3 class="text-xs font-black uppercase tracking-widest text-blue-500 border-b border-blue-50 pb-2">Basic Vitals</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Potassium (mg/dL)</label>
+                        <input type="number" step="0.1" name="potassium" placeholder="4.2" required
+                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Sodium (mEq/L)</label>
+                        <input type="number" step="0.1" name="sodium" placeholder="138" required
+                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Fluid Intake (ML)</label>
+                        <input type="number" name="fluid" placeholder="1200" required
+                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-blue-600">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Weight (KG)</label>
+                        <input type="number" step="0.1" name="weight" placeholder="68.5" required
+                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold">
+                    </div>
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Blood Pressure (SYS / DIA)</label>
+                        <div class="flex gap-2">
+                            <input type="number" name="bp_sys" placeholder="120" required
+                                   class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-center">
+                            <input type="number" name="bp_dia" placeholder="80" required
+                                   class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-center">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: BIOCHEMISTRY LAB -->
+            <section class="space-y-6">
+                <h3 class="text-xs font-black uppercase tracking-widest text-indigo-500 border-b border-indigo-50 pb-2">Biochemistry Lab Report</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Urea (mg/dL)</label>
+                        <input type="number" step="0.1" name="urea" placeholder="42" required
+                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-bold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1 text-indigo-600 font-black">Creatinine (mg/dL)</label>
+                        <input type="number" step="0.1" name="creatinine" placeholder="1.4" required
+                               class="w-full px-4 py-4 rounded-2xl bg-indigo-50 border border-indigo-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-black text-indigo-700">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Sugar (mg/dL)</label>
+                        <input type="number" step="0.1" name="sugar" placeholder="105" required
+                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-bold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">HCV Status</label>
+                        <select name="hcv_status" class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-bold">
+                            <option value="Negative">Negative</option>
+                            <option value="Positive">Positive</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1 text-red-500">Hemoglobin (g/dL)</label>
+                        <input type="number" step="0.1" name="hgb" placeholder="11.5" required
+                               class="w-full px-4 py-4 rounded-2xl bg-red-50 border border-red-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-all font-bold text-red-700">
+                    </div>
+                    <!-- Hidden or default values to match the backend expectations -->
+                    <input type="hidden" name="platelets" value="250">
+                    <input type="hidden" name="chloride" value="102">
+                    <input type="hidden" name="cholesterol" value="180">
+                    <input type="hidden" name="iron" value="85">
+                    <input type="hidden" name="calcium" value="9.2">
+                    <input type="hidden" name="bilirubin" value="0.8">
+                    <input type="hidden" name="wbc" value="7.2">
+                    <input type="hidden" name="rbc" value="4.5">
+                </div>
+            </section>
+
+            <button type="submit" class="w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[1.5rem] font-black shadow-xl shadow-blue-200 hover:scale-[1.01] active:scale-95 transition-all uppercase tracking-widest text-lg">
+                <i class="fas fa-brain mr-2"></i> GENERATE RISK ANALYSIS
+            </button>
+        </form>
+
+        <footer class="mt-12 text-center text-xs font-bold text-slate-300 uppercase tracking-widest">
+            DialyCare AI • Advanced Kidney Assistant • V2.0
+        </footer>
+    </main>
+
+    <!-- Bottom Nav (Mobile Only) -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-4 flex justify-between items-center z-50">
+        <a href="/dashboard" class="text-slate-400 text-xl"><i class="fas fa-chart-line"></i></a>
+        <a href="/health-entry" class="text-blue-600 text-xl"><i class="fas fa-plus-circle"></i></a>
+        <a href="/diet-plan" class="text-slate-400 text-xl"><i class="fas fa-utensils"></i></a>
+        <a href="/logout" class="text-slate-400 text-xl"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+
+</body>
 </html>

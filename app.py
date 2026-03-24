@@ -211,19 +211,37 @@ def dashboard():
     user = Patient.query.get(session['user_id'])
     history = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).all()
     latest_record = history[0] if history else None
+    
     trend_summary = []
     if len(history) >= 2:
         latest, prev = history[0], history[1]
         if latest.creatinine > prev.creatinine * 1.05: trend_summary.append({'metric': 'creatinine', 'status': 'Worsening', 'message': tr('trend_creatinine_up'), 'color': 'error'})
         elif latest.creatinine < prev.creatinine * 0.95: trend_summary.append({'metric': 'creatinine', 'status': 'Improving', 'message': tr('trend_creatinine_down'), 'color': 'success'})
         if latest.gfr and prev.gfr and latest.gfr < prev.gfr * 0.95: trend_summary.append({'metric': 'egfr', 'status': 'Decreasing', 'message': tr('trend_gfr_down'), 'color': 'error'})
+    
+    # Chart Data (last 7 entries)
+    dates = []
+    creatinine_values = []
+    chart_history = history[:7][::-1]
+    for rec in chart_history:
+        dates.append(rec.date.strftime('%d %b'))
+        creatinine_values.append(rec.creatinine)
+
     dietary_tips = []
     if latest_record:
         risk = latest_record.risk_score.lower()
-        if "high" in risk: dietary_tips = ["Avoid high potassium foods like banana", "Reduce salt intake", "Limit fluids"]
-        elif "moderate" in risk: dietary_tips = ["Limit sodium", "Drink controlled water"]
-        else: dietary_tips = ["Maintain current diet", "Follow regular monitoring"]
-    return render_template('dashboard.html', user=user, latest_record=latest_record, history=history, trends=trend_summary, dietary_tips=dietary_tips)
+        if "high" in risk: dietary_tips = ["Avoid high potassium foods like banana", "Reduce salt intake", "Limit fluids to 500ml-700ml"]
+        elif "moderate" in risk: dietary_tips = ["Limit sodium to < 2g per day", "Control fluid intake", "Avoid processed foods"]
+        else: dietary_tips = ["Maintain current kidney-friendly diet", "Monitor fluid intake daily", "Follow doctor's advice on activity"]
+    
+    return render_template('dashboard.html', 
+                           user=user, 
+                           latest_record=latest_record, 
+                           history=history, 
+                           trends=trend_summary, 
+                           dates=dates, 
+                           creatinine_values=creatinine_values,
+                           dietary_tips=dietary_tips)
 
 @app.route('/health-entry', methods=['GET', 'POST'])
 def health_entry():
@@ -323,6 +341,51 @@ def clear_chat():
 
 @app.route('/health')
 def health(): return "OK"
+
+@app.route('/admin')
+def admin():
+    if 'user_id' not in session: # Optionally check for 'admin' role if added later
+        # return redirect(url_for('login'))
+        pass # Allow access for now for demonstration
+
+    patients = Patient.query.all()
+
+    total = len(patients)
+    high = 0
+    moderate = 0
+    low = 0
+    recent_alerts = []
+
+    patient_data = [] # Detailed list for admin display
+
+    for p in patients:
+        last = HealthRecord.query.filter_by(patient_id=p.id).order_by(HealthRecord.date.desc()).first()
+        risk = "Unknown"
+        if last:
+            risk = last.risk_score or "Low"
+            if "high" in risk.lower():
+                high += 1
+                recent_alerts.append({"message": f"Critical: High risk for patient {p.name}", "type": "error"})
+            elif "moderate" in risk.lower():
+                moderate += 1
+            else:
+                low += 1
+        
+        patient_data.append({
+            "name": p.name,
+            "email": p.email,
+            "ckd_stage": p.ckd_stage,
+            "latest_risk": risk,
+            "id": p.id
+        })
+
+    return render_template('admin.html',
+                           total_patients=total,
+                           high_risk=high,
+                           moderate=moderate,
+                           low=low,
+                           patients=patient_data,
+                           alerts=recent_alerts)
 
 if __name__ == '__main__':
     with app.app_context(): db.create_all()

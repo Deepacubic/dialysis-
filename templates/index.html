@@ -1,229 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DialyCare AI 3.0 (Open-Source Enabled) - AI Healthcare</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>DialyCare AI - Next Gen Kidney Care</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .hero-gradient { background: radial-gradient(circle at top right, #dbeafe, transparent), radial-gradient(circle at bottom left, #eff6ff, transparent); }
+    </style>
 </head>
+<body class="bg-white text-slate-900 hero-gradient min-h-screen">
 
-<body>
-    <header>
-        <div class="container">
-            <nav>
-                <a href="/" class="logo">
-                    <i class="fas fa-heartbeat"></i> DialyCare AI
-                </a>
-                <div class="nav-links">
-                    <div class="lang-selector">
-                        <i class="fas fa-globe"></i>
-                        <select onchange="window.location.href='/set-language/'+this.value">
-                            <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
-                            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
-                            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
-                            <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
-                            <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
-                            <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
-                        </select>
-                    </div>
-                    {% if session.get('user_id') %}
-                    <a href="/dashboard">{{ _('dashboard') }}</a>
-                    <a href="/logout">{{ _('logout') }}</a>
-                    {% else %}
-                    <a href="/diet-plan">Diet Plan</a>
-                    <a href="/login" class="btn btn-outline">{{ _('login') }}</a>
-                    <a href="/register" class="btn btn-primary">{{ _('register') }}</a>
-                    {% endif %}
-                </div>
-            </nav>
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-blue-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black text-blue-600 flex items-center gap-2 tracking-tighter">
+                <i class="fas fa-heart-pulse"></i> DialyCare AI
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 font-bold text-sm text-slate-500">
+                <a href="#features" class="hover:text-blue-600 transition-all">Features</a>
+                <a href="#technology" class="hover:text-blue-600 transition-all">Technology</a>
+                <a href="/diet-plan" class="hover:text-blue-600 transition-all">Diet Planner</a>
+                <div class="h-4 w-px bg-slate-200"></div>
+                {% if session.get('user_id') %}
+                    <a href="/dashboard" class="bg-blue-600 text-white px-6 py-2 rounded-full shadow-lg shadow-blue-200 hover:scale-105 transition-all">Dashboard</a>
+                    <a href="/logout" class="text-red-400">Logout</a>
+                {% else %}
+                    <a href="/login" class="hover:text-blue-600 transition-all">Sign In</a>
+                    <a href="/register" class="bg-blue-600 text-white px-6 py-2 rounded-full shadow-lg shadow-blue-200 hover:scale-105 transition-all">Get Started</a>
+                {% endif %}
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main>
-        <section class="hero">
-            <div class="container hero-grid">
-                <div class="hero-text">
-                    <h1>{{ _('welcome') }}</h1>
-                    <p>{{ _('hero_subtitle') }}</p>
-                    <div class="hero-btns">
-                        <a href="/register" class="btn btn-primary">{{ _('get_started') }}</a>
-                        <a href="#specialized-care" class="btn btn-outline">{{ _('Specialized Care') }}</a>
-                    </div>
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8">
+                <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">AI-Powered Renal Care</span>
+                <h1 class="text-5xl md:text-7xl font-black text-slate-800 leading-[1.1] tracking-tighter">
+                    Future of <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Dialysis</span> is Here.
+                </h1>
+                <p class="text-lg text-slate-500 font-medium max-w-lg leading-relaxed">
+                    Experience the revolutionary Antigravity Dialysis System combined with expert AI nutrition analysis. Personalized care for a better life.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/register" class="px-8 py-4 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-200 hover:scale-105 transition-all tracking-widest text-sm uppercase">Join the Future</a>
+                    <a href="/diet-plan" class="px-8 py-4 bg-white text-blue-600 border border-blue-100 font-black rounded-2xl hover:bg-blue-50 transition-all tracking-widest text-sm uppercase">Try Diet AI</a>
                 </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=1000"
-                        alt="High-Tech Medical Systems">
-                </div>
-            </div>
-        </section>
-
-        <section id="specialized-care" class="specialized-care section-padding">
-            <div class="container">
-                <div class="care-grid">
-                    <div class="care-content">
-                        <h2>Advanced Dialysis Systems</h2>
-                        <p>Experience the next generation of renal care with robotic assistance and holographic
-                            monitoring. Optimized for
-                            unparalleled precision and patient comfort.</p>
-                        <ul class="care-list">
-                            <li><i class="fas fa-microchip"></i> Compatible with AI-Powered Smart Systems</li>
-                            <li><i class="fas fa-water"></i> Integrated Pure Water Filtration</li>
-                            <li><i class="fas fa-heartbeat"></i> Real-time Hemodynamic Analytics</li>
-                        </ul>
+                <div class="flex items-center gap-6 pt-4">
+                    <div class="flex -space-x-3">
+                        <img src="https://ui-avatars.com/api/?name=Dr+Smith&background=2563eb&color=fff" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://ui-avatars.com/api/?name=Nurse+Jane&background=3b82f6&color=fff" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://ui-avatars.com/api/?name=Expert+AI&background=1e3a8a&color=fff" class="w-10 h-10 rounded-full border-2 border-white">
                     </div>
-                    <div class="care-image">
-                        <img src="{{ url_for('static', filename='images/futuristic-dialysis.png') }}"
-                            alt="Advanced Dialysis Machine with Robotic Assistance">
-                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Trusted by Specialists & AI</p>
                 </div>
             </div>
-        </section>
-
-        <section class="tech-showcase section-padding" style="background: var(--secondary); color: white;">
-            <div class="container">
-                <div class="care-grid" style="grid-template-columns: 1.2fr 1fr;">
-                    <div class="care-image">
-                        <img src="{{ url_for('static', filename='images/futuristic-dialysis.png') }}"
-                            alt="Ultra-Futuristic AI Dialysis Environment"
-                            style="box-shadow: 0 40px 100px -20px rgba(37, 99, 235, 0.3);">
-                    </div>
-                    <div class="care-content">
-                        <h2 style="color: white;">8K Holographic Renal Care</h2>
-                        <p style="color: rgba(255,255,255,0.7);">Our mission for the high-tech ICU includes
-                            holographic health dashboards and robotic assistance arms that ensure perfect treatment
-                            every time.</p>
-                        <div class="tech-specs">
-                            <div class="spec-item">
-                                <strong>Smart Blood Purification</strong>
-                                <p>Automated electrolyte balancing with AI-driven sensors.</p>
-                            </div>
-                            <div class="spec-item">
-                                <strong>Transparent Dialysis Chambers</strong>
-                                <p>Real-time visual monitoring with glowing filtration indicators.</p>
-                            </div>
-                            <div class="spec-item">
-                                <strong>Robotic Assistance</strong>
-                                <p>Precision fluid management enabled by advanced robotics.</p>
-                            </div>
-                        </div>
+            
+            <div class="relative">
+                <div class="absolute -top-10 -right-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-72 h-72 bg-indigo-400/20 rounded-full blur-3xl"></div>
+                <div class="bg-white p-4 rounded-[3rem] shadow-2xl relative z-10 border border-blue-50 overflow-hidden transform hover:-rotate-1 transition-all duration-700">
+                    <img src="https://images.unsplash.com/photo-1576091160550-217359f42f8c?auto=format&fit=crop&q=80&w=1000" 
+                         alt="Antigravity System" 
+                         class="rounded-[2.5rem] w-full h-[500px] object-cover">
+                    <div class="absolute bottom-10 left-10 p-6 glass rounded-2xl border border-white/50 shadow-xl max-w-xs">
+                        <h4 class="font-black text-slate-800 italic">"The Antigravity System reduces physical fatigue by 85%."</h4>
+                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">— Clinical Study 2026</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="features" class="features">
-            <div class="container">
-                <div class="section-title">
-                    <h2>{{ _('features_title') }}</h2>
-                    <p>{{ _('features_subtitle') }}</p>
+    <!-- Admin & Mobile Highlight -->
+    <section class="py-24 bg-slate-900 text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div class="order-2 lg:order-1 relative">
+                <div class="bg-slate-800 p-2 rounded-3xl border border-slate-700 shadow-3xl">
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-inner flex h-[400px]">
+                         <div class="w-16 bg-slate-100 border-r p-2 space-y-4">
+                             <div class="w-4 h-4 bg-blue-600 rounded"></div>
+                             <div class="w-4 h-4 bg-slate-300 rounded"></div>
+                             <div class="w-4 h-4 bg-slate-300 rounded"></div>
+                         </div>
+                         <div class="flex-1 p-6">
+                             <div class="flex justify-between items-center mb-6">
+                                 <div class="h-4 w-32 bg-slate-200 rounded"></div>
+                                 <div class="h-8 w-8 bg-blue-100 rounded-full"></div>
+                             </div>
+                             <div class="grid grid-cols-2 gap-4">
+                                 <div class="h-24 bg-blue-50 rounded-xl"></div>
+                                 <div class="h-24 bg-slate-50 rounded-xl"></div>
+                             </div>
+                             <div class="mt-8 space-y-4">
+                                 <div class="h-2 w-full bg-slate-100 rounded"></div>
+                                 <div class="h-2 w-full bg-slate-100 rounded"></div>
+                                 <div class="h-2 w-3/4 bg-slate-100 rounded"></div>
+                             </div>
+                         </div>
+                    </div>
                 </div>
-                <div class="grid">
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-utensils"></i></div>
-                        <h3>{{ _('smart_diet_title') }}</h3>
-                        <p>{{ _('smart_diet_desc') }}</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                        <h3>{{ _('health_tracking_title') }}</h3>
-                        <p>{{ _('health_tracking_desc') }}</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-file-medical"></i></div>
-                        <h3>{{ _('digital_report_title') }}</h3>
-                        <p>{{ _('digital_report_desc') }}</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-bell"></i></div>
-                        <h3>{{ _('risk_alerts_title') }}</h3>
-                        <p>{{ _('risk_alerts_desc') }}</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-user-md"></i></div>
-                        <h3>{{ _('doctor_integration_title') }}</h3>
-                        <p>{{ _('doctor_integration_desc') }}</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
-                        <h3>{{ _('weekly_summaries_title') }}</h3>
-                        <p>{{ _('weekly_summaries_desc') }}</p>
+                <div class="absolute -bottom-10 -right-10 bg-slate-800 p-2 rounded-[2rem] border border-slate-600 shadow-2xl w-48 rotate-6">
+                    <div class="bg-white rounded-[1.5rem] h-64 overflow-hidden p-4 space-y-4">
+                         <div class="h-4 w-20 bg-blue-100 rounded"></div>
+                         <div class="h-24 bg-blue-50 rounded-xl"></div>
+                         <div class="h-2 bg-slate-100 rounded"></div>
+                         <div class="flex justify-around pt-4 border-t">
+                             <div class="w-4 h-4 bg-slate-100 rounded"></div>
+                             <div class="w-4 h-4 bg-blue-400 rounded"></div>
+                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-        <section id="guide" class="guide section-padding">
-            <div class="container">
-                <div class="section-title">
-                    <h2>Dialysis Care Guide</h2>
-                    <p>Essential information for patients and caregivers</p>
-                </div>
-                <div class="grid">
-                    <div class="card info-card">
-                        <h3><i class="fas fa-tools"></i> Equipment & Supplies</h3>
-                        <ul>
-                            <li><strong>Dialyzer:</strong> The artificial kidney filter</li>
-                            <li><strong>Bloodlines:</strong> Tubing for blood transport</li>
-                            <li><strong>Fistula Needles:</strong> Specialized access needles</li>
-                            <li><strong>Cycler:</strong> Machine for peritoneal dialysis</li>
-                        </ul>
+            
+            <div class="order-1 lg:order-2 space-y-6">
+                <h2 class="text-4xl font-black leading-tight tracking-tighter">Centralized Hospital Control</h2>
+                <p class="text-slate-400 font-medium text-lg leading-relaxed">
+                    Designed for practitioners and patients alike. Our dual-dashboards ensure doctors can monitor risk from the Admin Panel while patients track progress via our mobile interface.
+                </p>
+                <div class="grid grid-cols-2 gap-6 pt-6">
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <i class="fas fa-desktop text-blue-400 mb-4 text-2xl"></i>
+                        <h5 class="font-bold mb-1">Admin Panel</h5>
+                        <p class="text-xs text-slate-500">Real-time patient monitoring for doctors.</p>
                     </div>
-                    <div class="card info-card">
-                        <h3><i class="fas fa-hand-holding-medical"></i> Access Care</h3>
-                        <ul>
-                            <li><strong>Fistula/Graft:</strong> Permanent surgical access</li>
-                            <li><strong>Protective Clothing:</strong> Hoodies with zippers</li>
-                            <li><strong>Care:</strong> Antibacterial soap & antiseptic</li>
-                            <li><strong>Comfort:</strong> Numbing sprays & creams</li>
-                        </ul>
-                    </div>
-                    <div class="card info-card">
-                        <h3><i class="fas fa-pills"></i> Diet & Meds</h3>
-                        <ul>
-                            <li><strong>Binders:</strong> Manage phosphorus levels</li>
-                            <li><strong>EPO:</strong> Hormone for anemia management</li>
-                            <li><strong>Supplements:</strong> Iron, B-complex & Vit C</li>
-                            <li><strong>Low-Sodium:</strong> Kidney-friendly spices</li>
-                        </ul>
-                    </div>
-                    <div class="card info-card">
-                        <h3><i class="fas fa-book-medical"></i> Key Terms</h3>
-                        <ul>
-                            <li><strong>Dry Weight:</strong> Post-session target weight</li>
-                            <li><strong>Exchange:</strong> PD draining/filling process</li>
-                            <li><strong>Kt/V:</strong> Measure of dialysis adequacy</li>
-                            <li><strong>Access:</strong> Site for blood removal</li>
-                        </ul>
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <i class="fas fa-mobile-alt text-cyan-400 mb-4 text-2xl"></i>
+                        <h5 class="font-bold mb-1">Mobile Web</h5>
+                        <p class="text-xs text-slate-500">Log vitals and check diets on the go.</p>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="logo" style="color: white;">
-                    <i class="fas fa-heartbeat"></i> DialyCare AI
-                </div>
-                <div class="footer-links">
-                    <a href="#">{{ _('privacy_policy') }}</a>
-                    <a href="#">{{ _('terms_service') }}</a>
-                    <a href="#">{{ _('help_center') }}</a>
-                    <a href="#">{{ _('contact_us') }}</a>
-                </div>
-                <p>&copy; 2026 DialyCare AI. {{ _('advanced_ai_care') }}</p>
+    <!-- Footer -->
+    <footer class="py-12 border-t border-blue-50 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <a href="/" class="text-xl font-black text-blue-600 flex items-center gap-2">
+                <i class="fas fa-heart-pulse"></i> DialyCare AI
+            </a>
+            <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">© 2026 NEXT GEN KIDNEY CARE SOLUTIONS</p>
+            <div class="flex gap-6 text-slate-400 text-sm">
+                <a href="/admin" class="hover:text-blue-600 transition-all font-bold">Admin Panel</a>
+                <a href="#" class="hover:text-blue-600 transition-all font-bold">Privacy</a>
+                <a href="#" class="hover:text-blue-600 transition-all font-bold">Terms</a>
             </div>
         </div>
     </footer>
+
     {% include 'chatbot.html' %}
 </body>
-
 </html>

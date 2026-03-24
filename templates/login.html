@@ -1,131 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - DialyCare AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        .auth-container {
-            min-height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .auth-card {
-            background: white;
-            padding: 3rem;
-            border-radius: 2rem;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .auth-card h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-
-        .auth-card p {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .btn-block {
-            width: 100%;
-            margin-top: 1rem;
-        }
+        body { font-family: 'Outfit', sans-serif; }
     </style>
 </head>
+<body class="bg-blue-50/50 min-h-screen flex flex-col items-center justify-center p-6">
 
-<body>
-    <header>
-        <div class="container">
-            <nav>
-                <a href="/" class="logo">
-                    <i class="fas fa-heartbeat"></i> DialyCare AI
-                </a>
-                <div class="nav-links">
-                    <div class="lang-selector">
-                        <i class="fas fa-globe"></i>
-                        <select onchange="window.location.href='/set-language/'+this.value">
-                            <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
-                            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
-                            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
-                            <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
-                            <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
-                            <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
-                        </select>
-                    </div>
-                    <a href="/">{{ _('home') }}</a>
-                </div>
+    <div class="fixed top-8 left-8">
+        <a href="/" class="text-2xl font-bold text-blue-600 flex items-center gap-2">
+            <i class="fas fa-heart-pulse"></i> DialyCare AI
+        </a>
+    </div>
+
+    <div class="w-full max-w-md bg-white p-10 rounded-[2.5rem] shadow-xl shadow-blue-100/50 border border-blue-50">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black text-slate-800 mb-2">Welcome Back</h1>
+            <p class="text-slate-400 font-medium">Please enter your credentials</p>
         </div>
-    </header>
 
-    <main class="auth-container">
-        <div class="auth-card">
-            <h2>{{ _('welcome_back') }}</h2>
-            <p>{{ _('enter_credentials') }}</p>
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
             {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
+                <div class="mb-6 p-4 rounded-2xl {% if category == 'error' %}bg-red-50 text-red-600{% else %}bg-blue-50 text-blue-600{% endif %} font-bold text-sm text-center">
+                    {{ message }}
+                </div>
             {% endfor %}
-            {% endif %}
-            {% endwith %}
-            <form action="/login" method="POST">
-                <div class="form-group">
-                    <label>{{ _('email') }}</label>
-                    <input type="email" name="email" class="form-control" placeholder="name@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label>{{ _('password') }}</label>
-                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">{{ _('sign_in') }}</button>
-            </form>
-            <p style="margin-top: 2rem; font-size: 0.9rem;">
-                {{ _('dont_have_account') }} <a href="/register"
-                    style="color: var(--primary); font-weight: 600; text-decoration: none;">{{ _('join_now') }}</a>
-            </p>
-        </div>
-    </main>
-</body>
+        {% endif %}
+        {% endwith %}
 
+        <form action="/login" method="POST" class="space-y-6">
+            <div class="space-y-2">
+                <label class="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-4 text-slate-300"><i class="fas fa-envelope"></i></span>
+                    <input type="email" name="email" placeholder="name@hospital.com" required
+                           class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-semibold">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Password</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-4 text-slate-300"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" placeholder="••••••••" required
+                           class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-semibold">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest">
+                Sign In
+            </button>
+        </form>
+
+        <p class="mt-8 text-center text-sm font-bold text-slate-400">
+            Don't have an account? <a href="/register" class="text-blue-600 hover:underline">Join now</a>
+        </p>
+    </div>
+
+    <div class="mt-8">
+        <select onchange="window.location.href='/set-language/'+this.value" class="bg-transparent text-xs font-black text-slate-400 outline-none">
+            <option value="en" {% if current_lang=='en' %}selected{% endif %}>ENGLISH</option>
+            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>TAMIL</option>
+            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>HINDI</option>
+        </select>
+    </div>
+
+</body>
 </html>
