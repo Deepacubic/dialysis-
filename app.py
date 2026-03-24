@@ -266,32 +266,60 @@ def anime_dashboard():
 def chat():
     user_msg = request.json.get('message', '').strip().lower()
     if not user_msg: return {"reply": "How can I help you today?"}
+    
+    # 1. Fetch Context
     history = None
     if 'user_id' in session:
         history = HealthRecord.query.filter_by(patient_id=session['user_id']).order_by(HealthRecord.date.desc()).first()
     
-    reply = ""
-    if any(w in user_msg for w in ["report", "analyze", "explain"]):
-        if not history: reply = "No records found! Please add your data in Health Entry first."
-        else:
-            status = "Low Risk" if float(str(history.risk_score).replace('%','')) < 40 else "High Risk"
-            reply = f"📊 **Health Status:** {status}. Your Creatinine is {history.creatinine} and Urea is {history.urea}. Visit Dashboard for trends!"
-    elif any(w in user_msg for w in ["banana", "potato", "eat", "food"]):
-        if "banana" in user_msg: reply = "❌ **Banana** is high in potassium. **Avoid it.** Try an apple!"
-        else: reply = "🍽️ Use the **Diet Plan** tool to build a safe meal! Stick to Low-Potassium foods."
-    elif "hi" in user_msg or "hello" in user_msg:
-        reply = "Hello! I am **DialyBot AI 🤖**. I can explain your reports and suggest safe foods. What's on your mind?"
-    else:
-        reply = "I'm DialyBot! Try asking: 'Can I eat banana?' or 'Explain my health report'."
+    patient_context = f"(Patient Labs: Creatinine {history.creatinine if history else 'N/A'}, K {history.potassium if history else 'N/A'})"
 
-    # LLM Fallback (OpenAI)
+    # 2. Rule-Based Fallback (Instant & Free)
+    rule_reply = None
+    if "banana" in user_msg: rule_reply = "❌ **Banana** is high in potassium. **Avoid it.** Try an apple!"
+    elif "report" in user_msg and history:
+        status = "Low Risk" if float(str(history.risk_score).replace('%','')) < 40 else "High Risk"
+        rule_reply = f"📊 **Report Analyzer:** Status is {status}. Creatinine: {history.creatinine}. Visit Dashboard for full trends!"
+
+    # 3. Multi-Provider LLM Engine (Open Source Focused)
+    final_reply = rule_reply
+    
     try:
+        # A. Attempt OpenAI (GPT-3.5)
         import openai
-        if os.environ.get("OPENAI_API_KEY"):
-            resp = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "system", "content": "You are DialyBot, an AI for dialysis patients."}, {"role": "user", "content": user_msg}], max_tokens=150)
-            reply = resp['choices'][0]['message']['content']
-    except: pass
-    return {"reply": reply}
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not final_reply and api_key and api_key != "YOUR_API_KEY":
+            resp = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "system", "content": f"You are DialyBot, a Dialysis AI. {patient_context}"}, {"role": "user", "content": user_msg}],
+                max_tokens=150
+            )
+            final_reply = resp['choices'][0]['message']['content']
+
+        # B. Attempt Hugging Face (Open Source Llama-3/Mistral)
+        if not final_reply:
+            import requests
+            hf_token = os.environ.get("HUGGINGFACE_TOKEN") # High-performance Open Source LLM
+            if hf_token:
+                API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+                headers = {"Authorization": f"Bearer {hf_token}"}
+                payload = {"inputs": f"Medical Assistant (Dialysis): User says: {user_msg}. Respond concisely as DialyBot."}
+                hf_resp = requests.post(API_URL, headers=headers, json=payload)
+                if hf_resp.status_code == 200:
+                    final_reply = hf_resp.json()[0]['generated_text'].split("Respond concisely as DialyBot.")[-1].strip()
+    except Exception as e:
+        print(f"LLM Provider Error: {e}")
+
+    # C. Default Response
+    if not final_reply:
+        final_reply = "I'm DialyBot! Try asking: 'Can I eat potato?' or 'Explain my health report'."
+
+    return {"reply": final_reply}
+
+@app.route('/clear-chat', methods=['POST'])
+def clear_chat():
+    # Simply acknowledge - client side wipes the UI
+    return {"status": "success", "message": "Chat cleared locally."}
 
 @app.route('/health')
 def health(): return "OK"
