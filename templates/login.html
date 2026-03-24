@@ -3,73 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DialyCare AI</title>
+    <title>Login — DialyCare AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        :root {
+            --neon-blue: #00d2ff;
+            --neon-cyan: #06b6d4;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: #020617;
+            color: #f1f5f9;
+        }
+        .glass { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid var(--glass-border);
+        }
+        .hero-bg {
+            background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.15), transparent 70%),
+                        radial-gradient(circle at 0% 100%, rgba(6, 182, 212, 0.1), transparent 50%);
+        }
+        .neon-border {
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
     </style>
 </head>
-<body class="bg-blue-50/50 min-h-screen flex flex-col items-center justify-center p-6">
+<body class="hero-bg min-h-screen flex flex-col items-center justify-center p-6 selection:bg-cyan-500/30">
 
     <div class="fixed top-8 left-8">
-        <a href="/" class="text-2xl font-bold text-blue-600 flex items-center gap-2">
-            <i class="fas fa-heart-pulse"></i> DialyCare AI
+        <a href="/" class="text-2xl font-black text-white flex items-center gap-2 tracking-tighter hover:scale-105 transition-transform">
+            <i class="fas fa-heart-pulse text-cyan-400"></i> DialyCare <span class="text-cyan-400">AI</span>
         </a>
     </div>
 
-    <div class="w-full max-w-md bg-white p-10 rounded-[2.5rem] shadow-xl shadow-blue-100/50 border border-blue-50">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-black text-slate-800 mb-2">Welcome Back</h1>
-            <p class="text-slate-400 font-medium">Please enter your credentials</p>
+    <div class="w-full max-w-md glass p-10 rounded-[2.5rem] shadow-2xl border border-white/10 neon-border relative overflow-hidden">
+        <!-- Glow Effect -->
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        
+        <div class="text-center mb-10 relative z-10">
+            <h1 class="text-4xl font-black text-white mb-2 tracking-tight">Welcome Back</h1>
+            <p class="text-slate-400 font-semibold text-sm">Access your renal health dashboard</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="mb-6 p-4 rounded-2xl {% if category == 'error' %}bg-red-50 text-red-600{% else %}bg-blue-50 text-blue-600{% endif %} font-bold text-sm text-center">
+                <div class="mb-6 p-4 rounded-2xl {% if category == 'error' %}bg-rose-500/10 text-rose-400 border border-rose-500/20{% else %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% endif %} font-bold text-xs text-center uppercase tracking-widest">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
         {% endwith %}
 
-        <form action="/login" method="POST" class="space-y-6">
+        <form action="/login" method="POST" class="space-y-6 relative z-10">
             <div class="space-y-2">
-                <label class="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
-                <div class="relative">
-                    <span class="absolute left-4 top-4 text-slate-300"><i class="fas fa-envelope"></i></span>
-                    <input type="email" name="email" placeholder="name@hospital.com" required
-                           class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-semibold">
+                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500/70 ml-1">Secure Email</label>
+                <div class="relative group">
+                    <span class="absolute left-4 top-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors"><i class="fas fa-envelope"></i></span>
+                    <input type="email" name="email" placeholder="name@dialycare.ai" required
+                           class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:bg-white/10 focus:border-cyan-500/50 transition-all font-semibold text-white placeholder:text-slate-600">
                 </div>
             </div>
 
             <div class="space-y-2">
-                <label class="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Password</label>
-                <div class="relative">
-                    <span class="absolute left-4 top-4 text-slate-300"><i class="fas fa-lock"></i></span>
+                <label class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500/70 ml-1">Access Key</label>
+                <div class="relative group">
+                    <span class="absolute left-4 top-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors"><i class="fas fa-lock"></i></span>
                     <input type="password" name="password" placeholder="••••••••" required
-                           class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-semibold">
+                           class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:bg-white/10 focus:border-cyan-500/50 transition-all font-semibold text-white placeholder:text-slate-600">
                 </div>
             </div>
 
-            <button type="submit" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest">
-                Sign In
+            <button type="submit" class="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-2xl font-black shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-sm">
+                Authenticate
             </button>
         </form>
 
-        <p class="mt-8 text-center text-sm font-bold text-slate-400">
-            Don't have an account? <a href="/register" class="text-blue-600 hover:underline">Join now</a>
+        <p class="mt-8 text-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+            New Patient? <a href="/register" class="text-cyan-400 hover:text-cyan-300 transition-colors">Create Profile</a>
         </p>
     </div>
 
-    <div class="mt-8">
-        <select onchange="window.location.href='/set-language/'+this.value" class="bg-transparent text-xs font-black text-slate-400 outline-none">
-            <option value="en" {% if current_lang=='en' %}selected{% endif %}>ENGLISH</option>
-            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>TAMIL</option>
-            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>HINDI</option>
-        </select>
+    <div class="mt-12 group">
+        <div class="flex items-center gap-3 glass px-4 py-2 rounded-full border border-white/5 hover:border-cyan-400/30 transition-all cursor-pointer">
+            <i class="fas fa-globe text-cyan-400 text-xs"></i>
+            <select onchange="window.location.href='/set-language/'+this.value" class="bg-transparent text-[10px] font-black text-slate-400 outline-none uppercase tracking-widest cursor-pointer">
+                <option value="en" class="bg-slate-900" {% if current_lang=='en' %}selected{% endif %}>English System</option>
+                <option value="ta" class="bg-slate-900" {% if current_lang=='ta' %}selected{% endif %}>Tamil Interface</option>
+                <option value="hi" class="bg-slate-900" {% if current_lang=='hi' %}selected{% endif %}>Hindi Interface</option>
+            </select>
+        </div>
     </div>
 
 </body>

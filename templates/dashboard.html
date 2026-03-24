@@ -3,309 +3,732 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - DialyCare AI</title>
+    <title>Patient Hub — DialyCare AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
-        .sidebar { transition: width 0.3s ease; }
-        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
+        :root {
+            --neon-cyan: #06b6d4;
+            --neon-violet: #8b5cf6;
+            --neon-rose: #f43f5e;
+            --neon-emerald: #10b981;
+            --glass-bg: rgba(15,23,42,0.75);
+            --glass-border: rgba(255,255,255,0.07);
+        }
+        * { box-sizing: border-box; }
+        body { font-family:'Outfit',sans-serif; background:#020617; color:#f1f5f9; margin:0; }
+        .glass { background:var(--glass-bg); backdrop-filter:blur(16px); border:1px solid var(--glass-border); }
+        .sidebar-active { background:linear-gradient(to right,rgba(6,182,212,0.18),transparent); border-left:3px solid var(--neon-cyan); }
+        .glow-cyan { box-shadow:0 0 24px rgba(6,182,212,0.18); }
+        .glow-violet { box-shadow:0 0 24px rgba(139,92,246,0.2); }
+        .glow-rose { box-shadow:0 0 24px rgba(244,63,94,0.2); }
+        .section { display:none; }
+        .section.active { display:block; }
+        .tab-btn { transition:all .2s; }
+        .tab-btn.active { background:rgba(6,182,212,0.15); color:#06b6d4; border-color:rgba(6,182,212,0.3); }
+        .pulse-dot { animation:pulseDot 2s infinite; }
+        @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+        .dialysis-img { border-radius:2rem; border:1px solid rgba(6,182,212,0.2); box-shadow:0 0 60px rgba(6,182,212,0.12); width:100%; object-fit:cover; }
+        .metric-bar { height:4px; border-radius:99px; background:rgba(255,255,255,0.05); overflow:hidden; margin-top:10px; }
+        .metric-bar-fill { height:100%; border-radius:99px; transition:width 1s; }
+        .nav-link { display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; color:#94a3b8; font-weight:700; font-size:13px; transition:all .2s; cursor:pointer; border:1px solid transparent; }
+        .nav-link:hover { background:rgba(255,255,255,0.05); color:#fff; }
+        .nav-link.active { background:linear-gradient(to right,rgba(6,182,212,0.18),transparent); color:#06b6d4; border-left:3px solid #06b6d4; }
+        @media(max-width:768px){.sidebar{display:none!important}.main-content{margin-left:0!important}}
     </style>
 </head>
-<body class="bg-blue-50/50 min-h-screen">
+<body class="min-h-screen flex">
 
-    <!-- Sidebar (Desktop Only) -->
-    <aside class="sidebar fixed top-0 left-0 w-64 h-full bg-white border-r border-blue-100 z-50">
-        <div class="p-6">
-            <div class="flex items-center gap-3 text-2xl font-bold text-blue-600 mb-10">
-                <i class="fas fa-heart-pulse"></i>
-                <span>DialyCare AI</span>
-            </div>
-            
-            <nav class="space-y-2">
-                <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white font-semibold transition-all shadow-lg shadow-blue-200">
-                    <i class="fas fa-chart-line"></i> Dashboard
-                </a>
-                <a href="/health-entry" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                    <i class="fas fa-plus-circle"></i> Add Vitals
-                </a>
-                <a href="/diet-plan" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                    <i class="fas fa-utensils"></i> Diet Planner
-                </a>
-                <a href="/food" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                    <i class="fas fa-bowl-rice"></i> Food Guide
-                </a>
-                <a href="/anime-dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-cyan-500 font-bold hover:bg-cyan-50 transition-all">
-                    <i class="fas fa-gamepad"></i> Gaming Mode
-                </a>
-            </nav>
+<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<aside class="sidebar fixed top-0 left-0 w-72 glass border-r border-white/5 h-full z-50 p-7 flex flex-col" style="min-height:100vh">
+    <div class="flex items-center gap-3 mb-10">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+            <i class="fas fa-heartbeat text-white text-lg"></i>
         </div>
-        
-        <div class="absolute bottom-6 left-6 right-6">
-            <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-all font-semibold">
-                <i class="fas fa-sign-out-alt"></i> Logout
+        <div>
+            <h1 class="text-xl font-black text-white tracking-tight leading-none">DialyCare <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">AI</span></h1>
+            <p class="text-[9px] text-cyan-500/60 font-black uppercase tracking-[0.2em]">Neural Engine v5.2</p>
+        </div>
+    </div>
+
+    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 mb-3 ml-2">Patient</p>
+    <nav class="space-y-1">
+        <div class="nav-link active" onclick="showSection('hub')">
+            <i class="fas fa-th-large w-4"></i> Patient Hub
+        </div>
+        <a href="/health-entry" class="nav-link">
+            <i class="fas fa-plus-circle w-4"></i> Log Vitals
+        </a>
+        <div class="nav-link" onclick="showSection('nutrition')">
+            <i class="fas fa-utensils w-4"></i> Nutrition Guide
+        </div>
+    </nav>
+
+    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 mb-3 ml-2 mt-7">Clinical</p>
+    <nav class="space-y-1">
+        <div class="nav-link" onclick="showSection('clinical')">
+            <i class="fas fa-stethoscope w-4"></i> Clinical Control
+        </div>
+        <div class="nav-link" onclick="showSection('neural')">
+            <i class="fas fa-brain w-4"></i> Neural Insight
+        </div>
+        <div class="nav-link" onclick="showSection('lab')">
+            <i class="fas fa-flask w-4"></i> Lab Analysis
+        </div>
+        <div class="nav-link" onclick="showSection('sync')">
+            <i class="fas fa-sync-alt w-4"></i> Patient Sync
+        </div>
+    </nav>
+
+    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 mb-3 ml-2 mt-7">System</p>
+    <nav class="space-y-1">
+        <div class="nav-link" onclick="showSection('assistant')">
+            <i class="fas fa-robot w-4"></i> AI Assistant
+        </div>
+        <div class="nav-link" onclick="showSection('config')">
+            <i class="fas fa-cog w-4"></i> Config
+        </div>
+        <a href="/anime-dashboard" class="nav-link">
+            <i class="fas fa-gamepad w-4 text-cyan-400"></i> Gaming Ops
+        </a>
+    </nav>
+
+    <div class="mt-auto pt-6 border-t border-white/5">
+        <div class="glass p-4 rounded-2xl mb-3 border border-cyan-500/10">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/15 flex items-center justify-center text-cyan-400 font-black text-xs border border-cyan-500/20">
+                    {{ user.name[:2]|upper }}
+                </div>
+                <div>
+                    <p class="text-xs font-black text-white leading-none">{{ user.name }}</p>
+                    <p class="text-[9px] text-cyan-400 mt-1 font-bold">CKD Stage {{ user.ckd_stage or 'N/A' }}</p>
+                </div>
+                <span class="ml-auto w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+            </div>
+        </div>
+        <a href="/logout" class="nav-link text-rose-400 hover:text-rose-300">
+            <i class="fas fa-sign-out-alt w-4"></i> Disconnect
+        </a>
+    </div>
+</aside>
+
+<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<main class="main-content flex-1 md:ml-72 relative" style="min-height:100vh">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="p-6 pb-0">
+        {% for category, message in messages %}
+        <div class="p-4 rounded-2xl glass bg-cyan-500/5 border border-cyan-500/20 text-cyan-400 font-black text-xs uppercase tracking-[0.2em] flex items-center gap-3 mb-4">
+            <i class="fas fa-info-circle"></i> {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- ───────── PATIENT HUB ───────── -->
+    <div id="section-hub" class="section active p-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-black text-white tracking-tight">Patient Hub <span class="text-cyan-400">— {{ user.name }}</span></h2>
+                <p class="text-slate-500 text-sm font-semibold mt-1">Live diagnostics · Neural Engine v5.2 · {{ user.dialysis_type or 'Hemodialysis' }}</p>
+            </div>
+            <a href="/health-entry" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-lg hover:scale-105 transition-transform">
+                <i class="fas fa-plus mr-2"></i>New Entry
             </a>
         </div>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main-content md:ml-64 p-4 md:p-8">
-        
-        <!-- Navbar -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div>
-                <h2 class="text-3xl font-extrabold text-slate-800">Hello, {{ user.name }}! 👋</h2>
-                <p class="text-slate-500">How are you feeling today?</p>
+        <!-- Metrics Row -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <!-- Neural Risk -->
+            <div class="glass p-6 rounded-3xl border border-white/5 glow-cyan hover:scale-[1.02] transition-all relative overflow-hidden">
+                <div class="absolute -top-6 -right-6 w-20 h-20 bg-cyan-500/10 rounded-full blur-2xl"></div>
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">Neural Risk</p>
+                <h3 class="text-2xl font-black {% if latest_record and 'High' in latest_record.risk_score %}text-rose-400 animate-pulse{% elif latest_record and 'Moderate' in latest_record.risk_score %}text-amber-400{% else %}text-emerald-400{% endif %}">
+                    {{ latest_record.risk_score if latest_record else '—' }}
+                </h3>
+                <div class="metric-bar mt-3"><div class="metric-bar-fill bg-cyan-400" style="width:{% if latest_record and 'High' in latest_record.risk_score %}85{% elif latest_record and 'Moderate' in latest_record.risk_score %}55{% else %}20{% endif %}%"></div></div>
             </div>
-            
-            <div class="flex items-center gap-4 bg-white p-2 pr-4 rounded-2xl shadow-sm border border-slate-100">
-                <img src="https://ui-avatars.com/api/?name={{ user.name }}&background=2563eb&color=fff" class="w-10 h-10 rounded-xl" alt="user">
-                <div class="hidden sm:block">
-                    <p class="text-xs text-slate-400 font-medium">Stage {{ user.ckd_stage or 'N/A' }}</p>
-                    <p class="text-sm font-bold text-slate-700">{{ user.name }}</p>
+            <!-- Creatinine -->
+            <div class="glass p-6 rounded-3xl border border-white/5 hover:scale-[1.02] transition-all">
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">Creatinine</p>
+                <div class="flex items-baseline gap-1">
+                    <h3 class="text-3xl font-black text-white">{{ latest_record.creatinine if latest_record else '—' }}</h3>
+                    <span class="text-[9px] text-slate-600 font-black uppercase">mg/dL</span>
                 </div>
-                <div class="ml-4 pl-4 border-l border-slate-100">
-                    <select onchange="window.location.href='/set-language/'+this.value" class="text-xs font-bold text-slate-500 p-1 rounded-md outline-none bg-transparent">
-                        <option value="en" {% if current_lang=='en' %}selected{% endif %}>EN</option>
-                        <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>TA</option>
-                        <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>HI</option>
+                <div class="metric-bar"><div class="metric-bar-fill bg-violet-400" style="width:60%"></div></div>
+            </div>
+            <!-- eGFR -->
+            <div class="glass p-6 rounded-3xl border border-white/5 hover:scale-[1.02] transition-all">
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">eGFR Level</p>
+                <div class="flex items-baseline gap-1">
+                    <h3 class="text-3xl font-black text-cyan-400">{{ latest_record.gfr if latest_record else '—' }}</h3>
+                    <span class="text-[9px] text-slate-600 font-black uppercase">ml/min</span>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-cyan-400" style="width:45%"></div></div>
+            </div>
+            <!-- Fluid -->
+            <div class="glass p-6 rounded-3xl border border-white/5 hover:scale-[1.02] transition-all">
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">Fluid Intake</p>
+                <div class="flex items-baseline gap-1">
+                    <h3 class="text-3xl font-black text-blue-400">{{ latest_record.fluid_intake if latest_record else '—' }}</h3>
+                    <span class="text-[9px] text-slate-600 font-black uppercase">ml</span>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-blue-400" style="width:70%"></div></div>
+            </div>
+        </div>
+
+        <!-- Chart + Dialysis Image + Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Chart -->
+            <div class="lg:col-span-2 glass p-8 rounded-3xl border border-white/5">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-black text-white">Creatinine Trend</h3>
+                    <span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full pulse-dot"></span>Live Stream</span>
+                </div>
+                <div class="h-64"><canvas id="healthChart"></canvas></div>
+            </div>
+            <!-- Dialysis Machine Image -->
+            <div class="glass p-6 rounded-3xl border border-cyan-500/15 flex flex-col items-center justify-center gap-4">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-cyan-500/60">Dialysis System</p>
+                <img src="/static/images/dialysis_machine.png"
+                     onerror="this.src='https://placehold.co/400x320/0f172a/06b6d4?text=Dialysis+System'"
+                     alt="DialyCare AI Dialysis Machine" class="dialysis-img" style="max-height:220px">
+                <div class="text-center">
+                    <p class="text-xs font-black text-white">AI-Powered Dialysis Unit</p>
+                    <p class="text-[9px] text-slate-500 font-semibold mt-1">DialyCare OS · Connected</p>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase tracking-widest flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>System Online
+                </span>
+            </div>
+        </div>
+
+        <!-- History Table + Neural Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 glass rounded-3xl border border-white/5 overflow-hidden">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                    <h3 class="font-black text-white">Diagnostic Archive</h3>
+                    <a href="/health-entry" class="text-cyan-400 text-xs font-black uppercase tracking-widest hover:text-cyan-300">Add Record →</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 bg-white/2">
+                            <tr>
+                                <th class="px-6 py-4">Date</th>
+                                <th class="px-6 py-4">K+ Level</th>
+                                <th class="px-6 py-4">Creatinine</th>
+                                <th class="px-6 py-4">BP</th>
+                                <th class="px-6 py-4 text-center">Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for record in history[:6] %}
+                            <tr class="hover:bg-white/2 transition-colors">
+                                <td class="px-6 py-4 text-xs font-bold text-white">{{ record.date.strftime('%Y.%m.%d') }}</td>
+                                <td class="px-6 py-4 text-xs text-slate-400 font-bold">{{ record.potassium }}</td>
+                                <td class="px-6 py-4 text-xs text-slate-400 font-bold">{{ record.creatinine }}</td>
+                                <td class="px-6 py-4 text-xs text-slate-400 font-bold">{{ record.bp_sys }}/{{ record.bp_dia }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest
+                                        {% if 'High' in record.risk_score %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+                                        {% elif 'Moderate' in record.risk_score %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+                                        {% else %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% endif %}">
+                                        {{ record.risk_score }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="px-6 py-12 text-center text-slate-600 text-xs font-black uppercase tracking-widest">No records yet — log your first vital</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Neural Insights -->
+            <div class="glass p-6 rounded-3xl border border-cyan-500/10 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 border border-cyan-500/20">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4 class="font-black text-white">AI Insights</h4>
+                </div>
+                <div class="space-y-3">
+                    {% for tip in dietary_tips %}
+                    <div class="p-4 rounded-2xl glass bg-white/3 border border-white/5 hover:border-cyan-500/20 transition-colors">
+                        <p class="text-xs font-semibold text-slate-300 leading-relaxed"><i class="fas fa-check-circle text-cyan-400 mr-2 text-[10px]"></i>{{ tip }}</p>
+                    </div>
+                    {% else %}
+                    <p class="text-slate-600 text-[9px] font-black uppercase tracking-widest text-center py-6">Log vitals to unlock insights</p>
+                    {% endfor %}
+                </div>
+                <button onclick="showSection('assistant')" class="w-full mt-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:scale-[1.02] transition-transform">
+                    <i class="fas fa-robot mr-2"></i>Open AI Assistant
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────── CLINICAL CONTROL ───────── -->
+    <div id="section-clinical" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">Clinical Control <span class="text-violet-400">— Overview</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Real-time clinical parameters · CKD Stage {{ user.ckd_stage or 'N/A' }} · {{ user.dialysis_type or 'Hemodialysis' }}</p>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            {% set params = [
+                ('Potassium', latest_record.potassium if latest_record else '—', 'mEq/L', 'violet', 'fas fa-atom', 65),
+                ('Sodium', latest_record.sodium if latest_record else '—', 'mEq/L', 'cyan', 'fas fa-tint', 72),
+                ('Urea', latest_record.urea if latest_record else '—', 'mg/dL', 'amber', 'fas fa-vial', 55),
+                ('Calcium', latest_record.calcium if latest_record else '—', 'mg/dL', 'emerald', 'fas fa-bone', 48),
+                ('Chloride', latest_record.chloride if latest_record else '—', 'mEq/L', 'blue', 'fas fa-flask', 60),
+                ('Iron', latest_record.iron if latest_record else '—', 'μg/dL', 'rose', 'fas fa-magnet', 40),
+                ('HGB', latest_record.hgb if latest_record else '—', 'g/dL', 'cyan', 'fas fa-droplet', 70),
+                ('Blood Sugar', latest_record.sugar if latest_record else '—', 'mg/dL', 'amber', 'fas fa-candy-cane', 58),
+            ] %}
+            {% for label, val, unit, color, icon, pct in params %}
+            <div class="glass p-5 rounded-3xl border border-white/5 hover:scale-[1.02] transition-all">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-{{ color }}-500/10 flex items-center justify-center text-{{ color }}-400 border border-{{ color }}-500/20 text-xs">
+                        <i class="{{ icon }}"></i>
+                    </div>
+                    <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">{{ label }}</p>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-2xl font-black text-white">{{ val }}</span>
+                    <span class="text-[9px] text-slate-600 font-black uppercase">{{ unit }}</span>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-{{ color }}-400" style="width:{{ pct }}%"></div></div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- BP & Weight Panel -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass p-8 rounded-3xl border border-rose-500/10 glow-rose text-center">
+                <i class="fas fa-heart-pulse text-rose-400 text-4xl mb-4"></i>
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">Blood Pressure</p>
+                <p class="text-5xl font-black text-rose-400">{{ latest_record.bp_sys if latest_record else '—' }}<span class="text-2xl text-slate-500">/{{ latest_record.bp_dia if latest_record else '—' }}</span></p>
+                <p class="text-[9px] text-slate-600 font-black uppercase mt-2">mmHg</p>
+            </div>
+            <div class="glass p-8 rounded-3xl border border-white/5 text-center">
+                <i class="fas fa-weight-scale text-cyan-400 text-4xl mb-4"></i>
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">Body Weight</p>
+                <p class="text-5xl font-black text-white">{{ latest_record.weight if latest_record else '—' }}<span class="text-2xl text-slate-500"> kg</span></p>
+            </div>
+            <div class="glass p-8 rounded-3xl border border-white/5 text-center">
+                <i class="fas fa-shield-virus text-emerald-400 text-4xl mb-4 {% if latest_record and latest_record.hcv_status == 'Positive' %}text-rose-400{% endif %}"></i>
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-2">HCV Status</p>
+                <p class="text-3xl font-black {% if latest_record and latest_record.hcv_status == 'Positive' %}text-rose-400{% else %}text-emerald-400{% endif %}">
+                    {{ latest_record.hcv_status if latest_record else 'N/A' }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────── NEURAL INSIGHT ───────── -->
+    <div id="section-neural" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">Neural <span class="text-cyan-400">Insight</span></h2>
+            <p class="text-slate-500 text-sm mt-1">AI-powered diagnostics · Decision Tree Model · 98.4% accuracy</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Risk Analysis -->
+            <div class="glass p-8 rounded-3xl border border-cyan-500/15 glow-cyan">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-14 h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center border border-cyan-500/20">
+                        <i class="fas fa-brain text-cyan-400 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-white text-lg">AI Risk Assessment</h3>
+                        <p class="text-slate-500 text-xs">Neural Engine v5.2</p>
+                    </div>
+                </div>
+                <div class="text-center py-4">
+                    <p class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 mb-3">Current Risk Score</p>
+                    <div class="text-7xl font-black {% if latest_record and 'High' in latest_record.risk_score %}text-rose-400{% elif latest_record and 'Moderate' in latest_record.risk_score %}text-amber-400{% else %}text-emerald-400{% endif %} mb-4">
+                        {{ latest_record.risk_score if latest_record else 'N/A' }}
+                    </div>
+                    <p class="text-slate-500 text-xs">Based on {{ history|length }} record(s)</p>
+                </div>
+            </div>
+            <!-- Trend Analysis -->
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-chart-line text-cyan-400"></i> Trend Analysis</h3>
+                <div class="space-y-4">
+                    {% for trend in trends %}
+                    <div class="p-4 rounded-2xl glass border {% if trend.color == 'error' %}border-rose-500/20 bg-rose-500/5{% else %}border-emerald-500/20 bg-emerald-500/5{% endif %}">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-{% if trend.color == 'error' %}biohazard text-rose-400{% else %}shield-check text-emerald-400{% endif %} mt-1 text-sm"></i>
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-widest {% if trend.color == 'error' %}text-rose-400{% else %}text-emerald-400{% endif %}">{{ trend.metric }} — {{ trend.status }}</p>
+                                <p class="text-[10px] text-slate-500 font-bold mt-1">{{ trend.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-10 opacity-40">
+                        <i class="fas fa-fingerprint text-4xl text-cyan-400 mb-4"></i>
+                        <p class="text-[9px] font-black uppercase tracking-widest">Biometric signature stable</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Model Stats -->
+        <div class="glass p-8 rounded-3xl border border-white/5">
+            <h3 class="font-black text-white mb-6">Model Performance</h3>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for label, val, color in [('Model Accuracy','98.4%','cyan'),('Training Samples','120,000','violet'),('Neural Nodes','248','blue'),('Last Retrain','Today','emerald')] %}
+                <div class="text-center">
+                    <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{{ label }}</p>
+                    <p class="text-2xl font-black text-{{ color }}-400">{{ val }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="mt-6">
+                <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase mb-2"><span>Model Fidelity</span><span class="text-cyan-400">98.4%</span></div>
+                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" style="width:98.4%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────── LAB ANALYSIS ───────── -->
+    <div id="section-lab" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">Lab <span class="text-amber-400">Analysis</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Complete blood panel · Biochemistry · Renal markers</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Blood Panel -->
+            <div class="glass rounded-3xl border border-white/5 overflow-hidden">
+                <div class="p-6 border-b border-white/5 bg-violet-500/5">
+                    <h3 class="font-black text-white flex items-center gap-3"><i class="fas fa-vials text-violet-400"></i> Blood Panel CBC</h3>
+                </div>
+                <div class="divide-y divide-white/5">
+                    {% set cbc = [
+                        ('WBC', latest_record.wbc if latest_record else '—', '10³/μL', '4.5–11.0', 'white'),
+                        ('RBC', latest_record.rbc if latest_record else '—', '10⁶/μL', '4.2–5.9', 'red'),
+                        ('HGB', latest_record.hgb if latest_record else '—', 'g/dL', '12.0–17.5', 'rose'),
+                        ('Platelets', latest_record.platelets if latest_record else '—', '10³/μL', '150–400', 'amber'),
+                    ] %}
+                    {% for name, val, unit, ref, color in cbc %}
+                    <div class="flex items-center justify-between px-6 py-4 hover:bg-white/2 transition-colors">
+                        <div>
+                            <p class="text-sm font-black text-white">{{ name }}</p>
+                            <p class="text-[9px] text-slate-500 font-bold">Ref: {{ ref }}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-lg font-black text-{{ color }}-400">{{ val }}</span>
+                            <span class="text-[9px] text-slate-600 font-bold ml-1">{{ unit }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Biochemistry -->
+            <div class="glass rounded-3xl border border-white/5 overflow-hidden">
+                <div class="p-6 border-b border-white/5 bg-cyan-500/5">
+                    <h3 class="font-black text-white flex items-center gap-3"><i class="fas fa-microscope text-cyan-400"></i> Biochemistry Panel</h3>
+                </div>
+                <div class="divide-y divide-white/5">
+                    {% set bio = [
+                        ('Creatinine', latest_record.creatinine if latest_record else '—', 'mg/dL', '0.6–1.2', 'cyan'),
+                        ('Urea', latest_record.urea if latest_record else '—', 'mg/dL', '7–20', 'amber'),
+                        ('Cholesterol', latest_record.cholesterol if latest_record else '—', 'mg/dL', '<200', 'emerald'),
+                        ('Bilirubin', latest_record.bilirubin if latest_record else '—', 'mg/dL', '0.1–1.2', 'yellow'),
+                    ] %}
+                    {% for name, val, unit, ref, color in bio %}
+                    <div class="flex items-center justify-between px-6 py-4 hover:bg-white/2 transition-colors">
+                        <div>
+                            <p class="text-sm font-black text-white">{{ name }}</p>
+                            <p class="text-[9px] text-slate-500 font-bold">Ref: {{ ref }}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-lg font-black text-{{ color }}-400">{{ val }}</span>
+                            <span class="text-[9px] text-slate-600 font-bold ml-1">{{ unit }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────── PATIENT SYNC ───────── -->
+    <div id="section-sync" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">Patient <span class="text-emerald-400">Sync</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Your profile · Session history · Data synchronization</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Profile Card -->
+            <div class="glass p-8 rounded-3xl border border-cyan-500/15 glow-cyan text-center">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center text-4xl font-black text-cyan-400 mx-auto mb-4">
+                    {{ user.name[:2]|upper }}
+                </div>
+                <h3 class="text-xl font-black text-white mb-1">{{ user.name }}</h3>
+                <p class="text-cyan-400 text-xs font-black uppercase tracking-widest mb-4">CKD Stage {{ user.ckd_stage or 'N/A' }}</p>
+                <div class="space-y-3 text-left">
+                    {% for label, val in [('Email', user.email),('Age', (user.age|string + ' years') if user.age else 'N/A'),('Gender', user.gender or 'N/A'),('Dialysis Type', user.dialysis_type or 'N/A'),('Condition', user.kidney_condition or 'N/A')] %}
+                    <div class="flex justify-between items-center py-2 border-b border-white/5">
+                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">{{ label }}</span>
+                        <span class="text-xs font-bold text-white">{{ val }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- History Stats -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="grid grid-cols-3 gap-4">
+                    {% for label, val, color in [('Total Records', history|length, 'cyan'),('High Risk Events', history|selectattr('risk_score','contains','High')|list|length, 'rose'),('Days Tracked', [history|length * 3, 1]|max, 'emerald')] %}
+                    <div class="glass p-6 rounded-3xl border border-white/5 text-center hover:scale-[1.02] transition-all">
+                        <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{{ label }}</p>
+                        <p class="text-4xl font-black text-{{ color }}-400">{{ val }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="glass rounded-3xl border border-white/5 overflow-hidden">
+                    <div class="p-6 border-b border-white/5">
+                        <h3 class="font-black text-white">Recent Session Log</h3>
+                    </div>
+                    <div class="divide-y divide-white/5">
+                        {% for record in history[:5] %}
+                        <div class="flex items-center justify-between px-6 py-4 hover:bg-white/2 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 text-cyan-400 text-xs"><i class="fas fa-heartbeat"></i></div>
+                                <div>
+                                    <p class="text-xs font-black text-white">{{ record.date.strftime('%b %d, %Y') }}</p>
+                                    <p class="text-[9px] text-slate-500 font-bold">Creatinine: {{ record.creatinine }} · K+: {{ record.potassium }}</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase
+                                {% if 'High' in record.risk_score %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+                                {% elif 'Moderate' in record.risk_score %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+                                {% else %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20{% endif %}">
+                                {{ record.risk_score }}
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-10 text-slate-600 text-xs font-black uppercase tracking-widest">No sessions synced yet</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────── NUTRITION GUIDE ───────── -->
+    <div id="section-nutrition" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">Nutrition <span class="text-emerald-400">Guide</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Kidney-friendly dietary recommendations · Personalised for your CKD stage</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {% set foods = [
+                ('✅ SAFE Foods','Eat freely','emerald',[('Apple','Low potassium, safe daily','80 cal'),('White Rice','Low phosphorus staple','130 cal'),('Cabbage','Excellent renal food','25 cal'),('Egg White','High protein, low phos','17 cal')]),
+                ('⚠️ LIMIT','Consume in moderation','amber',[('Chicken Breast','High protein — limit 90g','165 cal'),('Brown Rice','Moderate phosphorus','216 cal'),('Tomato','Medium potassium','22 cal'),('Milk','High phosphorus','61 cal')]),
+                ('❌ AVOID','Avoid or restrict heavily','rose',[('Banana','Very high potassium','89 cal'),('Orange Juice','High potassium','112 cal'),('Processed Meats','High sodium & phos','250 cal'),('Dark Cola','High phosphorus additive','140 cal')]),
+            ] %}
+            {% for title, subtitle, color, items in foods %}
+            <div class="glass rounded-3xl border border-{{ color }}-500/15 overflow-hidden">
+                <div class="p-6 border-b border-{{ color }}-500/15 bg-{{ color }}-500/5">
+                    <h3 class="font-black text-white">{{ title }}</h3>
+                    <p class="text-[9px] text-{{ color }}-400 font-bold uppercase tracking-widest mt-1">{{ subtitle }}</p>
+                </div>
+                <div class="divide-y divide-white/5">
+                    {% for name, desc, cal in items %}
+                    <div class="px-5 py-4 hover:bg-white/2 transition-colors">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-black text-white">{{ name }}</p>
+                                <p class="text-[9px] text-slate-500 font-semibold mt-0.5">{{ desc }}</p>
+                            </div>
+                            <span class="text-[9px] font-black text-{{ color }}-400 bg-{{ color }}-500/10 px-2 py-0.5 rounded-full border border-{{ color }}-500/20">{{ cal }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="glass p-6 rounded-3xl border border-white/5 text-center">
+            <p class="text-slate-400 text-sm font-semibold mb-4">Want personalised meal plans based on your latest labs?</p>
+            <a href="/diet-plan" class="inline-block px-8 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform shadow-lg">
+                <i class="fas fa-utensils mr-2"></i>Open Full Diet Planner
+            </a>
+        </div>
+    </div>
+
+    <!-- ───────── AI ASSISTANT ───────── -->
+    <div id="section-assistant" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">AI <span class="text-violet-400">Assistant</span></h2>
+            <p class="text-slate-500 text-sm mt-1">DialyBot — Conversational kidney care intelligence</p>
+        </div>
+        <div class="max-w-3xl mx-auto">
+            <div class="glass rounded-3xl border border-violet-500/15 overflow-hidden" style="height:520px; display:flex; flex-direction:column;">
+                <!-- Chat Header -->
+                <div class="p-6 border-b border-white/5 bg-violet-500/5 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-blue-600 flex items-center justify-center border border-violet-500/30">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <div>
+                        <p class="font-black text-white">DialyBot AI</p>
+                        <p class="text-[9px] text-violet-400 font-bold uppercase tracking-widest flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full pulse-dot"></span>Online · Neural Engine</p>
+                    </div>
+                </div>
+                <!-- Messages -->
+                <div id="assistant-msgs" class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-violet-500/20 flex items-center justify-center text-violet-400 text-xs shrink-0 border border-violet-500/20"><i class="fas fa-robot"></i></div>
+                        <div class="glass p-4 rounded-2xl rounded-tl-none border border-white/5 max-w-xs">
+                            <p class="text-xs text-slate-300 font-semibold leading-relaxed">Hello {{ user.name }}! I'm DialyBot. Ask me about your diet, medications, lab results, or kidney health! 🩺</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Input -->
+                <div class="p-4 border-t border-white/5 flex gap-3">
+                    <input id="assistant-input" type="text" placeholder="Ask DialyBot anything..." 
+                        class="flex-1 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 text-white placeholder-slate-600 font-semibold"
+                        onkeypress="if(event.key==='Enter')sendAssistantMsg()">
+                    <button onclick="sendAssistantMsg()" class="px-5 py-3 bg-gradient-to-r from-violet-500 to-blue-600 rounded-2xl text-white font-black text-sm hover:scale-105 transition-transform">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ───────── CONFIG ───────── -->
+    <div id="section-config" class="section p-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black text-white">System <span class="text-slate-400">Config</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Application settings · Preferences · Notifications</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl">
+            <!-- Profile Settings -->
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-user-cog text-cyan-400"></i> Profile Settings</h3>
+                <div class="space-y-4">
+                    {% for label, val in [('Full Name', user.name),('Email Address', user.email),('Age', user.age or 'Not set'),('Gender', user.gender or 'Not set'),('CKD Stage', user.ckd_stage or 'Not set'),('Dialysis Type', user.dialysis_type or 'Not set')] %}
+                    <div class="flex justify-between items-center p-4 rounded-2xl bg-white/3 border border-white/5">
+                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">{{ label }}</span>
+                        <span class="text-xs font-bold text-white">{{ val }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- System Preferences -->
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-sliders text-violet-400"></i> Preferences</h3>
+                <div class="space-y-4">
+                    {% for label, desc, enabled in [('Neural Risk Alerts','Real-time AI risk notifications',True),('Diet Recommendations','Personalized food suggestions',True),('Trend Analysis','Weekly health trend reports',True),('DialyBot AI','Conversational health assistant',True),('Gaming Mode','Anime dashboard & gamification',False)] %}
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/3 border border-white/5">
+                        <div>
+                            <p class="text-xs font-black text-white">{{ label }}</p>
+                            <p class="text-[9px] text-slate-500 font-semibold">{{ desc }}</p>
+                        </div>
+                        <button class="w-12 h-6 rounded-full border transition-all {% if enabled %}bg-cyan-500 border-cyan-500{% else %}bg-white/10 border-white/10{% endif %} relative">
+                            <span class="absolute top-0.5 {% if enabled %}right-0.5{% else %}left-0.5{% endif %} w-5 h-5 bg-white rounded-full transition-all"></span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Language -->
+                <div class="mt-6 p-4 rounded-2xl bg-white/3 border border-white/5">
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Interface Language</p>
+                    <select onchange="window.location.href='/set-language/'+this.value" class="w-full bg-transparent text-sm font-black text-white outline-none cursor-pointer">
+                        <option value="en" class="bg-slate-900">🇬🇧 English</option>
+                        <option value="ta" class="bg-slate-900">🇮🇳 Tamil</option>
                     </select>
                 </div>
             </div>
-        </header>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="mb-6 p-4 rounded-xl bg-blue-100 text-blue-700 font-bold flex items-center gap-3">
-                    <i class="fas fa-info-circle"></i> {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-
-        <!-- Quick Metrics -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-50 relative overflow-hidden group hover:scale-[1.02] transition-all">
-                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all">
-                    <i class="fas fa-circle-exclamation text-4xl text-red-600"></i>
-                </div>
-                <p class="text-xs uppercase tracking-widest text-slate-400 font-extrabold mb-1">Risk Status</p>
-                <div class="flex items-center gap-2">
-                    <h3 class="text-2xl font-black {% if latest_record and 'High' in latest_record.risk_score %}text-red-600 animate-pulse{% elif latest_record and 'Moderate' in latest_record.risk_score %}text-yellow-500{% else %}text-green-500{% endif %}">
-                        {{ latest_record.risk_score if latest_record else 'No Records' }}
-                    </h3>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-50 relative overflow-hidden group hover:scale-[1.02] transition-all">
-                <p class="text-xs uppercase tracking-widest text-slate-400 font-extrabold mb-1">Creatinine</p>
-                <div class="flex items-baseline gap-1">
-                    <h3 class="text-3xl font-black text-slate-800">{{ latest_record.creatinine if latest_record else '--' }}</h3>
-                    <span class="text-slate-400 font-medium">mg/dL</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-50 relative overflow-hidden group hover:scale-[1.02] transition-all">
-                <p class="text-xs uppercase tracking-widest text-slate-400 font-extrabold mb-1">eGFR Status</p>
-                <div class="flex items-baseline gap-1">
-                    <h3 class="text-3xl font-black text-blue-600">{{ latest_record.gfr if latest_record else '--' }}</h3>
-                    <span class="text-slate-400 font-medium">ml/min</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-50 relative overflow-hidden group hover:scale-[1.02] transition-all">
-                <p class="text-xs uppercase tracking-widest text-slate-400 font-extrabold mb-1">Fluid Intake</p>
-                <div class="flex items-baseline gap-1">
-                    <h3 class="text-3xl font-black text-cyan-500">{{ latest_record.fluid_intake if latest_record else '--' }}</h3>
-                    <span class="text-slate-400 font-medium">ml</span>
-                </div>
-            </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Trend Chart -->
-            <div class="lg:col-span-2 space-y-8">
-                <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-blue-50">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-black text-slate-800">Health Progress</h3>
-                        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
-                             <span class="w-3 h-3 rounded-full bg-blue-600"></span> Creatinine Trend
-                        </div>
-                    </div>
-                    <div class="h-64">
-                        <canvas id="healthChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Recent Activity Table -->
-                <div class="bg-white rounded-[2rem] shadow-sm border border-blue-50 overflow-hidden">
-                    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
-                        <h3 class="text-xl font-black text-slate-800">History Log</h3>
-                        <a href="/health-entry" class="text-blue-600 text-sm font-bold hover:underline">See Analysis →</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
-                                <tr>
-                                    <th class="p-6">Date</th>
-                                    <th class="p-6">Potassium</th>
-                                    <th class="p-6">Creatinine</th>
-                                    <th class="p-6">Risk Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                {% for record in history[:5] %}
-                                <tr class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="p-6 font-bold text-slate-700">{{ record.date.strftime('%d %b, %Y') }}</td>
-                                    <td class="p-6 text-slate-600">{{ record.potassium }}</td>
-                                    <td class="p-6 text-slate-600">{{ record.creatinine }}</td>
-                                    <td class="p-6">
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
-                                            {% if 'High' in record.risk_score %}bg-red-100 text-red-600{% elif 'Moderate' in record.risk_score %}bg-yellow-100 text-yellow-600{% else %}bg-green-100 text-green-600{% endif %}">
-                                            {{ record.risk_score }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Side Cards -->
-            <div class="space-y-8">
-                
-                <!-- Smart AI Insights -->
-                <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-8 rounded-[2rem] shadow-xl text-white relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-                    <div class="relative">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
-                                <i class="fas fa-robot text-lg"></i>
-                            </div>
-                            <h4 class="text-xl font-black">AI Insights</h4>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            {% for tip in dietary_tips %}
-                            <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
-                                <p class="text-sm font-medium leading-relaxed">
-                                    <i class="fas fa-check-circle text-blue-200 mr-2"></i> {{ tip }}
-                                </p>
-                            </div>
-                            {% endfor %}
-                            {% if not dietary_tips %}
-                            <p class="text-slate-200 text-sm opacity-60 italic">Add metrics to generate insights...</p>
-                            {% endif %}
-                        </div>
-                        
-                        <a href="/chatbot" class="w-full mt-6 py-3 bg-white text-blue-600 rounded-xl font-black text-sm text-center block shadow-lg hover:scale-[1.02] transition-all">
-                            ASK DIALYBOT ANY QUESTION
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Recent Alerts -->
-                <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-blue-50">
-                    <h4 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
-                        <i class="fas fa-bell text-yellow-500"></i> Smart Alerts
-                    </h4>
-                    <div class="space-y-4">
-                        {% for trend in trends %}
-                        <div class="p-4 rounded-2xl flex items-start gap-4 {% if trend.color == 'error' %}bg-red-50/50 border border-red-100 text-red-600{% else %}bg-green-50/50 border border-green-100 text-green-600{% endif %}">
-                            <span class="mt-1"><i class="fas fa-{% if trend.color == 'error' %}triangle-exclamation{% else %}circle-check{% endif %}"></i></span>
-                            <div>
-                                <p class="text-xs font-black uppercase">{{ trend.metric }} {{ trend.status }}</p>
-                                <p class="text-xs opacity-80 mt-1 font-semibold leading-tight">{{ trend.message }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        
-                        {% if not trends %}
-                        <div class="text-center py-6 opacity-40">
-                            <i class="fas fa-thumbs-up text-3xl mb-2"></i>
-                            <p class="text-xs font-bold">Health indicators are stable.</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Mobile Bottom Navigation -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-4 flex justify-between items-center z-50">
-        <a href="/dashboard" class="text-blue-600 text-xl"><i class="fas fa-chart-line"></i></a>
-        <a href="/health-entry" class="text-slate-400 text-xl"><i class="fas fa-plus-circle"></i></a>
-        <a href="/diet-plan" class="text-slate-400 text-xl"><i class="fas fa-utensils"></i></a>
-        <a href="/chatbot" class="text-slate-400 text-xl"><i class="fas fa-comment-dots"></i></a>
     </div>
 
-    <!-- Chart Configuration -->
-    <script>
-        const ctx = document.getElementById('healthChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: {{ dates | safe }},
-                    datasets: [{
-                        label: 'Creatinine Value',
-                        data: {{ creatinine_values | safe }},
-                        borderColor: '#2563eb',
-                        backgroundColor: (context) => {
-                            const chart = context.chart;
-                            const {ctx, chartArea} = chart;
-                            if (!chartArea) return null;
-                            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                            gradient.addColorStop(0, 'rgba(37, 99, 235, 0)');
-                            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.2)');
-                            return gradient;
-                        },
-                        borderWidth: 4,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#2563eb',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: { color: '#f1f5f9' },
-                            ticks: { 
-                                font: { weight: '700', size: 10 },
-                                color: '#94a3b8'
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { 
-                                font: { weight: '700', size: 10 },
-                                color: '#94a3b8'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    </script>
+</main><!-- end main -->
 
-    {% include 'chatbot.html' %}
+<!-- Mobile Nav -->
+<div class="md:hidden fixed bottom-4 left-4 right-4 glass p-4 rounded-3xl border border-white/10 flex justify-around items-center z-50">
+    <button onclick="showSection('hub')" class="text-cyan-400 text-lg"><i class="fas fa-th-large"></i></button>
+    <a href="/health-entry" class="text-slate-500 text-lg"><i class="fas fa-plus"></i></a>
+    <button onclick="showSection('clinical')" class="text-slate-500 text-lg"><i class="fas fa-stethoscope"></i></button>
+    <button onclick="showSection('assistant')" class="text-slate-500 text-lg"><i class="fas fa-robot"></i></button>
+    <button onclick="showSection('nutrition')" class="text-slate-500 text-lg"><i class="fas fa-utensils"></i></button>
+</div>
+
+<!-- Chart -->
+<script>
+    const ctx = document.getElementById('healthChart');
+    if(ctx){
+        new Chart(ctx,{
+            type:'line',
+            data:{
+                labels:{{ dates|safe }},
+                datasets:[{
+                    label:'Creatinine',
+                    data:{{ creatinine_values|safe }},
+                    borderColor:'#06b6d4',
+                    backgroundColor:(context)=>{
+                        const c=context.chart,{ctx:cx,chartArea:ca}=c;
+                        if(!ca)return null;
+                        const g=cx.createLinearGradient(0,ca.bottom,0,ca.top);
+                        g.addColorStop(0,'rgba(6,182,212,0)');
+                        g.addColorStop(1,'rgba(6,182,212,0.12)');
+                        return g;
+                    },
+                    borderWidth:2.5,fill:true,tension:0.4,
+                    pointRadius:4,pointBackgroundColor:'#06b6d4',pointBorderColor:'rgba(255,255,255,0.2)',pointBorderWidth:3
+                }]
+            },
+            options:{
+                responsive:true,maintainAspectRatio:false,
+                plugins:{legend:{display:false}},
+                scales:{
+                    y:{beginAtZero:false,grid:{color:'rgba(255,255,255,0.04)'},ticks:{font:{weight:'800',size:9},color:'#475569'}},
+                    x:{grid:{display:false},ticks:{font:{weight:'800',size:9},color:'#475569'}}
+                }
+            }
+        });
+    }
+
+    // Section navigation
+    function showSection(id){
+        document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+        document.getElementById('section-'+id).classList.add('active');
+        document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l=>{
+            if(l.getAttribute('onclick')&&l.getAttribute('onclick').includes("'"+id+"'")) l.classList.add('active');
+        });
+    }
+
+    // AI Assistant
+    async function sendAssistantMsg(){
+        const input=document.getElementById('assistant-input');
+        const msgs=document.getElementById('assistant-msgs');
+        const text=input.value.trim();
+        if(!text)return;
+        input.value='';
+        // User bubble
+        msgs.innerHTML+=`<div class="flex gap-3 justify-end"><div class="glass p-4 rounded-2xl rounded-tr-none border border-cyan-500/20 max-w-xs bg-cyan-500/5"><p class="text-xs text-white font-semibold">${text}</p></div></div>`;
+        msgs.scrollTop=msgs.scrollHeight;
+        // Bot reply
+        const resp=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});
+        const data=await resp.json();
+        msgs.innerHTML+=`<div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-violet-500/20 flex items-center justify-center text-violet-400 text-xs shrink-0 border border-violet-500/20"><i class="fas fa-robot"></i></div><div class="glass p-4 rounded-2xl rounded-tl-none border border-white/5 max-w-xs"><p class="text-xs text-slate-300 font-semibold leading-relaxed">${data.reply}</p></div></div>`;
+        msgs.scrollTop=msgs.scrollHeight;
+    }
+</script>
+{% include 'chatbot.html' %}
 </body>
 </html>

@@ -3,173 +3,525 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - DialyCare AI</title>
+    <title>Clinical Control — DialyCare AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        :root{ --neon-cyan:#06b6d4; --neon-violet:#8b5cf6; }
+        body{ font-family:'Outfit',sans-serif; background:#020617; color:#f1f5f9; }
+        .glass{ background:rgba(15,23,42,0.75); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.07); }
+        .nav-link{ display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:12px; color:#94a3b8; font-weight:700; font-size:13px; cursor:pointer; transition:all .2s; border:1px solid transparent; }
+        .nav-link:hover{ background:rgba(255,255,255,0.05); color:#fff; }
+        .nav-link.active{ background:linear-gradient(to right,rgba(6,182,212,0.18),transparent); color:#06b6d4; border-left:3px solid #06b6d4; }
+        .section{ display:none; }
+        .section.active{ display:block; }
+        .risk-high{ background:rgba(244,63,94,.1); color:#fb7185; border:1px solid rgba(244,63,94,.2); }
+        .risk-moderate{ background:rgba(245,158,11,.1); color:#fbbf24; border:1px solid rgba(245,158,11,.2); }
+        .risk-stable{ background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.2); }
+        .pulse-dot{ animation:pd 2s infinite; }
+        @keyframes pd{ 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+        .metric-bar{ height:4px; border-radius:99px; background:rgba(255,255,255,0.05); overflow:hidden; margin-top:8px; }
+        .metric-bar-fill{ height:100%; border-radius:99px; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex">
+<body class="min-h-screen flex">
 
-    <!-- Sidebar -->
-    <div class="w-64 bg-slate-900 text-white min-h-screen fixed left-0 top-0 flex flex-col p-6">
-        <h1 class="text-2xl font-bold mb-10 text-blue-400">DialyCare AI</h1>
-        <nav class="flex-1 space-y-4">
-            <a href="#" class="block p-3 rounded-xl bg-blue-600 font-semibold transition-all">📊 Admin Dashboard</a>
-            <a href="#" class="block p-3 rounded-xl hover:bg-slate-800 transition-all">👥 Patient Monitoring</a>
-            <a href="#" class="block p-3 rounded-xl hover:bg-slate-800 transition-all">🧾 Lab Reports</a>
-            <a href="#" class="block p-3 rounded-xl hover:bg-slate-800 transition-all text-red-400">🚨 High Risk Alerts</a>
-            <a href="#" class="block p-3 rounded-xl hover:bg-slate-800 transition-all">🤖 AI Model Stats</a>
-            <a href="#" class="block p-3 rounded-xl hover:bg-slate-800 transition-all">⚙️ System Settings</a>
-        </nav>
-        <div class="mt-auto pt-6 border-t border-slate-800">
-            <p class="text-xs text-slate-500">© 2026 Hospital Admin</p>
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="fixed top-0 left-0 w-72 glass border-r border-white/5 h-full z-50 p-7 flex flex-col" style="min-height:100vh">
+    <div class="flex items-center gap-3 mb-10">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-600 flex items-center justify-center">
+            <i class="fas fa-microchip text-white text-lg"></i>
+        </div>
+        <div>
+            <h1 class="text-xl font-black text-white tracking-tight leading-none">DialyCare <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">OS</span></h1>
+            <p class="text-[9px] text-violet-500/60 font-black uppercase tracking-[0.2em]">Clinical Command</p>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 ml-64 p-8">
-        
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <div>
-                <h2 class="text-3xl font-bold text-slate-800">Central Monitor</h2>
-                <p class="text-slate-500">Overview of all kidney care patients</p>
+    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 mb-3 ml-2">Command Center</p>
+    <nav class="space-y-1">
+        <div class="nav-link active" onclick="showSection('overview')"><i class="fas fa-th-large w-4"></i>Overview</div>
+        <div class="nav-link" onclick="showSection('patients')"><i class="fas fa-users w-4"></i>Patient Hub</div>
+        <div class="nav-link" onclick="showSection('clinical')"><i class="fas fa-stethoscope w-4"></i>Clinical Control</div>
+        <div class="nav-link" onclick="showSection('sync')"><i class="fas fa-sync-alt w-4"></i>Patient Sync</div>
+        <div class="nav-link" style="color:#fb7185" onclick="showSection('alerts')"><i class="fas fa-radiation w-4"></i>Critical Alerts</div>
+    </nav>
+
+    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-600 mb-3 ml-2 mt-7">Advanced</p>
+    <nav class="space-y-1">
+        <div class="nav-link" onclick="showSection('neural')"><i class="fas fa-brain w-4 text-cyan-500/50"></i>Neural Insight</div>
+        <div class="nav-link" onclick="showSection('lab')"><i class="fas fa-flask w-4"></i>Lab Analysis</div>
+        <div class="nav-link" onclick="showSection('config')"><i class="fas fa-cog w-4"></i>Config</div>
+    </nav>
+
+    <div class="mt-auto pt-6 border-t border-white/5">
+        <div class="glass p-4 rounded-2xl border border-white/5 mb-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center text-violet-400 text-xs font-bold border border-violet-500/20">HD</div>
+                <div>
+                    <p class="text-xs font-black text-white">Head Doctor</p>
+                    <p class="text-[9px] text-emerald-400 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full pulse-dot"></span>Online</p>
+                </div>
             </div>
-            <div class="flex items-center gap-4">
-                <span class="bg-blue-100 text-blue-600 px-4 py-2 rounded-full font-medium">Logged as Head Doctor</span>
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="admin" class="w-10 h-10 rounded-full">
+        </div>
+        <a href="/dashboard" class="nav-link"><i class="fas fa-arrow-left w-4"></i>Patient View</a>
+        <a href="/logout" class="nav-link" style="color:#fb7185"><i class="fas fa-sign-out-alt w-4"></i>Disconnect</a>
+    </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="flex-1 ml-72 relative" style="min-height:100vh">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-violet-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-cyan-600/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <!-- ── OVERVIEW ── -->
+    <div id="section-overview" class="section active p-10">
+        <header class="flex justify-between items-start mb-10">
+            <div>
+                <h2 class="text-4xl font-black text-white tracking-tight">System Monitor <span class="text-violet-400">— 01</span></h2>
+                <p class="text-slate-500 text-sm mt-1">Real-time renal diagnostics across active patient pool</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Network Latency</span>
+                    <span class="text-cyan-400 font-black text-xs">12ms · OPTIMAL</span>
+                </div>
+                <button class="glass p-3 rounded-xl hover:border-cyan-400/30 transition-all border border-white/5">
+                    <i class="fas fa-bell text-slate-400"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
-                <p class="text-slate-400 text-sm font-medium">Total Patients</p>
-                <h3 class="text-4xl font-bold text-slate-800">{{ total_patients }}</h3>
+        <!-- Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="glass p-6 rounded-3xl border border-cyan-500/15" style="box-shadow:0 0 24px rgba(6,182,212,0.1)">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Patient Pool</p>
+                <div class="flex items-end justify-between">
+                    <h3 class="text-4xl font-black text-white">{{ total_patients }}</h3>
+                    <span class="text-xs font-bold text-cyan-400">ACTIVE</span>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-cyan-400" style="width:75%"></div></div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-red-500">
-                <p class="text-slate-400 text-sm font-medium">High Risk (Critical)</p>
-                <h3 class="text-4xl font-bold text-red-600">{{ high_risk }}</h3>
+            <div class="glass p-6 rounded-3xl border border-rose-500/15">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-rose-500/70 mb-2">Critical Risk</p>
+                <div class="flex items-end justify-between">
+                    <h3 class="text-4xl font-black text-rose-400">{{ high_risk }}</h3>
+                    <i class="fas fa-radiation-alt text-rose-500/30 text-xl"></i>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-rose-400" style="width:{% if total_patients > 0 %}{{ (high_risk / total_patients * 100)|int }}{% else %}0{% endif %}%"></div></div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-yellow-500">
-                <p class="text-slate-400 text-sm font-medium">Moderate Monitoring</p>
-                <h3 class="text-4xl font-bold text-yellow-600">{{ moderate_risk }}</h3>
+            <div class="glass p-6 rounded-3xl border border-amber-500/15">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-amber-500/70 mb-2">Priority Monitor</p>
+                <div class="flex items-end justify-between">
+                    <h3 class="text-4xl font-black text-amber-400">{{ moderate }}</h3>
+                    <i class="fas fa-exclamation-triangle text-amber-500/30 text-xl"></i>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-amber-400" style="width:{% if total_patients > 0 %}{{ (moderate / total_patients * 100)|int }}{% else %}0{% endif %}%"></div></div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-500">
-                <p class="text-slate-400 text-sm font-medium">Healthy / Stable</p>
-                <h3 class="text-4xl font-bold text-green-600">{{ low }}</h3>
+            <div class="glass p-6 rounded-3xl border border-emerald-500/15">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/70 mb-2">Stable</p>
+                <div class="flex items-end justify-between">
+                    <h3 class="text-4xl font-black text-emerald-400">{{ low }}</h3>
+                    <i class="fas fa-check-circle text-emerald-500/30 text-xl"></i>
+                </div>
+                <div class="metric-bar"><div class="metric-bar-fill bg-emerald-400" style="width:{% if total_patients > 0 %}{{ (low / total_patients * 100)|int }}{% else %}0{% endif %}%"></div></div>
             </div>
         </div>
 
+        <!-- Model AI Card + Alerts -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Patient List -->
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800 text-lg">Active Patients</h3>
-                    <div class="relative">
-                        <input type="text" placeholder="Search patients..." class="pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <span class="absolute left-3 top-2.5">🔍</span>
+            <div class="lg:col-span-2 glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white text-xl mb-6">DialyCare Insight AI — Performance</h3>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    {% for label, val, color in [('Model Accuracy','98.4%','cyan'),('Patients Analyzed',total_patients,'violet'),('Avg Latency','12ms','emerald'),('Neural Nodes','248','blue')] %}
+                    <div class="text-center">
+                        <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">{{ label }}</p>
+                        <p class="text-3xl font-black text-{{ color }}-400">{{ val }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div>
+                    <div class="flex justify-between text-[9px] font-black text-slate-500 uppercase mb-2"><span>Model Fidelity</span><span class="text-cyan-400">98.4%</span></div>
+                    <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-cyan-400 to-violet-500 rounded-full" style="width:98.4%"></div>
+                    </div>
+                    <div class="flex justify-between text-[9px] text-slate-600 font-black uppercase mt-2">
+                        <span>Training Set: 120k Samples</span><span class="text-cyan-500">Neural Engine v5.2</span>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-slate-500 text-sm uppercase">
-                            <tr>
-                                <th class="p-4 font-semibold">Patient Name</th>
-                                <th class="p-4 font-semibold">Stage</th>
-                                <th class="p-4 font-semibold">Current Risk</th>
-                                <th class="p-4 font-semibold">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            {% for p in patients %}
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="p-4">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-slate-800">{{ p.name }}</span>
-                                        <span class="text-xs text-slate-400">{{ p.email }}</span>
-                                    </div>
-                                </td>
-                                <td class="p-4 font-medium text-slate-700">{{ p.ckd_stage or 'N/A' }}</td>
-                                <td class="p-4">
-                                    {% if 'High' in p.latest_risk %}
-                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600">CRITICAL</span>
-                                    {% elif 'Moderate' in p.latest_risk %}
-                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-600">MODERATE</span>
-                                    {% else %}
-                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">STABLE</span>
-                                    {% endif %}
-                                </td>
-                                <td class="p-4 text-center">
-                                    <button class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold transition-all shadow-md shadow-blue-200">OPEN FILE</button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if not patients %}
-                <div class="p-10 text-center text-slate-400">
-                    <p>No patients registered yet.</p>
-                </div>
-                {% endif %}
             </div>
-
-            <!-- Side Widgets -->
-            <div class="space-y-8">
-                
-                <!-- Alerts -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h4 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
-                        Recent Alerts
-                        <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse">LIVE</span>
-                    </h4>
-                    <div class="space-y-4">
-                        {% for alert in alerts %}
-                        <div class="flex gap-4 p-3 bg-red-50 rounded-xl border border-red-100">
-                            <span class="text-xl">⚠️</span>
-                            <div>
-                                <p class="text-sm font-bold text-red-800">{{ alert.message }}</p>
-                                <p class="text-[10px] text-red-500 mt-1">Just now</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-
-                        {% if not alerts %}
-                        <div class="text-center py-6">
-                            <div class="text-3xl mb-2">✅</div>
-                            <p class="text-slate-400 text-sm leading-tight">All patients currently stable.<br>No critical alerts.</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <button class="w-full mt-6 py-2 text-xs font-bold text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 transition-all">VIEW ALL ALERTS</button>
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <div class="flex items-center justify-between mb-6">
+                    <h4 class="font-black text-white">Neural Alerts</h4>
+                    {% if alerts %}<span class="text-[9px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 font-black animate-pulse uppercase">Live</span>{% endif %}
                 </div>
-
-                <!-- Model Stats -->
-                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-2xl shadow-lg text-white">
-                    <h4 class="font-bold mb-4">AI Model Status</h4>
-                    <div class="flex justify-between items-end">
+                <div class="space-y-4">
+                    {% for alert in alerts %}
+                    <div class="flex gap-3 p-4 glass bg-rose-500/5 rounded-2xl border border-rose-500/20">
+                        <i class="fas fa-biohazard text-rose-400 text-lg mt-0.5"></i>
                         <div>
-                            <p class="text-blue-100 text-xs uppercase tracking-wider mb-1">Accuracy</p>
-                            <h5 class="text-3xl font-bold">94.2%</h5>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-blue-100 text-xs mb-1">Last Retrained</p>
-                            <p class="text-sm font-medium">12 Mar 2026</p>
+                            <p class="text-xs font-black text-white tracking-widest uppercase mb-1">{{ alert.message }}</p>
+                            <p class="text-[9px] text-rose-400/70 font-bold uppercase">T-0:00</p>
                         </div>
                     </div>
-                    <div class="w-full bg-blue-900/40 h-1.5 rounded-full mt-4 overflow-hidden">
-                        <div class="bg-white h-full w-[94.2%] transition-all"></div>
+                    {% else %}
+                    <div class="text-center py-10 opacity-40">
+                        <i class="fas fa-shield-virus text-4xl text-emerald-400 mb-3"></i>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-emerald-400">All Systems Optimal</p>
                     </div>
+                    {% endfor %}
                 </div>
-
             </div>
         </div>
-
     </div>
 
+    <!-- ── PATIENT HUB ── -->
+    <div id="section-patients" class="section p-10">
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h2 class="text-4xl font-black text-white">Patient Hub</h2>
+                <p class="text-slate-500 text-sm mt-1">Unified patient stream · {{ total_patients }} registered</p>
+            </div>
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-3.5 text-slate-500"></i>
+                <input type="text" id="patientSearch" oninput="filterPatients(this.value)" placeholder="Search patients..." 
+                    class="pl-10 pr-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 text-white w-64 font-semibold">
+            </div>
+        </div>
+        <div class="glass rounded-3xl border border-white/5 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left" id="patientTable">
+                    <thead class="text-[9px] uppercase font-black tracking-[0.2em] text-slate-500 bg-white/2">
+                        <tr>
+                            <th class="px-8 py-5">Patient Profile</th>
+                            <th class="px-8 py-5">CKD Stage</th>
+                            <th class="px-8 py-5 text-center">Neural Risk</th>
+                            <th class="px-8 py-5 text-center">Status</th>
+                            <th class="px-8 py-5 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for p in patients %}
+                        <tr class="hover:bg-white/2 transition-all group patient-row" data-name="{{ p.name|lower }}" data-email="{{ p.email|lower }}">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl glass border border-white/10 flex items-center justify-center font-bold text-cyan-400 group-hover:border-cyan-400/40 transition-all text-xs">{{ p.name[:2]|upper }}</div>
+                                    <div>
+                                        <p class="font-bold text-white text-sm">{{ p.name }}</p>
+                                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{{ p.email }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 font-bold text-slate-400 text-xs uppercase tracking-widest">{{ p.ckd_stage or 'Stage 0' }}</td>
+                            <td class="px-8 py-5 text-center">
+                                {% set risk = p.latest_risk|lower %}
+                                {% if 'high' in risk %}
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full risk-high text-[9px] font-black tracking-widest"><span class="w-1.5 h-1.5 rounded-full bg-rose-400 pulse-dot"></span>CRITICAL</span>
+                                {% elif 'moderate' in risk %}
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full risk-moderate text-[9px] font-black tracking-widest"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>ELEVATED</span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full risk-stable text-[9px] font-black tracking-widest"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>STABLE</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-black flex items-center justify-center gap-1 mx-auto w-fit">
+                                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full pulse-dot"></span>Active
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <button class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[9px] px-4 py-2 rounded-xl font-black transition-all hover:scale-105 tracking-widest uppercase">
+                                    View Record
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="px-8 py-16 text-center text-slate-600 text-xs font-black uppercase tracking-widest">No patients registered</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CLINICAL CONTROL ── -->
+    <div id="section-clinical" class="section p-10">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-white">Clinical <span class="text-violet-400">Control</span></h2>
+            <p class="text-slate-500 text-sm mt-1">System-wide clinical parameters · Threshold management</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Safe Thresholds -->
+            <div class="glass p-8 rounded-3xl border border-emerald-500/15">
+                <h3 class="font-black text-white mb-2 flex items-center gap-3"><i class="fas fa-shield-check text-emerald-400"></i> Safe Thresholds</h3>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-6">Standard CKD reference values</p>
+                <div class="space-y-4">
+                    {% for param, ref, color in [('Potassium','3.5–5.0 mEq/L','emerald'),('Sodium','135–145 mEq/L','cyan'),('Creatinine','0.6–1.2 mg/dL','blue'),('GFR','> 60 ml/min','violet'),('Blood Pressure','< 130/80 mmHg','rose'),('Hemoglobin','> 10 g/dL','amber')] %}
+                    <div class="flex justify-between items-center p-3 rounded-2xl bg-white/3 border border-white/5">
+                        <span class="text-xs font-black text-white">{{ param }}</span>
+                        <span class="text-[9px] font-bold text-{{ color }}-400 bg-{{ color }}-500/10 px-3 py-1 rounded-full border border-{{ color }}-500/20">{{ ref }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Risk Distribution Chart -->
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-chart-pie text-cyan-400"></i> Risk Distribution</h3>
+                <div class="relative" style="height:220px"><canvas id="riskChart"></canvas></div>
+                <div class="grid grid-cols-3 gap-3 mt-6">
+                    {% for label, count, color in [('High', high_risk,'rose'),('Moderate',moderate,'amber'),('Stable',low,'emerald')] %}
+                    <div class="text-center">
+                        <p class="text-2xl font-black text-{{ color }}-400">{{ count }}</p>
+                        <p class="text-[9px] font-black text-slate-500 uppercase">{{ label }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Intervention Protocols -->
+            <div class="glass p-8 rounded-3xl border border-amber-500/15">
+                <h3 class="font-black text-white mb-2 flex items-center gap-3"><i class="fas fa-notes-medical text-amber-400"></i> Protocols</h3>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-6">Clinical intervention guidelines</p>
+                <div class="space-y-4">
+                    {% for proto, action, color in [('High K+ (>5.5)','Restrict dietary potassium · Check RAAS meds','rose'),('Low GFR (<30)','Increase dialysis frequency · Nephrology consult','amber'),('High BP (>140/90)','Antihypertensive review · Fluid restriction','violet'),('Anemia (HGB<10)','Erythropoietin assessment · Iron supplementation','cyan'),('Fluid Overload','Strict fluid restriction · Diuretic review','blue')] %}
+                    <div class="p-4 rounded-2xl bg-{{ color }}-500/5 border border-{{ color }}-500/15">
+                        <p class="text-[10px] font-black text-{{ color }}-400 uppercase tracking-widest mb-1">{{ proto }}</p>
+                        <p class="text-[9px] text-slate-400 font-semibold leading-relaxed">{{ action }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PATIENT SYNC ── -->
+    <div id="section-sync" class="section p-10">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-white">Patient <span class="text-emerald-400">Sync</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Data synchronization · Session history · Audit log</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="glass p-8 rounded-3xl border border-emerald-500/15 flex flex-col items-center justify-center text-center">
+                <i class="fas fa-sync-alt text-5xl text-emerald-400 mb-4" style="animation:spin 3s linear infinite"></i>
+                <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+                <p class="font-black text-white text-xl mb-2">Sync Active</p>
+                <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mb-6">All streams synchronized</p>
+                <div class="space-y-3 w-full">
+                    {% for label, val in [('Patients Synced', total_patients),('Records Online','Live'),('Sync Interval','30s'),('Last Sync','Just now')] %}
+                    <div class="flex justify-between p-3 rounded-xl bg-white/3 border border-white/5">
+                        <span class="text-[9px] font-black text-slate-500 uppercase">{{ label }}</span>
+                        <span class="text-xs font-black text-white">{{ val }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="lg:col-span-2 glass rounded-3xl border border-white/5 overflow-hidden">
+                <div class="p-6 border-b border-white/5">
+                    <h3 class="font-black text-white">Patient Registry</h3>
+                </div>
+                <div class="divide-y divide-white/5 overflow-y-auto" style="max-height:400px">
+                    {% for p in patients %}
+                    <div class="flex items-center justify-between px-6 py-4 hover:bg-white/2 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center font-bold text-cyan-400 text-xs">{{ p.name[:2]|upper }}</div>
+                            <div>
+                                <p class="text-sm font-black text-white">{{ p.name }}</p>
+                                <p class="text-[9px] text-slate-500 font-bold">{{ p.email }} · CKD {{ p.ckd_stage or 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[9px] font-black uppercase px-3 py-1 rounded-full
+                                {% if 'High' in p.latest_risk %}risk-high{% elif 'Moderate' in p.latest_risk %}risk-moderate{% else %}risk-stable{% endif %}">
+                                {{ p.latest_risk }}
+                            </span>
+                            <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-16 text-slate-600 text-xs font-black uppercase tracking-widest">No patients synced</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CRITICAL ALERTS ── -->
+    <div id="section-alerts" class="section p-10">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-white">Critical <span class="text-rose-400">Alerts</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Real-time patient risk notifications</p>
+        </div>
+        {% if alerts %}
+        <div class="space-y-4 max-w-3xl">
+            {% for alert in alerts %}
+            <div class="glass p-6 rounded-3xl border border-rose-500/20 bg-rose-500/4 flex items-start gap-6">
+                <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                    <i class="fas fa-biohazard text-rose-400 text-2xl"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-black text-white text-sm uppercase tracking-wider mb-1">{{ alert.message }}</p>
+                    <p class="text-[9px] text-rose-400/70 font-bold uppercase tracking-[0.2em]">Alert Generated · T-0:00 · Priority: HIGH</p>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[9px] font-black animate-pulse">LIVE</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="max-w-md text-center py-24 mx-auto opacity-40">
+            <i class="fas fa-shield-virus text-6xl text-emerald-400 mb-6"></i>
+            <p class="text-xl font-black text-white mb-2">All Clear</p>
+            <p class="text-[9px] font-black uppercase tracking-widest text-emerald-400">No critical alerts detected · System baseline optimal</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ── NEURAL INSIGHT ── -->
+    <div id="section-neural" class="section p-10">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-white">Neural <span class="text-cyan-400">Insight</span></h2>
+            <p class="text-slate-500 text-sm mt-1">AI model analytics · Decision tree performance · System intelligence</p>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {% for label, val, unit, color in [('Model Accuracy','98.4','%','cyan'),('Training Samples','120K','','violet'),('Active Patients',total_patients,'','emerald'),('Neural Latency','12','ms','blue')] %}
+            <div class="glass p-6 rounded-3xl border border-{{ color }}-500/15 text-center">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3">{{ label }}</p>
+                <p class="text-4xl font-black text-{{ color }}-400">{{ val }}<span class="text-xl text-slate-500">{{ unit }}</span></p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="glass p-8 rounded-3xl border border-white/5">
+            <h3 class="font-black text-white mb-6">Feature Importance Scores</h3>
+            <div class="space-y-4">
+                {% for feat, pct, color in [('Creatinine',87,'cyan'),('GFR',82,'blue'),('Potassium',75,'violet'),('Hemoglobin',68,'emerald'),('Urea',60,'amber'),('Blood Sugar',52,'rose'),('Sodium',45,'pink'),('Fluid Intake',40,'sky')] %}
+                <div class="flex items-center gap-4">
+                    <span class="text-xs font-black text-white w-28">{{ feat }}</span>
+                    <div class="flex-1 h-3 bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full bg-{{ color }}-400 rounded-full" style="width:{{ pct }}%; transition:width 1s"></div>
+                    </div>
+                    <span class="text-[9px] font-black text-{{ color }}-400 w-10 text-right">{{ pct }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ── LAB ANALYSIS ── -->
+    <div id="section-lab" class="section p-10">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-white">Lab <span class="text-amber-400">Analysis</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Aggregated laboratory metrics across patient pool</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-vials text-violet-400"></i> Reference Ranges</h3>
+                <div class="space-y-3">
+                    {% for name, range_val, color in [
+                        ('Creatinine','0.6–1.2 mg/dL','cyan'),
+                        ('Potassium','3.5–5.0 mEq/L','violet'),
+                        ('Sodium','135–145 mEq/L','blue'),
+                        ('GFR','>60 ml/min','emerald'),
+                        ('Hemoglobin (M)','>13.5 g/dL','rose'),
+                        ('Hemoglobin (F)','>12.0 g/dL','pink'),
+                        ('Urea (BUN)','7–20 mg/dL','amber'),
+                        ('Calcium','8.5–10.5 mg/dL','yellow'),
+                        ('Phosphorus','2.5–4.5 mg/dL','orange'),
+                        ('Bilirubin','0.1–1.2 mg/dL','lime')
+                    ] %}
+                    <div class="flex items-center justify-between p-3 rounded-2xl bg-white/3 border border-white/5">
+                        <span class="text-xs font-black text-white">{{ name }}</span>
+                        <span class="text-[9px] font-bold text-{{ color }}-400">{{ range_val }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-microscope text-amber-400"></i> Analysis Notes</h3>
+                <div class="space-y-4">
+                    {% for title, content, color in [
+                        ('Creatinine & GFR','Primary markers of kidney filtration capacity. High creatinine + low GFR = advanced CKD progression.','cyan'),
+                        ('Electrolyte Balance','Potassium and sodium imbalance can lead to cardiac arrhythmia in dialysis patients — must be monitored closely.','violet'),
+                        ('Anemia Protocol','Dialysis patients commonly develop renal anemia. Target HGB 10–12 g/dL with erythropoietin supplementation.','rose'),
+                        ('Metabolic Acidosis','Bicarbonate levels should be maintained. Low bicarbonate indicates metabolic acidosis, common in CKD.','amber'),
+                        ('Phosphorus Control','Hyperphosphatemia accelerates vascular calcification. Diet restriction + phosphate binders essential.','emerald')
+                    ] %}
+                    <div class="p-5 rounded-2xl bg-{{ color }}-500/5 border border-{{ color }}-500/15">
+                        <p class="text-[10px] font-black text-{{ color }}-400 uppercase tracking-widest mb-2">{{ title }}</p>
+                        <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">{{ content }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CONFIG ── -->
+    <div id="section-config" class="section p-10">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-white">System <span class="text-slate-400">Config</span></h2>
+            <p class="text-slate-500 text-sm mt-1">Application settings · Integrations · Alert thresholds</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-sliders text-cyan-400"></i> System Parameters</h3>
+                <div class="space-y-4">
+                    {% for label, val, active in [('Auto Neural Risk Scoring','Enabled', True),('Real-time Alert Engine','Enabled', True),('Patient Sync Interval','30 seconds', True),('ML Model Auto-retrain','Weekly', True),('Audit Logging','Full trace', True),('Demo Mode','Disabled', False)] %}
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/3 border border-white/5">
+                        <div>
+                            <p class="text-xs font-black text-white">{{ label }}</p>
+                            <p class="text-[9px] text-slate-500 font-semibold">{{ val }}</p>
+                        </div>
+                        <div class="w-10 h-5 rounded-full {% if active %}bg-cyan-500{% else %}bg-white/10{% endif %} relative transition-all">
+                            <span class="absolute top-0.5 {% if active %}right-0.5{% else %}left-0.5{% endif %} w-4 h-4 bg-white rounded-full"></span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="glass p-8 rounded-3xl border border-white/5">
+                <h3 class="font-black text-white mb-6 flex items-center gap-3"><i class="fas fa-bell text-amber-400"></i> Alert Thresholds</h3>
+                <div class="space-y-4">
+                    {% for param, threshold, color in [('Creatinine (High)','>2.0 mg/dL','rose'),('Potassium (High)','>6.0 mEq/L','amber'),('GFR (Critical)','<15 ml/min','rose'),('Blood Pressure','>160/100 mmHg','violet'),('Hemoglobin (Low)','<8 g/dL','cyan'),('Fluid Overload','>3000 ml/day','blue')] %}
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-{{ color }}-500/5 border border-{{ color }}-500/15">
+                        <span class="text-xs font-black text-white">{{ param }}</span>
+                        <span class="text-[9px] font-bold text-{{ color }}-400 bg-{{ color }}-500/10 px-3 py-1 rounded-full border border-{{ color }}-500/20">{{ threshold }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-6 p-4 rounded-2xl bg-white/3 border border-white/5">
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Database</p>
+                    <p class="text-xs font-bold text-white">SQLite · DialyCare v2.0 · <span class="text-emerald-400">Connected</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+function showSection(id){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('section-'+id).classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
+function filterPatients(q){
+    document.querySelectorAll('.patient-row').forEach(row=>{
+        const name=row.dataset.name||'', email=row.dataset.email||'';
+        row.style.display=(name.includes(q.toLowerCase())||email.includes(q.toLowerCase()))?'':'none';
+    });
+}
+// Risk Donut Chart
+const rc=document.getElementById('riskChart');
+if(rc){
+    new Chart(rc,{
+        type:'doughnut',
+        data:{
+            labels:['High Risk','Moderate','Stable'],
+            datasets:[{data:[{{ high_risk }},{{ moderate }},{{ low }}],backgroundColor:['rgba(244,63,94,0.7)','rgba(245,158,11,0.7)','rgba(34,197,94,0.7)'],borderColor:['rgba(244,63,94,0.3)','rgba(245,158,11,0.3)','rgba(34,197,94,0.3)'],borderWidth:1}]
+        },
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'70%'}
+    });
+}
+</script>
 </body>
 </html>
