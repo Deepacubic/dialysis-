@@ -91,7 +91,7 @@ def inject_translate():
     def translate(key):
         lang = session.get('lang', 'en')
         return translations.get(lang, translations['en']).get(key, key)
-    return dict(tr=translate)
+    return dict(_=translate, tr=translate)
 
 def tr(key):
     lang = session.get('lang', 'en')
