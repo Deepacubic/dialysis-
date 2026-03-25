@@ -105,7 +105,7 @@ def home():
 
 @app.route('/set-language/<lang>')
 def set_language(lang):
-    if lang in ['en', 'ta']:
+    if lang in ['en', 'ta', 'hi']:
         session['lang'] = lang
     return redirect(request.referrer or url_for('home'))
 
@@ -280,6 +280,11 @@ def health_entry():
 def anime_dashboard():
     if 'user_id' not in session: return redirect(url_for('login'))
     return render_template('anime_dashboard.html')
+
+@app.route('/ai-assistant')
+def ai_assistant():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    return render_template('ai_assistant.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
