@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diet Plan Planner - DialyCare AI</title>
+    <title>Diet Plan Planner - NephroAI</title>
     <meta name="description" content="Build and track your personalised dialysis diet plan with food quantities and nutrient percentages.">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -198,7 +198,7 @@
 
     <!-- Sidebar -->
     <aside class="dp-sidebar">
-        <div class="logo"><i class="fas fa-heartbeat"></i> DialyCare AI</div>
+        <div class="logo"><i class="fas fa-heartbeat"></i> NephroAI</div>
         <nav>
             <a href="/dashboard" class="sidebar-link"><i class="fas fa-th-large"></i> {{ _('dashboard') }}</a>
             <a href="/health-entry" class="sidebar-link"><i class="fas fa-plus-circle"></i> {{ _('health_entry') }}</a>
@@ -832,7 +832,7 @@ function updateSafetyUI(score, warnCount) {
         badge.textContent = "High Risk";
         badge.className = "badge-sm badge-avoid";
         circle.setAttribute('stroke', '#ef4444');
-        advice.innerHTML = "🛑 **Warning:** This plan poses a high risk to your kidneys. Consult DialyBot for safer alternatives.";
+        advice.innerHTML = "🛑 **Warning:** This plan poses a high risk to your kidneys. Consult NephroBot for safer alternatives.";
     }
 }
 
@@ -852,7 +852,7 @@ function setBar(prefix, val, limit, unit) {
 }
 </script>
 
-<!-- DIALYCARE AI: FLOATING CHATBOT UI -->
+<!-- NephroAI: FLOATING CHATBOT UI -->
 <style>
     .chat-bubble {
         position: fixed;
@@ -966,7 +966,7 @@ function setBar(prefix, val, limit, unit) {
 </style>
 
 
-<!-- DIALYBOT 3.0 MULTI-DOMAIN CHATBOT -->
+<!-- NephroBot 3.0 MULTI-DOMAIN CHATBOT -->
 <div class="chat-bubble" onclick="toggleChat()">
     <i class="fas fa-robot fa-lg"></i>
     <span style="position:absolute; top:-5px; right:-5px; background:var(--dp-avoid); color:white; font-size:10px; padding:2px 6px; border-radius:10px; font-weight:800;">3.0</span>
@@ -977,7 +977,7 @@ function setBar(prefix, val, limit, unit) {
         <div style="display:flex; align-items:center; gap:0.75rem;">
             <div style="background:rgba(255,255,255,0.2); width:32px; height:32px; border-radius:50%; display:flex; justify-content:center; align-items:center;"><i class="fas fa-robot"></i></div>
             <div>
-                <div style="font-weight:700; font-size:1rem;">DialyBot 3.0</div>
+                <div style="font-weight:700; font-size:1rem;">NephroBot 3.0</div>
                 <div style="font-size:0.75rem; opacity:0.8;">Multi-Domain AI Assistant</div>
             </div>
         </div>
@@ -989,7 +989,7 @@ function setBar(prefix, val, limit, unit) {
     
     <div class="chat-messages" id="chatMessages" style="flex:1; padding:1.25rem; overflow-y:auto; display:flex; flex-direction:column; gap:1rem; background:#f8fafc;">
         <div class="bot-msg" style="background:white; padding:1.2rem; border-radius:1.5rem; border-bottom-left-radius:0; box-shadow:0 4px 15px rgba(0,0,0,0.05); font-size:0.95rem; max-width:90%; text-align:center; line-height:1.6;">
-            Hello! I am **DialyBot 3.0** 🤖<br>
+            Hello! I am **NephroBot 3.0** 🤖<br>
             I can analyze your **Lab Reports**, suggest **Safe Foods**, and give **Risk Alerts**. <br>
             <strong>How can I help today?</strong>
         </div>
@@ -1051,7 +1051,7 @@ function setBar(prefix, val, limit, unit) {
         if(!confirm("Clear chat history?")) return;
         document.getElementById('chatMessages').innerHTML = `
             <div class="bot-msg" style="background:white; padding:1.2rem; border-radius:1.5rem; border-bottom-left-radius:0; box-shadow:0 4px 15px rgba(0,0,0,0.05); font-size:0.95rem; max-width:90%; text-align:center; line-height:1.6;">
-                Hello! I am **DialyBot 3.0** 🤖<br>
+                Hello! I am **NephroBot 3.0** 🤖<br>
                 I can analyze your **Lab Reports**, suggest **Safe Foods**, and give **Risk Alerts**. <br>
                 <strong>How can I help today?</strong>
             </div>

@@ -8,7 +8,8 @@ import pickle
 from translations import translations
 
 app = Flask(__name__)
-app.secret_key = 'dialycare_secret_key'
+app.secret_key = 'NephroAI_secret_key'
+app.jinja_env.tests['contains'] = lambda val, s: s in str(val) if val else False
 
 # Database Configuration (SQLite)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -309,7 +310,7 @@ def chat():
         if not final_reply and api_key and api_key != "YOUR_API_KEY":
             resp = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=[{"role": "system", "content": f"You are DialyBot, a Dialysis AI. {patient_context}"}, {"role": "user", "content": user_msg}],
+                messages=[{"role": "system", "content": f"You are NephroBot, a Dialysis AI. {patient_context}"}, {"role": "user", "content": user_msg}],
                 max_tokens=150
             )
             final_reply = resp['choices'][0]['message']['content']
@@ -321,16 +322,16 @@ def chat():
             if hf_token:
                 API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
                 headers = {"Authorization": f"Bearer {hf_token}"}
-                payload = {"inputs": f"Medical Assistant (Dialysis): User says: {user_msg}. Respond concisely as DialyBot."}
+                payload = {"inputs": f"Medical Assistant (Dialysis): User says: {user_msg}. Respond concisely as NephroBot."}
                 hf_resp = requests.post(API_URL, headers=headers, json=payload)
                 if hf_resp.status_code == 200:
-                    final_reply = hf_resp.json()[0]['generated_text'].split("Respond concisely as DialyBot.")[-1].strip()
+                    final_reply = hf_resp.json()[0]['generated_text'].split("Respond concisely as NephroBot.")[-1].strip()
     except Exception as e:
         print(f"LLM Provider Error: {e}")
 
     # C. Default Response
     if not final_reply:
-        final_reply = "I'm DialyBot! Try asking: 'Can I eat potato?' or 'Explain my health report'."
+        final_reply = "I'm NephroBot! Try asking: 'Can I eat potato?' or 'Explain my health report'."
 
     return {"reply": final_reply}
 
