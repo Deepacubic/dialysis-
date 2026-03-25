@@ -3,33 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NephroAI | Modern Renal Dashboard</title>
+    <title>Patient Hub — NephroAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/modern_ui.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        .sidebar { background: var(--bg-dark); }
-        .main-content { background: var(--bg-darker); }
+        :root {
+            --bg-light: #f8fafc;
+            --blue-primary: #2563eb;
+            --blue-secondary: #1e40af;
+            --glass-white: rgba(255, 255, 255, 0.85);
+        }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg-light);
+            color: #1e3a8a;
+        }
+        .glass { 
+            background: var(--glass-white); 
+            backdrop-filter: blur(24px); 
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
         .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 12px 16px;
             border-radius: 12px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: var(--transition);
-            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            transition: all 0.3s ease;
         }
         .nav-link:hover {
-            color: var(--neon-blue);
             background: rgba(37, 99, 235, 0.05);
+            color: #2563eb;
         }
         .nav-link.active {
-            color: #ffffff;
-            background: linear-gradient(135deg, #2563eb, #1e40af);
+            background: #2563eb;
+            color: white;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
         .section { display: none; }
@@ -40,7 +52,7 @@
 <body class="min-h-screen flex">
 
 <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
-<aside class="sidebar fixed top-0 left-0 w-72 border-r border-blue-500/10 h-full z-50 p-7 flex flex-col">
+<aside class="fixed top-0 left-0 w-72 glass border-r border-blue-500/10 h-full z-50 p-7 flex flex-col">
     <div class="flex items-center gap-3 mb-10">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <i class="fas fa-heartbeat text-white text-lg"></i>
@@ -67,18 +79,18 @@
     <!-- CLINICAL Group -->
     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300 mb-3 ml-2 mt-8">Clinical</p>
     <nav class="space-y-1">
-        <div class="nav-link" onclick="showSection('clinical')">
+        <a href="/admin" class="nav-link">
             <i class="fas fa-stethoscope w-4"></i> Clinical Control
-        </div>
-        <div class="nav-link" onclick="showSection('neural')">
+        </a>
+        <a href="/neural-insight" class="nav-link">
             <i class="fas fa-brain w-4"></i> Neural Insight
-        </div>
-        <div class="nav-link" onclick="showSection('lab')">
+        </a>
+        <a href="/lab-analysis" class="nav-link">
             <i class="fas fa-flask w-4"></i> Lab Analysis
-        </div>
-        <div class="nav-link" onclick="showSection('sync')">
+        </a>
+        <a href="/patient-sync" class="nav-link">
             <i class="fas fa-sync-alt w-4"></i> Patient Sync
-        </div>
+        </a>
     </nav>
 
     <!-- SYSTEM Group -->
@@ -87,9 +99,9 @@
         <a href="/ai-assistant" class="nav-link">
             <i class="fas fa-robot w-4"></i> AI Assistant
         </a>
-        <div class="nav-link" onclick="showSection('config')">
+        <a href="/config" class="nav-link">
             <i class="fas fa-cog w-4"></i> Config
-        </div>
+        </a>
         <a href="/anime-dashboard" class="nav-link">
             <i class="fas fa-gamepad w-4"></i> Gaming Ops
         </a>
@@ -113,9 +125,14 @@
     
     <!-- PATIENT HUB -->
     <div id="section-hub" class="section active">
-        <div class="mb-10">
-            <h2 class="text-3xl font-black text-blue-900">Patient <span class="text-blue-600">Hub</span></h2>
-            <p class="text-blue-500/60 text-sm mt-1">Welcome back. Your renal health signatures are stable.</p>
+        <div class="mb-10 flex justify-between items-start">
+            <div>
+                <h2 class="text-3xl font-black text-blue-900">Patient <span class="text-blue-600">Hub</span></h2>
+                <p class="text-blue-500/60 text-sm mt-1">Welcome back. Your renal health signatures are stable.</p>
+            </div>
+            <div class="w-48 h-32 rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10 border-4 border-white rotate-2 hover:rotate-0 transition-all duration-500">
+                <img src="/static/images/user_dialysis.jpg" alt="Clinical Live" class="w-full h-full object-cover">
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
@@ -153,58 +170,25 @@
             </div>
         </div>
     </div>
-
-    <!-- CLINICAL CONTROL -->
-    <div id="section-clinical" class="section">
-        <div class="mb-10">
-            <h2 class="text-3xl font-black text-blue-900">Clinical <span class="text-blue-600">Control</span></h2>
-            <p class="text-blue-500/60 text-sm mt-1">Detailed laboratory parameters and vitals.</p>
-        </div>
-        <!-- (Simplified for demo) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-             <div class="glass p-6 text-center">
-                <p class="text-[10px] font-black uppercase text-blue-400 mb-2">Blood Pressure</p>
-                <div class="text-3xl font-black text-blue-900">{{ latest_record.bp_sys or '120' }}/{{ latest_record.bp_dia or '80' }}</div>
-             </div>
-             <div class="glass p-6 text-center">
-                <p class="text-[10px] font-black uppercase text-blue-400 mb-2">Weight</p>
-                <div class="text-3xl font-black text-blue-900">{{ latest_record.weight or '72' }} kg</div>
-             </div>
-        </div>
-    </div>
-
-    <!-- Other Sections Placeholders -->
-    <div id="section-nutrition" class="section"> <h2 class="text-3xl font-black text-blue-900">Nutrition Guide</h2> </div>
-    <div id="section-neural" class="section"> <h2 class="text-3xl font-black text-blue-900">Neural Insight</h2> </div>
-    <div id="section-lab" class="section"> <h2 class="text-3xl font-black text-blue-900">Lab Analysis</h2> </div>
-    <div id="section-sync" class="section"> <h2 class="text-3xl font-black text-blue-900">Patient Sync</h2> </div>
-    <div id="section-assistant" class="section"> <h2 class="text-3xl font-black text-blue-900">AI Assistant</h2> </div>
-    <div id="section-config" class="section"> <h2 class="text-3xl font-black text-blue-900">Configuration</h2> </div>
-    <div id="section-gaming" class="section"> <h2 class="text-3xl font-black text-blue-900">Gaming Ops</h2> </div>
-
 </main>
 
-<!-- Chatbot Toggle (Fixed for Demo) -->
-{% include 'chatbot.html' %}
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById('section-' + id).classList.add('active');
-        
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         event.currentTarget.classList.add('active');
     }
 
-    // Initialize Chart
     const ctx = document.getElementById('healthChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: {{ dates|safe }},
+            labels: {{ dates | tojson }},
             datasets: [{
-                label: 'Creatinine',
-                data: {{ creatinine_levels|safe }},
+                label: 'Creatinine level',
+                data: {{ creatinine_values | tojson }},
                 borderColor: '#2563eb',
                 backgroundColor: 'rgba(37, 99, 235, 0.1)',
                 tension: 0.4,
@@ -215,9 +199,14 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+            scales: {
+                y: { grid: { borderDash: [5, 5] } },
+                x: { grid: { display: false } }
+            }
         }
     });
 </script>
+
+{% include 'chatbot.html' %}
 </body>
 </html>

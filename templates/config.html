@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Config — NephroAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-light: #f8fafc;
+            --blue-primary: #2563eb;
+            --glass-white: rgba(255, 255, 255, 0.85);
+        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-light); color: #1e3a8a; }
+        .glass { background: var(--glass-white); backdrop-filter: blur(24px); border: 1px solid rgba(37, 99, 235, 0.1); }
+        .input-group { position: relative; margin-bottom: 24px; }
+        .input-group label { display: block; font-size: 10px; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; margin-left: 4px; }
+        .input-group input, .input-group select { width: 100%; padding: 16px 20px; background: white; border: 1px solid #e2e8f0; border-radius: 16px; font-weight: 700; color: #1e3a8a; outline: none; transition: all 0.3s ease; }
+        .input-group input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
+    </style>
+</head>
+<body class="p-10 flex justify-center">
+
+    <div class="max-w-2xl w-full glass rounded-[48px] p-12 shadow-2xl shadow-blue-500/5">
+        <div class="flex items-center gap-6 mb-12">
+            <div class="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/20">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-black text-blue-900">System <span class="text-blue-600">Config</span></h1>
+                <p class="text-blue-500/60 font-bold">Manage your profile and clinical preferences</p>
+            </div>
+        </div>
+
+        <form action="/update-profile" method="POST" class="space-y-8">
+            <div class="grid grid-cols-2 gap-6">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" value="{{ user.name }}">
+                </div>
+                <div class="input-group">
+                    <label>Assigned ID</label>
+                    <input type="text" value="NP-{{ user.id }}-0X" disabled class="bg-blue-50/50 cursor-not-allowed">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Clinical Protocol Email</label>
+                <input type="email" name="email" value="{{ user.email }}">
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="input-group">
+                    <label>Language Preference</label>
+                    <select name="lang">
+                        <option value="en" {% if session.lang == 'en' %}selected{% endif %}>English (Unified)</option>
+                        <option value="ta" {% if session.lang == 'ta' %}selected{% endif %}>தமிழ் (Tamil)</option>
+                        <option value="hi" {% if session.lang == 'hi' %}selected{% endif %}>हिन्दी (Hindi)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Telemetry Sync Rate</label>
+                    <select disabled>
+                        <option>Real-time (Active)</option>
+                        <option>Batch 5min</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-6 flex gap-4">
+                <button type="submit" class="flex-1 py-4 bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-xs">Save Configuration</button>
+                <a href="/dashboard" class="px-8 py-4 border border-blue-100 text-blue-600 font-black rounded-2xl hover:bg-blue-50 transition-all uppercase tracking-widest text-xs flex items-center">Return</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

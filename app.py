@@ -350,48 +350,43 @@ def health(): return "OK"
 
 @app.route('/admin')
 def admin():
-    if 'user_id' not in session: # Optionally check for 'admin' role if added later
-        # return redirect(url_for('login'))
-        pass # Allow access for now for demonstration
-
+    if 'user_id' not in session: pass 
     patients = Patient.query.all()
-
     total = len(patients)
-    high = 0
-    moderate = 0
-    low = 0
+    high, moderate, low = 0, 0, 0
     recent_alerts = []
-
-    patient_data = [] # Detailed list for admin display
-
+    patient_data = []
     for p in patients:
         last = HealthRecord.query.filter_by(patient_id=p.id).order_by(HealthRecord.date.desc()).first()
-        risk = "Unknown"
-        if last:
-            risk = last.risk_score or "Low"
-            if "high" in risk.lower():
-                high += 1
-                recent_alerts.append({"message": f"Critical: High risk for patient {p.name}", "type": "error"})
-            elif "moderate" in risk.lower():
-                moderate += 1
-            else:
-                low += 1
-        
-        patient_data.append({
-            "name": p.name,
-            "email": p.email,
-            "ckd_stage": p.ckd_stage,
-            "latest_risk": risk,
-            "id": p.id
-        })
+        risk = last.risk_score or "Low" if last else "Unknown"
+        if "high" in risk.lower():
+            high += 1
+            recent_alerts.append({"message": f"Critical: High risk for patient {p.name}", "type": "error"})
+        elif "moderate" in risk.lower(): moderate += 1
+        else: low += 1
+        patient_data.append({"name": p.name, "email": p.email, "ckd_stage": p.ckd_stage, "latest_risk": risk, "id": p.id})
+    return render_template('admin.html', total_patients=total, high_risk=high, moderate=moderate, low=low, patients=patient_data, alerts=recent_alerts)
 
-    return render_template('admin.html',
-                           total_patients=total,
-                           high_risk=high,
-                           moderate=moderate,
-                           low=low,
-                           patients=patient_data,
-                           alerts=recent_alerts)
+@app.route('/neural-insight')
+def neural_insight():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    return render_template('admin.html', section='neural') # Re-use admin template but focus on neural
+
+@app.route('/lab-analysis')
+def lab_analysis():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    return render_template('admin.html', section='lab')
+
+@app.route('/patient-sync')
+def patient_sync():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    return render_template('admin.html', section='sync')
+
+@app.route('/config')
+def config():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user = Patient.query.get(session['user_id'])
+    return render_template('config.html', user=user)
 
 if __name__ == '__main__':
     with app.app_context(): db.create_all()

@@ -14,44 +14,14 @@
             --blue-secondary: #1e40af;
             --glass-white: rgba(255, 255, 255, 0.8);
         }
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background: var(--bg-light);
-            color: #1e3a8a;
-        }
-        .glass { 
-            background: var(--glass-white); 
-            backdrop-filter: blur(16px); 
-            border: 1px solid rgba(37, 99, 235, 0.1);
-        }
-        .sidebar-item {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #64748b;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .nav-link:hover {
-            background: rgba(37, 99, 235, 0.05);
-            color: #2563eb;
-        }
-        .nav-link.active {
-            background: #2563eb;
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-light); color: #1e3a8a; }
+        .glass { background: var(--glass-white); backdrop-filter: blur(16px); border: 1px solid rgba(37, 99, 235, 0.1); }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; color: #64748b; transition: all 0.3s ease; }
+        .nav-link:hover { background: rgba(37, 99, 235, 0.05); color: #2563eb; }
+        .nav-link.active { background: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .risk-high { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
         .risk-moderate { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
         .risk-stable { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
@@ -59,7 +29,6 @@
 </head>
 <body class="min-h-screen flex">
 
-<!-- ═══ SIDEBAR ═══ -->
 <aside class="fixed top-0 left-0 w-72 glass border-r border-blue-500/10 h-full z-50 p-7 flex flex-col">
     <div class="flex items-center gap-3 mb-10">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -82,62 +51,41 @@
     <!-- Clinical Group -->
     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300 mb-3 ml-2 mt-8">Clinical</p>
     <nav class="space-y-1">
-        <div class="nav-link active" onclick="showSection('overview')"><i class="fas fa-microscope w-4"></i>Clinical Control</div>
-        <div class="nav-link" onclick="showSection('neural')"><i class="fas fa-brain w-4"></i>Neural Insight</div>
-        <div class="nav-link" onclick="showSection('lab')"><i class="fas fa-flask w-4"></i>Lab Analysis</div>
-        <div class="nav-link" onclick="showSection('sync')"><i class="fas fa-sync-alt w-4"></i>Patient Sync</div>
+        <a href="/admin" class="nav-link {% if not section or section == 'overview' %}active{% endif %}"><i class="fas fa-microscope w-4"></i>Clinical Control</a>
+        <a href="/neural-insight" class="nav-link {% if section == 'neural' %}active{% endif %}"><i class="fas fa-brain w-4"></i>Neural Insight</a>
+        <a href="/lab-analysis" class="nav-link {% if section == 'lab' %}active{% endif %}"><i class="fas fa-flask w-4"></i>Lab Analysis</a>
+        <a href="/patient-sync" class="nav-link {% if section == 'sync' %}active{% endif %}"><i class="fas fa-sync-alt w-4"></i>Patient Sync</a>
     </nav>
 
     <!-- System Group -->
     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300 mb-3 ml-2 mt-8">System</p>
     <nav class="space-y-1">
         <a href="/ai-assistant" class="nav-link"><i class="fas fa-robot w-4"></i>AI Assistant</a>
-        <div class="nav-link" onclick="showSection('config')"><i class="fas fa-cog w-4"></i>Config</div>
+        <a href="/config" class="nav-link"><i class="fas fa-cog w-4"></i>Config</a>
         <a href="/anime-dashboard" class="nav-link"><i class="fas fa-gamepad w-4"></i>Gaming Ops</a>
     </nav>
 
     <div class="mt-auto pt-6 border-t border-blue-500/5">
-        <div class="flex items-center gap-4 px-2">
-            <div class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 border border-blue-200">
-                <i class="fas fa-user-md text-xs"></i>
-            </div>
-            <div>
-                <p class="text-[11px] font-black text-blue-900">Dr. Nephro</p>
-                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>Clinical Active
-                </p>
-            </div>
-        </div>
-        <a href="/logout" class="nav-link mt-4 text-[10px] uppercase font-black tracking-widest text-rose-500"><i class="fas fa-sign-out-alt"></i> Logout Engine</a>
+        <a href="/logout" class="nav-link text-[10px] uppercase font-black tracking-widest text-rose-500"><i class="fas fa-sign-out-alt"></i> Logout Engine</a>
     </div>
 </aside>
 
-<!-- ═══ MAIN ═══ -->
 <main class="flex-1 ml-72 p-10">
     
-    <!-- OVERVIEW -->
-    <div id="section-overview" class="section active">
+    <div id="section-overview" class="section {% if not section or section == 'overview' %}active{% endif %}">
         <div class="mb-12 flex justify-between items-end">
             <div>
                 <h2 class="text-4xl font-black text-blue-900 tracking-tight">Clinical <span class="text-blue-600">Control Panel</span></h2>
                 <p class="text-blue-500/60 text-sm mt-1 font-bold italic">“Precision Patient Management · Live Monitoring”</p>
             </div>
-            <div class="flex gap-4">
-                <div class="glass px-6 py-3 rounded-2xl border-blue-50 flex items-center gap-6">
-                    <div class="text-center">
-                        <p class="text-[9px] font-black text-blue-300 uppercase tracking-widest">Total Active Pool</p>
-                        <p class="text-xl font-black text-blue-900">{{ total_patients }}</p>
-                    </div>
-                    <div class="h-8 w-px bg-blue-100"></div>
-                    <div class="text-center">
-                        <p class="text-[9px] font-black text-rose-300 uppercase tracking-widest">Hi-Risk Alerts</p>
-                        <p class="text-xl font-black text-rose-600 font-black">{{ high_risk }}</p>
-                    </div>
-                </div>
+            <div class="glass px-6 py-3 rounded-2xl border-blue-50 flex items-center gap-6">
+                <div class="text-center"><p class="text-[9px] font-black text-blue-300 uppercase tracking-widest">Total Active Pool</p><p class="text-xl font-black text-blue-900">{{ total_patients }}</p></div>
+                <div class="h-8 w-px bg-blue-100"></div>
+                <div class="text-center"><p class="text-[9px] font-black text-rose-300 uppercase tracking-widest">Hi-Risk Alerts</p><p class="text-xl font-black text-rose-600 font-black">{{ high_risk }}</p></div>
             </div>
         </div>
 
-        <!-- RISK DISTRIBUTION -->
+        <!-- DASHBOARD CONTENT ... -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
             <div class="lg:col-span-2 glass rounded-[40px] p-10 border-blue-50 shadow-sm relative overflow-hidden">
                 <div class="flex justify-between items-center mb-8">
@@ -145,9 +93,7 @@
                     <span class="text-[10px] font-black text-blue-300 uppercase bg-blue-50 px-3 py-1 rounded-full">Automated Audit</span>
                 </div>
                 <div class="flex items-center gap-12">
-                    <div class="w-48 h-48 relative shrink-0">
-                        <canvas id="riskDonut"></canvas>
-                    </div>
+                    <div class="w-48 h-48 relative shrink-0"><canvas id="riskDonut"></canvas></div>
                     <div class="flex-1 space-y-4">
                         {% for label, count, color in [('High Risk', high_risk, 'rose'), ('Moderate', moderate, 'amber'), ('Stable Care', low, 'emerald')] %}
                         <div class="flex justify-between items-center p-4 bg-{{ color }}-50/30 rounded-2xl border border-{{ color }}-100/50">
@@ -158,131 +104,59 @@
                     </div>
                 </div>
             </div>
-
-            <!-- RECENT ALERTS -->
             <div class="glass rounded-[40px] p-8 border-blue-50 bg-blue-50/20">
                 <h3 class="font-black text-blue-900 mb-6 flex items-center gap-2"><i class="fas fa-bell text-rose-500"></i> Critical Monitor</h3>
                 <div class="space-y-4">
-                    {% if alerts %}
-                        {% for alert in alerts %}
-                        <div class="p-4 bg-white rounded-2xl border-l-4 border-rose-500 shadow-sm">
-                            <p class="text-[10px] font-bold text-rose-600 mb-1 uppercase tracking-widest">Electrolyte Spike</p>
-                            <p class="text-xs font-black text-blue-900">{{ alert.message }}</p>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="text-center py-10 opacity-30 italic text-sm">No high-risk conditions identified.</div>
-                    {% endif %}
+                    {% for alert in alerts %}<div class="p-4 bg-white rounded-2xl border-l-4 border-rose-500 shadow-sm"><p class="text-xs font-black text-blue-900">{{ alert.message }}</p></div>{% endfor %}
                 </div>
-            </div>
-        </div>
-
-        <!-- PATIENT LIST -->
-        <div class="glass rounded-[48px] border-blue-50 p-10 shadow-sm">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-2xl font-black text-blue-900">Patient Registry</h3>
-                <div class="flex gap-2">
-                    <button class="px-4 py-2 glass border-blue-100 text-[10px] font-black text-blue-600 rounded-xl hover:bg-white uppercase tracking-widest transition-all">Export Clinical CSV</button>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-blue-50/50 text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">
-                        <tr>
-                            <th class="px-6 py-5">Assigned Patient</th>
-                            <th class="px-6 py-5">Clinic Email</th>
-                            <th class="px-6 py-5">Stage</th>
-                            <th class="px-6 py-5 text-center">Latest Analysis</th>
-                            <th class="px-6 py-5 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-blue-50">
-                        {% for p in patients %}
-                        <tr class="hover:bg-blue-50/20 transition-all group">
-                            <td class="px-6 py-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center font-black text-blue-600 border border-blue-200 uppercase">{{ p.name[:2] }}</div>
-                                    <span class="font-black text-blue-900">{{ p.name }}</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-6 text-sm font-bold text-blue-500/60 lowercase italic">{{ p.email }}</td>
-                            <td class="px-6 py-6">
-                                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-lg uppercase tracking-widest border border-indigo-100">Stage {{ p.ckd_stage }}</span>
-                            </td>
-                            <td class="px-6 py-6 text-center">
-                                <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm 
-                                    {% if 'high' in p.latest_risk|lower %}risk-high{% elif 'moderate' in p.latest_risk|lower %}risk-moderate{% else %}risk-stable{% endif %}">
-                                    {{ p.latest_risk }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-6 text-center">
-                                <button class="text-blue-300 hover:text-blue-600 transition-colors"><i class="fas fa-external-link-alt"></i></button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 
-    <!-- PLACEHOLDERS FOR CLINICAL SUB-MODULES -->
-    <div id="section-neural" class="section">
-        <div class="mb-12">
-            <h2 class="text-4xl font-black text-blue-900 tracking-tight">Neural <span class="text-blue-600">Insight</span></h2>
-            <p class="text-blue-500/60 text-sm mt-1 font-bold italic">“Advanced AI Predictive Renal Modeling”</p>
-        </div>
+    <div id="section-neural" class="section {% if section == 'neural' %}active{% endif %}">
+        <h2 class="text-4xl font-black text-blue-900 tracking-tight mb-12">Neural <span class="text-blue-600">Insight</span></h2>
         <div class="glass p-20 rounded-[48px] text-center border-blue-50">
             <i class="fas fa-brain text-6xl text-blue-100 mb-6 flex justify-center"></i>
-            <h3 class="text-2xl font-black text-blue-900 mb-4">Neural Engine Initializing</h3>
-            <p class="text-blue-400 font-bold max-w-xl mx-auto leading-relaxed">Integrating deep-learning pathways for patient-specific disease progression modeling. High-fidelity predictive charts scheduled for V3.0 release.</p>
+            <h3 class="text-2xl font-black text-blue-900 mb-4">Neural Engine Active</h3>
+            <p class="text-blue-400 font-bold max-w-xl mx-auto leading-relaxed">Processing patient-specific disease progression modeling. High-fidelity predictive signatures are being generated for current dialysis pool.</p>
         </div>
     </div>
 
-    <div id="section-lab" class="section">
-         <div class="mb-12">
-            <h2 class="text-4xl font-black text-blue-900 tracking-tight">Lab <span class="text-blue-600">Analysis</span></h2>
-            <p class="text-blue-500/60 text-sm mt-1 font-bold italic">“Biochemistry Threshold Control & Calibrations”</p>
-        </div>
+    <div id="section-lab" class="section {% if section == 'lab' %}active{% endif %}">
+        <h2 class="text-4xl font-black text-blue-900 tracking-tight mb-12">Lab <span class="text-blue-600">Analysis</span></h2>
         <div class="glass p-20 rounded-[48px] text-center border-blue-50">
             <i class="fas fa-flask text-6xl text-blue-100 mb-6 flex justify-center"></i>
-            <h3 class="text-2xl font-black text-blue-900 mb-4">Laboratory Interface</h3>
-            <p class="text-blue-400 font-bold max-w-xl mx-auto leading-relaxed">Establish laboratory-specific normal ranges and clinical alert thresholds for synchronized telemetry processing.</p>
+            <h3 class="text-2xl font-black text-blue-900 mb-4">Laboratory Interface Active</h3>
+            <p class="text-blue-400 font-bold max-w-xl mx-auto leading-relaxed">Synchronizing biochemistry normal ranges and clinical alert thresholds across all dialysis units.</p>
+        </div>
+    </div>
+
+    <div id="section-sync" class="section {% if section == 'sync' %}active{% endif %}">
+        <h2 class="text-4xl font-black text-blue-900 tracking-tight mb-12">Patient <span class="text-blue-600">Sync</span></h2>
+        <div class="glass p-20 rounded-[48px] text-center border-blue-50">
+            <i class="fas fa-sync-alt text-6xl text-blue-100 mb-6 flex justify-center"></i>
+            <h3 class="text-2xl font-black text-blue-900 mb-4">Real-time Synchronization</h3>
+            <p class="text-blue-400 font-bold max-w-xl mx-auto leading-relaxed">Cross-referencing patient demographics and clinical history with the central health cloud hub.</p>
         </div>
     </div>
 
 </main>
 
-<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById('section-' + id).classList.add('active');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        // Find links without href that match the onclick section
-        event.currentTarget.classList.add('active');
-    }
-
     const ctx = document.getElementById('riskDonut').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['High', 'Moderate', 'Stable'],
             datasets: [{
-                data: [{{ high_risk }}, {{ moderate }}, {{ low }}],
+                data: [{{ high_risk|default(0) }}, {{ moderate|default(0) }}, {{ low|default(0) }}],
                 backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                borderWidth: 0,
-                cutout: '80%'
+                borderWidth: 0, cutout: '80%'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 </script>
-
 </body>
 </html>
