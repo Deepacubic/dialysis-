@@ -3,623 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NephroAI - Anime Gaming Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Gaming Ops — NephroAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --neon-blue: #00f2ff;
-            --neon-pink: #ff00ff;
-            --neon-green: #39ff14;
-            --dark-bg: #05070a;
-            --panel-bg: rgba(10, 15, 25, 0.85);
-            --border-glow: rgba(0, 242, 255, 0.3);
+            --medical-blue: #2563eb;
+            --medical-cyan: #06b6d4;
+            --bg-light: #f8fafc;
+            --glass-white: rgba(255, 255, 255, 0.85);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg-light);
+            color: #1e3a8a;
             overflow: hidden;
             height: 100vh;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(20, 30, 48, 0.5) 0%, #05070a 100%),
-                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0, 242, 255, 0.05) 1px, rgba(0, 242, 255, 0.05) 2px);
-            background-size: cover, 100% 4px;
         }
-
-        /* Scanlines Overlay */
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* Tactical Scanlines */
         .scanlines {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                rgba(18, 16, 16, 0) 50%,
-                rgba(0, 0, 0, 0.25) 50%
-            ), linear-gradient(
-                90deg,
-                rgba(255, 0, 0, 0.06),
-                rgba(0, 255, 0, 0.02),
-                rgba(0, 0, 255, 0.06)
-            );
-            background-size: 100% 4px, 3px 100%;
-            pointer-events: none;
-            z-index: 1000;
-        }
-
-        /* Settings Overlay Cinematic */
-        .settings-modal {
-            position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1500;
-            display: none;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            padding: 100px;
-            transform: scale(1.5);
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            backdrop-filter: blur(20px);
-        }
-
-        .settings-modal.active {
-            display: grid;
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .settings-category {
-            border: 1px solid var(--neon-blue);
-            background: rgba(0, 242, 255, 0.05);
-            padding: 30px;
-            border-radius: 15px;
-            animation: slideUp 0.6s backwards;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .category-title {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-blue);
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--neon-blue);
-            display: inline-block;
-        }
-
-        .close-settings {
-            position: absolute;
-            top: 50px;
-            right: 50px;
-            background: var(--neon-pink);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-family: 'Orbitron', sans-serif;
-            cursor: pointer;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
-            z-index: 100;
-        }
-
-        .settings-content-wrapper {
-            grid-column: span 3;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding-right: 20px;
-        }
-
-        .settings-content-wrapper::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .settings-content-wrapper::-webkit-scrollbar-thumb {
-            background: var(--neon-blue);
-        }
-
-        .speed-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(37, 99, 235, 0.02) 50%);
+            background-size: 100% 4px;
             pointer-events: none;
-            background: repeating-linear-gradient(45deg, 
-                transparent, 
-                transparent 100px, 
-                rgba(255, 255, 255, 0.02) 100px, 
-                rgba(255, 255, 255, 0.02) 101px);
-            animation: speedMove 2s linear infinite;
-            z-index: 1;
+            z-index: 50;
         }
 
-        @keyframes speedMove {
-            from { transform: scale(1.1) rotate(0deg); }
-            to { transform: scale(1.2) rotate(1deg); }
+        .glass-ops {
+            background: var(--glass-white);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
         }
 
-        .dashboard-container {
-            position: relative;
-            display: grid;
-            grid-template-columns: 350px 1fr 400px;
-            height: 100vh;
-            padding: 20px;
-            gap: 20px;
-            z-index: 2;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 10px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            animation: panelFadeIn 0.8s ease-out;
-        }
-
-        @keyframes panelFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
-        }
-
-        .character-section {
+        .panel-header {
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
         }
 
         .character-portrait {
-            width: 100%;
-            max-height: 450px;
-            object-fit: cover;
-            border-radius: 10px;
-            filter: contrast(1.1) brightness(1.1) drop-shadow(0 0 15px var(--neon-blue));
-            border: 2px solid var(--neon-blue);
-            animation: float 4s ease-in-out infinite;
+            filter: contrast(1.1) brightness(1.05) drop-shadow(0 0 15px rgba(37, 99, 235, 0.2));
+            transition: all 0.5s ease;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .header-title {
-            text-align: center;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 12px;
-            background: linear-gradient(180deg, #fff 0%, #00f2ff 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
-            margin-bottom: 40px;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+        .character-portrait:hover {
+            filter: contrast(1.2) brightness(1.1) drop-shadow(0 0 25px rgba(37, 99, 235, 0.4));
         }
 
         .metric-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 5px solid var(--neon-blue);
-            padding: 25px;
-            transition: 0.3s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .metric-card::after {
-            content: '';
-            position: absolute;
-            right: -20px;
-            bottom: -20px;
-            width: 60px;
-            height: 60px;
-            background: var(--neon-blue);
-            opacity: 0.05;
-            border-radius: 50%;
-        }
-
-        .metric-card:hover {
-            background: rgba(0, 242, 255, 0.1);
-            transform: translateX(10px);
-            border-left-width: 10px;
-        }
-
-        .metric-label {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--neon-blue);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .metric-value {
-            font-size: 2.8rem;
-            font-weight: 900;
-            font-family: 'Orbitron', sans-serif;
-            margin-top: 10px;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .metric-unit {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-left: 8px;
-        }
-
-        .settings-panel h2 {
-            font-family: 'Orbitron', sans-serif;
-            margin-bottom: 30px;
-            color: var(--neon-pink);
-            letter-spacing: 3px;
-            display: flex;
-            align-items: center;
-        }
-
-        .settings-panel h2::before {
-            content: '>';
-            margin-right: 10px;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
-
-        .settings-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .settings-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 18px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: 0.4s;
-        }
-
-        .settings-item:hover {
-            border-color: var(--neon-blue);
-            background: rgba(0, 242, 255, 0.05);
-        }
-
-        .toggle-container {
-            width: 55px;
-            height: 28px;
-            background: #222;
-            border-radius: 20px;
-            position: relative;
-            cursor: pointer;
-            border: 1px solid #444;
-        }
-
-        .toggle-container::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: #666;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: 0.3s;
-        }
-
-        .toggle-container.active {
-            background: var(--neon-blue);
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        .toggle-container.active::after {
-            left: 29px;
             background: white;
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
-
-        .footer-nav {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 25px;
-            z-index: 100;
+        .metric-card:hover {
+            transform: translateX(10px);
+            background: #eff6ff;
+            border-left-width: 8px;
         }
 
         .nav-btn {
-            background: rgba(0, 242, 255, 0.05);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 12px 35px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-            clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: all 0.3s ease;
         }
-
         .nav-btn:hover {
-            background: var(--neon-blue);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-blue);
             transform: translateY(-5px);
+            filter: brightness(1.1);
         }
 
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+        .pulse { animation: pulse-blue 2s infinite; }
+
+        /* Loader Glitch */
         .glitch-loader {
             position: fixed;
             inset: 0;
-            background: #000;
+            background: white;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
-            font-family: 'Orbitron', sans-serif;
-            color: var(--neon-blue);
-            font-size: 2rem;
-            animation: pageReveal 1s ease-out forwards 1.5s;
+            animation:reveal 1s ease-out forwards 1.2s;
         }
+        @keyframes reveal { to { opacity: 0; visibility: hidden; } }
 
-        @keyframes pageReveal {
-            to { clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); visibility: hidden; }
+        .toggle-btn {
+            width: 48px;
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 99px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-
-        .status-tag {
-            font-size: 0.8rem;
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-left: 10px;
-            vertical-align: middle;
+        .toggle-btn.active { background: #2563eb; }
+        .toggle-btn::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
         }
+        .toggle-btn.active::after { left: 26px; }
     </style>
 </head>
-<body>
-    <div class="glitch-loader">INITIALIZING DASHBOARD...</div>
-    <div class="speed-lines"></div>
+<body class="selection:bg-blue-500/30">
 
-    <div class="dashboard-container">
-        <!-- AI Assistant Sidebar -->
-        <div class="panel character-section">
-            <h2 style="font-family: 'Orbitron'; margin-bottom: 25px; color: var(--neon-blue); letter-spacing: 2px;">AI_UNIT_01</h2>
-            <img src="{{ url_for('static', filename='images/doctor.png') }}" alt="AI Doctor" class="character-portrait">
-            <div style="margin-top: 25px; width: 100%;">
-                <div style="color: var(--neon-pink); font-family: 'Orbitron'; font-size: 0.9rem; margin-bottom: 10px;">NEURAL_LOAD: 12%</div>
-                <div style="height: 6px; background: #222; border-radius: 3px;">
-                    <div style="width: 12%; height: 100%; background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink);"></div>
-                </div>
-            </div>
-            <p style="margin-top: 25px; font-size: 0.95rem; line-height: 1.6; color: #a0a0a0; text-align: center;">
-                "Welcome back. All systems are primed for dialysis monitoring. Awaiting your command."
-            </p>
-        </div>
-
-        <!-- Main Metrics Center -->
-        <div class="panel">
-            <h1 class="header-title">DIALYSIS_OPS</h1>
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Heart Rate <span class="status-tag">STABLE</span></div>
-                    <div class="metric-value">72<span class="metric-unit">BPM</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Blood Glucose <span class="status-tag">OPTIMAL</span></div>
-                    <div class="metric-value">110<span class="metric-unit">mg/dL</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Urea Level <span class="status-tag">MONITORING</span></div>
-                    <div class="metric-value">45<span class="metric-unit">mg/dL</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">GFR Score <span class="status-tag">ACTIVE</span></div>
-                    <div class="metric-value">92<span class="metric-unit">ml/min</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Potassium <span class="status-tag">NORMAL</span></div>
-                    <div class="metric-value">4.2<span class="metric-unit">mEq/L</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Fluid Intake <span class="status-tag">TARGET</span></div>
-                    <div class="metric-value">1.5<span class="metric-unit">Liters</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Comprehensive Settings -->
-        <div class="panel settings-panel">
-            <h2>SYSTEM_CORE_SETTINGS</h2>
-            <div class="settings-group">
-                <div class="settings-item">
-                    <span>Active AI Analysis</span>
-                    <div class="toggle-container active"></div>
-                </div>
-                <div class="settings-item">
-                    <span>Real-time Biosync</span>
-                    <div class="toggle-container active"></div>
-                </div>
-                <div class="settings-item">
-                    <span>Anime Visual Mode</span>
-                    <div class="toggle-container active"></div>
-                </div>
-                <div class="settings-item">
-                    <span>Holographic Proj.</span>
-                    <div class="toggle-container"></div>
-                </div>
-                <div class="settings-item">
-                    <span>Emergency Proxy</span>
-                    <div class="toggle-container active"></div>
-                </div>
-                <div class="settings-item">
-                    <span>Silent Feed</span>
-                    <div class="toggle-container"></div>
-                </div>
-                <div class="settings-item"><span>Dev Logging</span><div class="toggle-container"></div></div>
-            </div>
-            <div style="margin-top: 30px; text-align: center;">
-                <button style="background: transparent; border: 1px solid #444; color: #666; padding: 10px 20px; cursor: pointer; border-radius: 4px;">RECALIBRATE SENSORS</button>
-            </div>
+    <div class="glitch-loader flex flex-col gap-4">
+        <h2 class="orbitron text-2xl font-black text-blue-600 tracking-[1em]">INITIALIZING_OPS</h2>
+        <div class="w-64 h-1 bg-blue-100 rounded-full overflow-hidden">
+            <div class="h-full bg-blue-600 w-1/2 animate-[loading_1s_ease-in-out_infinite]"></div>
         </div>
     </div>
+    <style>@keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }</style>
 
     <div class="scanlines"></div>
 
-    <div class="settings-modal" id="settingsModal">
-        <button class="close-settings" onclick="toggleSettings()">CLOSE SYSTEM [X]</button>
+    <div class="h-screen w-full flex flex-col p-8 gap-8 relative z-10">
         
-        <div style="grid-column: span 3; margin-top: -60px; margin-bottom: 20px;">
-            <h1 style="font-family: 'Orbitron'; font-size: 2.5rem; letter-spacing: 15px; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);">ADVANCED_OVERRIDE_PANEL</h1>
+        <!-- Top Nav -->
+        <header class="flex justify-between items-center bg-white/50 backdrop-blur-md p-6 rounded-[28px] border border-blue-100">
+            <div class="flex items-center gap-6">
+                <div class="orbitron text-3xl font-black text-blue-900 tracking-tighter">
+                    NEPHRO<span class="text-blue-600">OPS</span><span class="text-[10px] ml-4 text-blue-300 font-bold uppercase tracking-[0.5em]">Tactical Clinical Hub</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="px-6 py-2 bg-emerald-50 text-emerald-600 font-black text-[10px] uppercase tracking-widest rounded-full border border-emerald-100 flex items-center gap-2">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full pulse"></div> System Normal
+                </div>
+                <div class="h-8 w-px bg-blue-100"></div>
+                <button onclick="window.location.href='/dashboard'" class="text-blue-900 font-black text-sm hover:text-blue-600 transition-colors uppercase tracking-widest">Exit Ops Mode</button>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="flex-1 grid grid-cols-12 gap-8 overflow-hidden">
+            
+            <!-- Left: Character/AI Info -->
+            <div class="col-span-3 flex flex-col gap-8">
+                <div class="glass-ops h-full rounded-[40px] p-8 flex flex-col items-center">
+                    <div class="panel-header w-full">
+                        <span class="orbitron text-xs font-black text-blue-400">UNIT_AUTH_01</span>
+                    </div>
+                    <div class="relative w-full group">
+                        <img src="/static/images/doctor.png" alt="AI Agent" class="character-portrait w-full rounded-3xl mb-8 grayscale hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent rounded-3xl"></div>
+                    </div>
+                    <div class="w-full space-y-6">
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[10px] font-black uppercase text-blue-900 tracking-widest">
+                                <span>Neural Load</span>
+                                <span class="text-blue-600">12%</span>
+                            </div>
+                            <div class="h-2 bg-blue-50 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-600 w-[12%]"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 italic text-sm text-blue-700 font-medium leading-relaxed">
+                            "Initializing specialized gaming telemetry. Dialysis parameters synchronized with gameplay logic. Ready for protocol engagement."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Core Metrics -->
+            <div class="col-span-6 flex flex-col gap-8">
+                <div class="glass-ops flex-1 rounded-[40px] p-10">
+                    <div class="panel-header">
+                        <h2 class="orbitron text-xl font-black text-blue-900 tracking-widest uppercase">Clinical_Telemetry_Stream</h2>
+                        <i class="fas fa-satellite-dish text-blue-600 animate-pulse"></i>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        {% for icon, label, val, unit, status in [
+                            ('heartbeat', 'Heart Rate', '72', 'BPM', 'STABLE'),
+                            ('pills', 'Glucose', '110', 'mg/dL', 'OPTIMAL'),
+                            ('flask', 'Urea', '45', 'mg/dL', 'MONITORING'),
+                            ('vial', 'GFR Score', '92', 'ml/min', 'NOMINAL'),
+                            ('bolt', 'Potassium', '4.2', 'mEq/L', 'SAFE'),
+                            ('droplet', 'Fluid Bal.', '1.5', 'L', 'TARGET')
+                        ] %}
+                        <div class="metric-card p-6 rounded-2xl border border-blue-50">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-blue-400"><i class="fas fa-{{ icon }} mr-2"></i> {{ label }}</span>
+                                <span class="text-[8px] font-black px-2 py-0.5 bg-blue-50 text-blue-600 rounded border border-blue-100">{{ status }}</span>
+                            </div>
+                            <div class="orbitron text-3xl font-black text-blue-900 flex items-baseline gap-2">
+                                {{ val }} <span class="text-[10px] text-blue-300">{{ unit }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Bottom Interface -->
+                <div class="h-40 flex gap-6">
+                    <button class="flex-1 nav-btn bg-blue-600 text-white font-black orbitron uppercase tracking-[0.3em] text-sm shadow-xl shadow-blue-500/20">Init_Protocol_X</button>
+                    <button class="flex-1 nav-btn bg-white border border-blue-100 text-blue-600 font-black orbitron uppercase tracking-[0.3em] text-sm">Sys_Audit</button>
+                </div>
+            </div>
+
+            <!-- Right: Config/System -->
+            <div class="col-span-3 flex flex-col gap-8">
+                <div class="glass-ops h-full rounded-[40px] p-8">
+                    <div class="panel-header">
+                        <h2 class="orbitron text-xs font-black text-blue-900 uppercase tracking-[0.2em]">Core_Overrides</h2>
+                    </div>
+                    <div class="space-y-6">
+                        {% for label, active in [
+                            ('AI Analysis Feed', true),
+                            ('Real-time Biosync', true),
+                            ('Tactical Visuals', true),
+                            ('Holographic HUD', false),
+                            ('Silent Alerts', false),
+                            ('Neural Link', true),
+                            ('Haptic Feedback', true)
+                        ] %}
+                        <div class="flex justify-between items-center p-4 bg-white rounded-2xl border border-blue-50 hover:border-blue-200 transition-all">
+                            <span class="text-[11px] font-black text-blue-900 uppercase tracking-widest">{{ label }}</span>
+                            <div class="toggle-btn {% if active %}active{% endif %}" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-auto pt-8">
+                        <div class="p-6 bg-rose-50 rounded-3xl border border-rose-100 flex flex-col gap-4">
+                            <span class="text-[10px] font-black text-rose-500 uppercase tracking-widest italic mx-auto">Critical Override Zone</span>
+                            <button class="w-full py-4 bg-rose-500 text-white orbitron font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all">Emergency_Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="settings-content-wrapper">
-            <!-- Group 1: Neural/AI -->
-            <div class="settings-category">
-                <div class="category-title">NEURAL_AI</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>AI Predictive Bio</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Neural Uplink</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Deep Scan</span><div class="toggle-container"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 2: Biosync -->
-            <div class="settings-category">
-                <div class="category-title">BIO_SYNC</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>Real-time Vitals</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Fluid Balance MT</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Blood Chem Sync</span><div class="toggle-container"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 3: Visuals -->
-            <div class="settings-category">
-                <div class="category-title">VISUAL_ENGINE</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>Glitch Effects</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Anime Outlines</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Shaders High</span><div class="toggle-container active"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 4: Audio -->
-            <div class="settings-category">
-                <div class="category-title">AUDIO_CORE</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>AI Voice Pack</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>SFX 3D Pulse</span><div class="toggle-container"></div></div>
-                    <div class="settings-item"><span>BGM: Cyberpunk</span><div class="toggle-container active"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 5: Hardware -->
-            <div class="settings-category">
-                <div class="category-title">HARDWARE_IF</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>Haptic Feedback</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>External Monitor</span><div class="toggle-container"></div></div>
-                    <div class="settings-item"><span>Anti-Grav Chair</span><div class="toggle-container active"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 6: Network -->
-            <div class="settings-category">
-                <div class="category-title">NET_COMM</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>Doc Cloud Sync</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>P2P Patient Net</span><div class="toggle-container"></div></div>
-                    <div class="settings-item"><span>Secure Proxy</span><div class="toggle-container active"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 7: Admin -->
-            <div class="settings-category">
-                <div class="category-title">ADMIN_CORE</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>Log Verbosity</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Debug Overlay</span><div class="toggle-container"></div></div>
-                    <div class="settings-item"><span>System Root</span><div class="toggle-container"></div></div>
-                </div>
-            </div>
-
-            <!-- Group 8: Emergency -->
-            <div class="settings-category" style="border-color: var(--neon-pink);">
-                <div class="category-title" style="color: var(--neon-pink); border-color: var(--neon-pink);">PROTOCOL_X</div>
-                <div class="settings-group">
-                    <div class="settings-item"><span>Auto-Rescue</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Siren Burst</span><div class="toggle-container active"></div></div>
-                    <div class="settings-item"><span>Full Lockdown</span><div class="toggle-container"></div></div>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
-    <div class="footer-nav">
-        <button class="nav-btn" onclick="window.location.href='/dashboard'">Exit to Classic</button>
-        <button class="nav-btn" onclick="toggleSettings()">Open All Settings</button>
-        <button class="nav-btn">Generate Report</button>
-    </div>
-
-    <script>
-        function toggleSettings() {
-            const modal = document.getElementById('settingsModal');
-            modal.style.display = modal.style.display === 'grid' ? 'none' : 'grid';
-            setTimeout(() => {
-                modal.classList.toggle('active');
-            }, 10);
-        }
-
-        document.querySelectorAll('.toggle-container').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                toggle.classList.toggle('active');
-            });
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            const char = document.querySelector('.character-portrait');
-            const x = (window.innerWidth / 2 - e.pageX) / 40;
-            const y = (window.innerHeight / 2 - e.pageY) / 40;
-            char.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
-        });
-    </script>
 </body>
 </html>

@@ -3,131 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Health Data - NephroAI</title>
+    <title>Log Vitals — NephroAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        :root {
+            --bg-light: #f8fafc;
+            --blue-primary: #2563eb;
+            --blue-secondary: #1e40af;
+            --glass-white: rgba(255, 255, 255, 0.85);
+        }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg-light);
+            color: #1e3a8a;
+        }
+        .glass { 
+            background: var(--glass-white); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+        input, select {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        input:focus, select:focus {
+            transform: scale(1.01);
+            border-color: #2563eb !important;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05) !important;
+        }
     </style>
 </head>
-<body class="bg-blue-50/50 min-h-screen">
+<body class="min-h-screen">
 
-    <!-- Mobile Top Nav -->
-    <div class="md:hidden flex items-center justify-between p-6 bg-white border-b border-blue-100 sticky top-0 z-50">
-        <h1 class="text-xl font-black text-blue-600">NephroAI</h1>
-        <a href="/dashboard" class="text-slate-400 text-xl"><i class="fas fa-times"></i></a>
-    </div>
-
-    <main class="max-w-4xl mx-auto p-6 md:p-12">
-        <header class="mb-10 flex justify-between items-center">
-            <div>
-                <h1 class="text-4xl font-black text-slate-800 mb-2">Health Log</h1>
-                <p class="text-slate-400 font-medium italic">Enter your clinic lab results for smart analysis</p>
-            </div>
-            <a href="/dashboard" class="hidden md:flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-blue-600 transition-all">
-                <i class="fas fa-arrow-left"></i> BACK TO DASHBOARD
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-blue-500/10 mx-6 mt-6 rounded-[24px]">
+        <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black text-blue-900 flex items-center gap-2 tracking-tighter">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                Log<span class="text-blue-600">Vitals</span>
             </a>
+            <div class="flex items-center gap-8 font-bold text-sm text-blue-900/60 uppercase tracking-widest">
+                <a href="/dashboard" class="hover:text-blue-600 transition-all">Back to Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-48 pb-24 px-8 max-w-5xl mx-auto">
+        <header class="mb-12">
+            <h1 class="text-5xl font-black text-blue-900 tracking-tighter mb-4">Clinical Telemetry</h1>
+            <p class="text-blue-500/60 font-bold text-lg max-w-xl leading-relaxed italic">
+                Enter your biometric data and laboratory biochemistry for AI-driven risk scoring.
+            </p>
         </header>
 
-        <form action="/health-entry" method="POST" class="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-blue-100/30 border border-blue-50 space-y-12">
+        <form action="/health-entry" method="POST" class="glass p-12 rounded-[48px] border border-blue-100 shadow-2xl shadow-blue-500/5 space-y-12">
             
-            <!-- SECTION 1: BASIC VITALS -->
-            <section class="space-y-6">
-                <h3 class="text-xs font-black uppercase tracking-widest text-blue-500 border-b border-blue-50 pb-2">Basic Vitals</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Potassium (mg/dL)</label>
+            <!-- Biometrics -->
+            <section class="space-y-8">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 border-b border-blue-100 pb-3">Primary Biometrics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Potassium (mEq/L)</label>
                         <input type="number" step="0.1" name="potassium" placeholder="4.2" required
-                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold">
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-900 outline-none">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Sodium (mEq/L)</label>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Sodium (mEq/L)</label>
                         <input type="number" step="0.1" name="sodium" placeholder="138" required
-                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold">
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-900 outline-none">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Fluid Intake (ML)</label>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Fluid Intake (ml)</label>
                         <input type="number" name="fluid" placeholder="1200" required
-                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-blue-600">
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-600 outline-none">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Weight (KG)</label>
-                        <input type="number" step="0.1" name="weight" placeholder="68.5" required
-                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold">
+                </div>
+            </section>
+
+            <!-- Lab Biochemistry -->
+            <section class="space-y-8">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 border-b border-indigo-100 pb-3">Laboratory Biochemistry</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-indigo-900 uppercase tracking-widest ml-1">Creatinine (mg/dL)</label>
+                        <input type="number" step="0.1" name="creatinine" placeholder="1.2" required
+                               class="w-full p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 font-black text-indigo-800 outline-none">
                     </div>
-                    <div class="md:col-span-2 space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Blood Pressure (SYS / DIA)</label>
-                        <div class="flex gap-2">
-                            <input type="number" name="bp_sys" placeholder="120" required
-                                   class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-center">
-                            <input type="number" name="bp_dia" placeholder="80" required
-                                   class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-center">
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Hemoglobin (g/dL)</label>
+                        <input type="number" step="0.1" name="hgb" placeholder="11.5" required
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-rose-600 outline-none">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Weight (kg)</label>
+                        <input type="number" step="0.1" name="weight" placeholder="70.0" required
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-900 outline-none">
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Blood Pressure (SYS/DIA)</label>
+                        <div class="flex gap-3">
+                            <input type="number" name="bp_sys" placeholder="120" required class="flex-1 p-5 glass rounded-2xl border border-blue-100 font-bold text-center outline-none">
+                            <input type="number" name="bp_dia" placeholder="80" required class="flex-1 p-5 glass rounded-2xl border border-blue-100 font-bold text-center outline-none">
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- SECTION 2: BIOCHEMISTRY LAB -->
-            <section class="space-y-6">
-                <h3 class="text-xs font-black uppercase tracking-widest text-indigo-500 border-b border-indigo-50 pb-2">Biochemistry Lab Report</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Urea (mg/dL)</label>
-                        <input type="number" step="0.1" name="urea" placeholder="42" required
-                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-bold">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1 text-indigo-600 font-black">Creatinine (mg/dL)</label>
-                        <input type="number" step="0.1" name="creatinine" placeholder="1.4" required
-                               class="w-full px-4 py-4 rounded-2xl bg-indigo-50 border border-indigo-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-black text-indigo-700">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">Sugar (mg/dL)</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">Blood Sugar (mg/dL)</label>
                         <input type="number" step="0.1" name="sugar" placeholder="105" required
-                               class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-bold">
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-900 outline-none">
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1">HCV Status</label>
-                        <select name="hcv_status" class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all font-bold">
-                            <option value="Negative">Negative</option>
-                            <option value="Positive">Positive</option>
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">HCV Diagnostic Status</label>
+                        <select name="hcv_status" class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-900 outline-none appearance-none">
+                            <option value="Negative">NEGATIVE (NON-REACTIVE)</option>
+                            <option value="Positive">POSITIVE (REACTIVE)</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-tighter ml-1 text-red-500">Hemoglobin (g/dL)</label>
-                        <input type="number" step="0.1" name="hgb" placeholder="11.5" required
-                               class="w-full px-4 py-4 rounded-2xl bg-red-50 border border-red-100 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-all font-bold text-red-700">
-                    </div>
-                    <!-- Hidden or default values to match the backend expectations -->
-                    <input type="hidden" name="platelets" value="250">
-                    <input type="hidden" name="chloride" value="102">
-                    <input type="hidden" name="cholesterol" value="180">
-                    <input type="hidden" name="iron" value="85">
-                    <input type="hidden" name="calcium" value="9.2">
-                    <input type="hidden" name="bilirubin" value="0.8">
-                    <input type="hidden" name="wbc" value="7.2">
-                    <input type="hidden" name="rbc" value="4.5">
                 </div>
+
+                <!-- Urea Addition as requested by original form -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <div class="space-y-3">
+                        <label class="text-[11px] font-black text-blue-900 uppercase tracking-widest ml-1">BUN / Urea (mg/dL)</label>
+                        <input type="number" step="0.1" name="urea" placeholder="42.0" required
+                               class="w-full p-5 glass rounded-2xl border border-blue-100 font-bold text-blue-900 outline-none">
+                    </div>
+                </div>
+                
+                <input type="hidden" name="platelets" value="250">
+                <input type="hidden" name="chloride" value="102">
+                <input type="hidden" name="cholesterol" value="180">
+                <input type="hidden" name="iron" value="85">
+                <input type="hidden" name="calcium" value="9.2">
+                <input type="hidden" name="bilirubin" value="0.8">
+                <input type="hidden" name="wbc" value="7.2">
+                <input type="hidden" name="rbc" value="4.5">
             </section>
 
-            <button type="submit" class="w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[1.5rem] font-black shadow-xl shadow-blue-200 hover:scale-[1.01] active:scale-95 transition-all uppercase tracking-widest text-lg">
-                <i class="fas fa-brain mr-2"></i> GENERATE RISK ANALYSIS
+            <button type="submit" class="w-full p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-3xl tracking-widest uppercase text-lg shadow-2xl shadow-blue-500/20 hover:scale-[1.01] transition-all">
+                Synchronize & Analyze <i class="fas fa-microchip ml-2"></i>
             </button>
         </form>
 
-        <footer class="mt-12 text-center text-xs font-bold text-slate-300 uppercase tracking-widest">
-            NephroAI • Advanced Kidney Assistant • V2.0
+        <footer class="mt-16 text-center">
+            <p class="text-[10px] font-black text-blue-200 uppercase tracking-[0.4em]">Integrated Clinical Stream • NephroAI V2.0</p>
         </footer>
     </main>
 
-    <!-- Bottom Nav (Mobile Only) -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-4 flex justify-between items-center z-50">
-        <a href="/dashboard" class="text-slate-400 text-xl"><i class="fas fa-chart-line"></i></a>
-        <a href="/health-entry" class="text-blue-600 text-xl"><i class="fas fa-plus-circle"></i></a>
-        <a href="/diet-plan" class="text-slate-400 text-xl"><i class="fas fa-utensils"></i></a>
-        <a href="/logout" class="text-slate-400 text-xl"><i class="fas fa-sign-out-alt"></i></a>
-    </div>
-
+    {% include 'chatbot.html' %}
 </body>
 </html>

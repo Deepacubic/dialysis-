@@ -3,194 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NephroAI — The Future of Renal Care</title>
+    <title>NephroAI — Future of Kidney Care</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --neon-blue: #00d2ff;
-            --neon-cyan: #06b6d4;
-            --glass-bg: rgba(15, 23, 42, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-light: #f8fafc;
+            --blue-primary: #2563eb;
+            --blue-secondary: #1e40af;
+            --glass-white: rgba(255, 255, 255, 0.8);
         }
         body { 
             font-family: 'Outfit', sans-serif; 
-            background: #020617;
-            color: #f1f5f9;
+            background: var(--bg-light);
+            color: #1e3a8a;
+            overflow-x: hidden;
         }
         .glass { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid var(--glass-border);
-        }
-        .glow-text {
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
-        }
-        .neon-border {
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            background: var(--glass-white); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(37, 99, 235, 0.1);
         }
         .hero-bg {
-            background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.15), transparent 70%),
-                        radial-gradient(circle at 0% 100%, rgba(6, 182, 212, 0.1), transparent 50%);
-        }
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            background: radial-gradient(circle at 50% -20%, rgba(37, 99, 235, 0.08), transparent 70%),
+                        radial-gradient(circle at 0% 100%, rgba(30, 64, 175, 0.05), transparent 50%);
         }
         .gradient-text {
-            background: linear-gradient(to right, #00d2ff, #3b82f6, #9333ea);
+            background: linear-gradient(to right, #2563eb, #4f46e5, #7c3aed);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        .floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+        }
     </style>
 </head>
-<body class="hero-bg min-h-screen selection:bg-cyan-500/30">
+<body class="hero-bg min-h-screen">
 
     <!-- Navbar -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 mx-4 mt-4 rounded-2xl">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-black text-white flex items-center gap-2 tracking-tighter">
-                <i class="fas fa-heart-pulse text-cyan-400 glow-text"></i> Nephro<span class="text-cyan-400">AI</span>
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-blue-500/10 mx-6 mt-6 rounded-[24px]">
+        <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black text-blue-900 flex items-center gap-2 tracking-tighter">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-heartbeat text-white text-lg"></i>
+                </div>
+                Nephro<span class="text-blue-600">AI</span>
             </a>
             
-            <div class="hidden md:flex items-center gap-8 font-semibold text-sm text-slate-400">
-                <a href="#features" class="hover:text-cyan-400 transition-all">Features</a>
-                <a href="/diet-plan" class="hover:text-cyan-400 transition-all">Diet AI</a>
-                <a href="/chatbot" class="hover:text-cyan-400 transition-all">Assistant</a>
-                <div class="h-4 w-px bg-white/10"></div>
+            <div class="hidden md:flex items-center gap-10 font-bold text-sm text-blue-900/60 uppercase tracking-widest">
+                <a href="#features" class="hover:text-blue-600 transition-all">Features</a>
+                <a href="/diet-plan" class="hover:text-blue-600 transition-all">Diet AI</a>
+                <div class="h-4 w-px bg-blue-500/10"></div>
                 {% if session.get('user_id') %}
-                    <a href="/dashboard" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-6 py-2 rounded-full font-bold transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.3)]">Dashboard</a>
-                    <a href="/logout" class="text-rose-400 hover:text-rose-300">Logout</a>
+                    <a href="/dashboard" class="btn-primary text-white px-8 py-3 rounded-2xl transition-all">My Hub</a>
+                    <a href="/logout" class="text-rose-500 hover:text-rose-400">Logout</a>
                 {% else %}
-                    <a href="/login" class="hover:text-white transition-all">Sign In</a>
-                    <a href="/register" class="bg-white text-slate-950 px-6 py-2 rounded-full font-bold transition-all hover:scale-105">Get Started</a>
+                    <a href="/login" class="hover:text-blue-600 transition-all">Sign In</a>
+                    <a href="/register" class="btn-primary text-white px-8 py-3 rounded-2xl transition-all">Get Started</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-48 pb-24 px-6 relative overflow-hidden">
-        <!-- Background Elements -->
-        <div class="absolute top-1/4 -right-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-1/4 -left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]"></div>
-
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div class="space-y-8 z-10">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 backdrop-blur-sm">
-                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Next-Gen Kidney Care</span>
+    <section class="pt-56 pb-32 px-8 relative">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div class="space-y-10">
+                <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-blue-500/10 bg-blue-500/5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-[11px] font-black text-blue-600 uppercase tracking-[0.2em]">Future of Kidney Care with AI</span>
                 </div>
-                <h1 class="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter">
-                    The Future of <span class="gradient-text">Dialysis</span> is Here.
+                <h1 class="text-6xl md:text-8xl font-black text-blue-900 leading-[0.95] tracking-tighter">
+                    Precision <br><span class="gradient-text">Renal Health</span> Management.
                 </h1>
-                <p class="text-lg text-slate-400 font-medium max-w-lg leading-relaxed">
-                    Powered by the revolutionary <span class="text-cyan-400">Antigravity</span> system and AI nutrition models. Experience hospital-grade health tracking specialized for renal care.
+                <p class="text-lg text-blue-900/60 font-semibold max-w-lg leading-relaxed">
+                    A clinical-grade management platform for dialysis patients. Leveraging AI to predict risks, optimize nutrition, and simplify medical monitoring.
                 </p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="/register" class="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all tracking-widest text-sm uppercase shadow-[0_0_30px_rgba(6,182,212,0.4)] hover:scale-105">Join the Future</a>
-                    <a href="/diet-plan" class="px-8 py-4 glass text-white font-black rounded-2xl hover:bg-white/10 transition-all tracking-widest text-sm uppercase">Explore Diet AI</a>
-                </div>
-                
-                <div class="flex items-center gap-6 pt-4">
-                    <div class="flex -space-x-3">
-                        <div class="w-10 h-10 rounded-full border-2 border-slate-900 bg-cyan-500 flex items-center justify-center text-xs font-bold text-slate-950">AI</div>
-                        <div class="w-10 h-10 rounded-full border-2 border-slate-900 bg-blue-600 flex items-center justify-center text-xs font-bold text-white">DR</div>
-                        <div class="w-10 h-10 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-xs font-bold text-cyan-400"><i class="fas fa-plus"></i></div>
-                    </div>
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Integrating Clinical Expertise with AI</p>
+                <div class="flex flex-wrap gap-5">
+                    <a href="/register" class="btn-primary px-10 py-5 text-white font-black rounded-[20px] tracking-widest text-xs uppercase">Get Started Now</a>
+                    <a href="/diet-plan" class="px-10 py-5 glass text-blue-600 font-black rounded-[20px] hover:bg-white transition-all tracking-widest text-xs uppercase border border-blue-100">Try AI Assistant</a>
                 </div>
             </div>
-            
-            <div class="relative group">
-                <div class="absolute inset-0 bg-cyan-500/20 rounded-[3rem] blur-3xl group-hover:bg-cyan-500/30 transition-all duration-700"></div>
-                <div class="glass p-3 rounded-[3rem] relative z-10 border border-white/10 overflow-hidden transform group-hover:scale-[1.02] transition-all duration-700 neon-border">
+
+            <!-- Visual Component -->
+            <div class="relative">
+                <div class="absolute -inset-10 bg-blue-500/5 rounded-full blur-[100px]"></div>
+                <div class="glass p-4 rounded-[48px] shadow-2xl relative z-10 border border-blue-100 overflow-hidden transform hover:scale-[1.01] transition-all duration-700">
                     <img src="{{ url_for('static', filename='images/hero_futuristic.png') }}" 
-                         alt="NephroAI Dashboard" 
-                         class="rounded-[2.5rem] w-full h-auto shadow-2xl">
-                    <div class="absolute bottom-8 left-8 p-6 glass rounded-2xl border border-white/20 shadow-2xl max-w-xs floating">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fas fa-microchip text-cyan-400"></i>
-                            <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">System Status</span>
+                         onerror="this.src='https://placehold.co/800x600/f1f5f9/1e3a8a?text=NephroAI+Dashboard'"
+                         className="rounded-[36px] w-full h-auto">
+                    <div class="absolute bottom-10 right-10 p-6 glass rounded-[24px] border border-blue-200 shadow-2xl max-w-xs floating">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                                <i class="fas fa-brain text-xs"></i>
+                            </div>
+                            <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Neural Status</span>
                         </div>
-                        <h4 class="font-bold text-white italic text-sm">"Antigravity stabilization active. Patient comfort optimized at 98%."</h4>
+                        <p class="text-sm font-bold text-blue-900 leading-relaxed italic">"Risk prediction active. Stabilization optimized for hospital use."</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Admin & Mobile Highlight -->
-    <section class="py-32 bg-slate-950/50 relative">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div class="relative order-2 lg:order-1">
-                <div class="absolute -inset-10 bg-blue-600/5 rounded-full blur-[100px]"></div>
-                <div class="glass p-2 rounded-[2.5rem] relative z-10 border border-white/5">
-                    <img src="{{ url_for('static', filename='images/analytics_futuristic.png') }}" 
-                         alt="Admin Panel" 
-                         class="rounded-[2rem] w-full h-auto shadow-2xl brightness-90">
-                </div>
-                <div class="absolute -bottom-10 -right-6 glass p-2 rounded-[2rem] border border-white/10 shadow-2xl w-56 rotate-3 floating">
-                    <img src="{{ url_for('static', filename='images/mobile_futuristic.png') }}" 
-                         alt="Mobile App" 
-                         class="rounded-[1.5rem] w-full h-auto">
-                </div>
-            </div>
-            
-            <div class="space-y-8 order-1 lg:order-2">
-                <h2 class="text-5xl font-black leading-tight tracking-tighter text-white">Full-Spectrum <br><span class="text-cyan-400">Health Sync</span></h2>
-                <p class="text-slate-400 font-medium text-lg leading-relaxed">
-                    Designed for practitioners and patients alike. Our dual-dashboards ensure doctors can monitor risk from the Admin Panel while patients track progress via our mobile interface.
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
-                    <div class="p-6 glass rounded-2xl border border-white/5 hover:border-cyan-500/30 transition-colors group">
-                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-desktop text-xl"></i>
-                        </div>
-                        <h5 class="font-bold mb-2 text-white">Clinical Control</h5>
-                        <p class="text-sm text-slate-500">Real-time patient monitoring and risk prediction for medical teams.</p>
+    <!-- Content Row -->
+    <section class="py-32 bg-white/50 border-y border-blue-500/5">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="p-10 rounded-[32px] glass hover:bg-white transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-stethoscope text-2xl"></i>
                     </div>
-                    <div class="p-6 glass rounded-2xl border border-white/5 hover:border-blue-500/30 transition-colors group">
-                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-mobile-alt text-xl"></i>
-                        </div>
-                        <h5 class="font-bold mb-2 text-white">Patient Hub</h5>
-                        <p class="text-sm text-slate-500">Log vitals, check nutrition risks, and chat with AI on the move.</p>
+                    <h3 class="text-xl font-black text-blue-900 mb-4">Clinical Control</h3>
+                    <p class="text-sm text-blue-900/60 font-semibold leading-relaxed">Doctor dashboard for real-time patient monitoring and critical risk highlights.</p>
+                </div>
+                <div class="p-10 rounded-[32px] glass hover:bg-white transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-utensils text-2xl"></i>
                     </div>
+                    <h3 class="text-xl font-black text-blue-900 mb-4">Nutrition Guide</h3>
+                    <p class="text-sm text-blue-900/60 font-semibold leading-relaxed">AI-generated diet recommendations tailored to renal health parameters.</p>
+                </div>
+                <div class="p-10 rounded-[32px] glass hover:bg-white transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-500/5 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-blue-900 mb-4">AI Assistant</h3>
+                    <p class="text-sm text-blue-900/60 font-semibold leading-relaxed">Integrated chatbot for immediate patient support and medical insights.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-20 border-t border-white/5 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-10">
-                <div class="space-y-4">
-                    <a href="/" class="text-2xl font-black text-white flex items-center gap-2">
-                        <i class="fas fa-heart-pulse text-cyan-400"></i> NephroAI
-                    </a>
-                    <p class="text-slate-500 text-sm max-w-xs font-medium">Revolutionizing renal healthcare through artificial intelligence and advanced dialysis systems.</p>
-                </div>
-                <div class="flex flex-wrap justify-center gap-10 text-sm font-bold uppercase tracking-widest">
-                    <a href="/admin" class="text-slate-400 hover:text-cyan-400 transition-colors">Admin Panel</a>
-                    <a href="/diet-plan" class="text-slate-400 hover:text-cyan-400 transition-colors">Diet Plan</a>
-                    <a href="/chatbot" class="text-slate-400 hover:text-cyan-400 transition-colors">AI Assistant</a>
-                </div>
+    <footer class="py-24 px-8 border-t border-blue-500/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+            <div class="space-y-6">
+                <a href="/" class="text-2xl font-black text-blue-900 flex items-center gap-3 tracking-tighter">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    NephroAI
+                </a>
+                <p class="text-blue-900/60 text-sm font-semibold max-w-sm">Modernizing renal care with advanced AI-driven management systems.</p>
             </div>
-            <div class="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] font-black uppercase text-slate-600 tracking-[0.3em]">© 2026 NEXT GEN KIDNEY CARE SOLUTIONS — ALL RIGHTS RESERVED</p>
-                <div class="flex gap-6 text-slate-500 text-sm">
-                    <a href="#" class="hover:text-white transition-all"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="hover:text-white transition-all"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="hover:text-white transition-all"><i class="fab fa-github"></i></a>
-                </div>
+            <div class="flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] text-blue-900/40">
+                <a href="/admin" class="hover:text-blue-600 transition-colors">Clinical Hub</a>
+                <a href="/login" class="hover:text-blue-600 transition-colors">Member Sign In</a>
+                <a href="/chatbot" class="hover:text-blue-600 transition-colors">AI Support</a>
             </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-blue-500/5 text-[10px] font-black text-blue-200 uppercase tracking-widest text-center">
+            © 2026 NEXT GEN KIDNEY CARE — HOSPITAL GRADE AI SYSTEM
         </div>
     </footer>
 

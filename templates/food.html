@@ -1,164 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diet Recommendations - NephroAI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Nutrition Guide — NephroAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        .food-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+        :root {
+            --bg-light: #f8fafc;
+            --blue-primary: #2563eb;
+            --blue-secondary: #1e40af;
+            --glass-white: rgba(255, 255, 255, 0.8);
         }
-
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg-light);
+            color: #1e3a8a;
+        }
+        .glass { 
+            background: var(--glass-white); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
         .food-card {
-            background: white;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: var(--transition);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
         .food-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1);
         }
-
-        .food-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .food-info {
-            padding: 1.5rem;
-        }
-
-        .food-info h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.25rem;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 2rem;
-            font-size: 0.875rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .badge-success {
-            background: rgba(34, 197, 94, 0.1);
-            color: var(--success);
-        }
-
-        .badge-error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-
-        .diet-header {
-            background: white;
-            padding: 4rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
+        .badge-safe { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .badge-limited { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-avoid { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
     </style>
 </head>
+<body class="min-h-screen">
 
-<body>
-    <header>
-        <div class="container">
-            <nav>
-                <a href="/" class="logo">
-                    <i class="fas fa-heartbeat"></i> NephroAI
-                </a>
-                <div class="nav-links">
-                    <div class="lang-selector">
-                        <i class="fas fa-globe"></i>
-                        <select onchange="window.location.href='/set-language/'+this.value">
-                            <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
-                            <option value="ta" {% if current_lang=='ta' %}selected{% endif %}>தமிழ்</option>
-                            <option value="hi" {% if current_lang=='hi' %}selected{% endif %}>हिंदी</option>
-                            <option value="ko" {% if current_lang=='ko' %}selected{% endif %}>한국어</option>
-                            <option value="ja" {% if current_lang=='ja' %}selected{% endif %}>日本語</option>
-                            <option value="zh" {% if current_lang=='zh' %}selected{% endif %}>简体中文</option>
-                        </select>
-                    </div>
-                    {% if session.get('user_id') %}
-                    <a href="/dashboard">{{ _('dashboard') }}</a>
-                    <a href="/logout">{{ _('logout') }}</a>
-                    {% else %}
-                    <a href="/">{{ _('home') }}</a>
-                    <a href="/login" class="btn btn-outline">{{ _('login') }}</a>
-                    {% endif %}
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-blue-500/10 mx-6 mt-6 rounded-[24px]">
+        <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black text-blue-900 flex items-center gap-2 tracking-tighter">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
+                    <i class="fas fa-utensils"></i>
                 </div>
-            </nav>
+                Nutrition<span class="text-blue-600">Guide</span>
+            </a>
+            <div class="flex items-center gap-8 font-bold text-sm text-blue-900/60 uppercase tracking-widest">
+                <a href="/dashboard" class="hover:text-blue-600 transition-all">Dashboard</a>
+                <div class="h-4 w-px bg-blue-500/10"></div>
+                <a href="/logout" class="text-rose-500 hover:text-rose-400">Logout</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main>
-        <section class="diet-header">
-            <div class="container">
-                <h1 style="color: #3b82f6; font-weight: 900; letter-spacing: -1px;">{{ _('nutritional_guidance') }}</h1>
-                <p>{{ _('food_recs') }}</p>
-                <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-                    <span class="badge badge-success">{{ _('safe') }}</span>
-                    <span class="badge badge-warning">{{ _('limited') }}</span>
-                    <span class="badge badge-error">{{ _('avoid') }}</span>
+    <main class="pt-48 pb-24 px-8">
+        <div class="max-w-7xl mx-auto">
+            <header class="mb-16">
+                <h1 class="text-5xl font-black text-blue-900 tracking-tighter mb-4">{{ _('nutritional_guidance') }}</h1>
+                <p class="text-blue-500/60 font-bold text-lg max-w-2xl leading-relaxed">{{ _('food_recs') }}</p>
+                <div class="flex gap-4 mt-8">
+                    <span class="px-4 py-1.5 rounded-full badge-safe text-[10px] font-black uppercase tracking-widest">{{ _('safe') }}</span>
+                    <span class="px-4 py-1.5 rounded-full badge-limited text-[10px] font-black uppercase tracking-widest">{{ _('limited') }}</span>
+                    <span class="px-4 py-1.5 rounded-full badge-avoid text-[10px] font-black uppercase tracking-widest">{{ _('avoid') }}</span>
                 </div>
-            </div>
-        </section>
+            </header>
 
-        {% for category, foods in categorized_foods.items() %}
-        <section class="container" style="padding: 3rem 2rem 0;">
-            <div class="section-title" style="text-align: left; margin-bottom: 2rem;">
-                <h2 style="border-left: 5px solid var(--primary); padding-left: 1rem;">{{ _(category) }}</h2>
-            </div>
+            {% for category, foods in categorized_foods.items() %}
+            <section class="mb-20">
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="h-8 w-1.5 bg-blue-600 rounded-full"></div>
+                    <h2 class="text-3xl font-black text-blue-900 tracking-tight">{{ _(category) }}</h2>
+                </div>
 
-            <div class="food-grid">
-                {% for food in foods %}
-                <div class="food-card">
-                    <img src="{{ food.image_url }}" alt="{{ food.food_name }}" class="food-img"
-                        onerror="this.onerror=null; this.src='/static/images/food-placeholder.png';">
-                    <div class="food-info">
-                        <span class="badge badge-{{ food.color }}" style="margin-bottom: 0.5rem;">{{ _(food.recommendation) }}</span>
-                        <h3 style="margin-bottom: 0.2rem;">{{ _(food.food_name) }}</h3>
-                        
-                        <div style="background: rgba(0,0,0,0.03); padding: 0.6rem; border-radius: 0.5rem; margin-top: 0.75rem;">
-                            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.2rem;">
-                                <i class="fas fa-stethoscope"></i> Clinical Effect
-                            </span>
-                            <p style="color: {% if food.recommendation|lower == 'safe' %}#16a34a{% else %}#dc2626{% endif %}; font-size: 0.82rem; font-weight: 600; margin: 0; line-height: 1.3;">
-                                {{ food.side_effects }}
-                            </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {% for food in foods %}
+                    <div class="glass rounded-[32px] border border-blue-500/10 overflow-hidden food-card">
+                        <div class="relative h-48">
+                            <img src="{{ food.image_url }}" alt="{{ food.food_name }}" class="w-full h-full object-cover"
+                                 onerror="this.src='/static/images/food-placeholder.png'">
+                            <div class="absolute top-4 left-4">
+                                <span class="px-3 py-1 rounded-full badge-{{ food.color|lower }} text-[9px] font-black uppercase tracking-widest shadow-sm">
+                                    {{ _(food.recommendation) }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-xl font-black text-blue-900 mb-4">{{ _(food.food_name) }}</h3>
+                            <div class="p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                                <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-2">
+                                    <i class="fas fa-stethoscope mr-1"></i> Clinical Effect
+                                </p>
+                                <p class="text-sm font-bold leading-relaxed {% if food.recommendation|lower == 'safe' %}text-emerald-700{% else %}text-rose-700{% endif %}">
+                                    {{ food.side_effects }}
+                                </p>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endfor %}
+            </section>
+            {% endfor %}
+        </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 NephroAI. All rights reserved.</p>
-        </div>
+    <footer class="py-20 px-8 border-t border-blue-500/5 text-center">
+        <p class="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em]">© 2026 NephroAI Clinical Guidance — All Rights Reserved</p>
     </footer>
-</body>
 
+    {% include 'chatbot.html' %}
+</body>
 </html>
