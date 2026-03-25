@@ -1,50 +1,65 @@
-<!-- NephroBot Floating Chat Widget -->
-<div id="NephroBot-container" class="NephroBot-container">
+<!-- NephroBot Ultra Floating Chat Widget -->
+<div id="NephroBot-container" class="NephroBot-container glass-mini">
     <div class="NephroBot-header" onclick="toggleChat()">
-        <img src="https://cdn-icons-png.flaticon.com/512/8649/8649603.png" alt="Bot" class="bot-avatar">
-        <div class="bot-info">
-            <h3>NephroBot 3.0</h3>
-            <span class="status"><i class="fas fa-circle active-dot"></i> AI Assistant Online</span>
+        <div class="relative">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-glow"></div>
         </div>
-        <i class="fas fa-chevron-down close-chat-icon"></i>
+        <div class="bot-info ml-4">
+            <h3 class="orbitron text-sm font-black text-white uppercase tracking-tight">Neural Agent</h3>
+            <span class="status text-[10px] font-black uppercase text-blue-400/60 tracking-widest">v3.0 Secure Node</span>
+        </div>
+        <i class="fas fa-chevron-down ml-auto text-blue-400/40"></i>
     </div>
-    <div class="NephroBot-body" id="chat-body">
+    
+    <div class="NephroBot-body no-scrollbar" id="chat-body">
         <div class="chat-message bot">
-            <div class="msg-content">
-                Hello! I am NephroBot 🤖, your AI Health & Diet Assistant. I can help you with personalized diet recommendations, risk alerts, and understanding your health data. How can I assist you today?
+            <div class="msg-content glass-bubble">
+                Neural link established. I have access to your clinical telemetry. <br><br>
+                <span class="text-blue-400">Initialize query...</span>
             </div>
         </div>
     </div>
+
     <div class="NephroBot-footer">
-        <input type="text" id="chat-input" placeholder="Ask about food, health, etc..." onkeypress="handleKeyPress(event)">
-        <button onclick="sendMessage()" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        <div class="relative w-full flex items-center">
+            <input type="text" id="chat-input" placeholder="Neural command..." onkeypress="handleKeyPress(event)" class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-5 text-sm font-bold text-white placeholder-white/20 outline-none focus:border-blue-500 transition-all">
+            <button onclick="sendMessage()" id="send-btn" class="absolute right-2 w-8 h-8 bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-600/20 active:scale-90 transition-all">
+                <i class="fas fa-bolt text-xs"></i>
+            </button>
+        </div>
     </div>
 </div>
 
-<button id="NephroBot-trigger" class="NephroBot-trigger" onclick="toggleChat()">
-    <i class="fas fa-robot"></i>
+<button id="NephroBot-trigger" class="NephroBot-trigger shadow-2xl" onclick="toggleChat()">
+    <i class="fas fa-robot text-2xl"></i>
+    <div class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-glow"></div>
 </button>
 
 <style>
-/* Professional Blue & White Chatbot UI */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
 :root {
-    --bot-bg: rgba(255, 255, 255, 0.9);
-    --bot-accent: #2563eb;
-    --bot-secondary: #1e3a8a;
+    --bg-dark: #0f172a;
+    --blue-glow: #3b82f6;
 }
+
+.orbitron { font-family: 'Orbitron', sans-serif; }
+
+.shadow-glow { box-shadow: 0 0 10px #10b981; }
 
 .NephroBot-container {
     position: fixed;
     bottom: 100px;
     right: 24px;
-    width: 380px;
-    height: 600px;
-    background: var(--bot-bg);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(37, 99, 235, 0.1);
+    width: 360px;
+    height: 540px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 32px;
-    box-shadow: 0 10px 40px rgba(30, 64, 175, 0.1), 0 0 20px rgba(37, 99, 235, 0.05);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -53,6 +68,7 @@
     pointer-events: none;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
     z-index: 10000;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
 .NephroBot-container.active {
@@ -62,63 +78,22 @@
 }
 
 .NephroBot-header {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(30, 64, 175, 0.05));
-    border-bottom: 1px solid rgba(37, 99, 235, 0.1);
-    color: var(--bot-secondary);
-    padding: 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 20px 24px;
     display: flex;
     align-items: center;
     cursor: pointer;
 }
 
-.bot-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    padding: 10px;
-    margin-right: 16px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-}
-
-.bot-info h3 {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: #1e3a8a;
-    letter-spacing: -0.5px;
-}
-
-.status {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 2px;
-}
-
-.active-dot {
-    color: #10b981;
-    font-size: 0.5rem;
-    animation: glowPulse 2s infinite;
-}
-
-@keyframes glowPulse {
-    0% { opacity: 1; text-shadow: 0 0 5px #10b981; }
-    50% { opacity: 0.5; text-shadow: 0 0 0px #10b981; }
-    100% { opacity: 1; text-shadow: 0 0 5px #10b981; }
-}
-
 .NephroBot-body {
     flex: 1;
-    padding: 24px;
+    padding: 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background: rgba(248, 250, 252, 0.5);
+    background: radial-gradient(circle at bottom, rgba(59, 130, 246, 0.05), transparent);
 }
 
 .chat-message {
@@ -145,62 +120,21 @@
     background: #2563eb;
     color: #fff;
     border-top-right-radius: 4px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
 }
 
 .bot .msg-content {
-    background: #fff;
-    color: #1e3a8a;
-    border: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.03);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-top-left-radius: 4px;
-    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.05);
+    backdrop-blur: 10px;
 }
 
 .NephroBot-footer {
-    padding: 20px 24px;
-    background: #fff;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    gap: 12px;
-}
-
-.NephroBot-footer input {
-    flex: 1;
-    padding: 12px 20px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    color: #1e3a8a;
-    outline: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.NephroBot-footer input:focus {
-    background: #fff;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-}
-
-.NephroBot-footer button {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-.NephroBot-footer button:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .NephroBot-trigger {
@@ -209,12 +143,11 @@
     right: 24px;
     width: 64px;
     height: 64px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
+    border-radius: 24px;
+    background: #2563eb;
     color: white;
-    font-size: 26px;
     border: none;
-    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
     cursor: pointer;
     z-index: 9999;
     display: flex;
@@ -224,83 +157,37 @@
 }
 
 .NephroBot-trigger:hover {
-    transform: translateY(-5px) scale(1.05) rotate(-5deg);
-    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
+    transform: translateY(-5px) scale(1.1);
+    background: #3b82f6;
 }
 
-.typing-indicator {
-    display: flex;
-    gap: 6px;
-    padding: 12px 18px !important;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 .typing-dot {
-    width: 5px;
-    height: 5px;
-    background: #06b6d4;
-    border-radius: 50%;
-    animation: jump 1.4s infinite ease-in-out;
+    width: 4px; height: 4px; background: #60a5fa; border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
 }
-
-@keyframes jump {
-    0%, 100% { transform: translateY(0); opacity: 0.3; }
-    50% { transform: translateY(-6px); opacity: 1; }
-}
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 </style>
 
 <script>
 function toggleChat() {
     const chat = document.getElementById('NephroBot-container');
     chat.classList.toggle('active');
-    if (chat.classList.contains('active')) {
-        document.getElementById('chat-input').focus();
-    }
 }
 
 function handleKeyPress(e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
+    if (e.key === 'Enter') { sendMessage(); }
 }
 
-function appendMessage(sender, text, isHtml = false) {
+function appendMessage(sender, text) {
     const chatBody = document.getElementById('chat-body');
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-message ${sender}`;
-    
-    let formattedText = text;
-    if (!isHtml) {
-        // Simple markdown parsing for bold and line breaks
-        formattedText = text.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
-        formattedText = formattedText.replace(/\\n/g, '<br>');
-    }
-    
+    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-blue-400 font-black">$1</strong>').replace(/\n/g, '<br>');
     msgDiv.innerHTML = `<div class="msg-content">${formattedText}</div>`;
     chatBody.appendChild(msgDiv);
     chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-function showTyping() {
-    const chatBody = document.getElementById('chat-body');
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'chat-message bot typing';
-    typingDiv.id = 'typing-indicator';
-    typingDiv.innerHTML = `
-        <div class="msg-content typing-indicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-        </div>
-    `;
-    chatBody.appendChild(typingDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-function hideTyping() {
-    const typingDiv = document.getElementById('typing-indicator');
-    if (typingDiv) {
-        typingDiv.remove();
-    }
 }
 
 function sendMessage() {
@@ -308,42 +195,29 @@ function sendMessage() {
     const message = input.value.trim();
     if (!message) return;
     
-    // Disable input while generating
     input.value = '';
-    input.disabled = true;
-    document.getElementById('send-btn').disabled = true;
-    
-    // Append user message
     appendMessage('user', message);
     
-    // Show typing animation
-    showTyping();
+    // Typing indicator
+    const typingRoot = document.createElement('div');
+    typingRoot.className = 'chat-message bot flex gap-2 p-2 items-center';
+    typingRoot.id = 'typing';
+    typingRoot.innerHTML = '<div class="typing-dot" style="animation-delay: 0s"></div><div class="typing-dot" style="animation-delay: 0.2s"></div><div class="typing-dot" style="animation-delay: 0.4s"></div>';
+    document.getElementById('chat-body').appendChild(typingRoot);
     
-    // Connect to Flask Backend
     fetch('/chat', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ message: message })
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
-        // Hide typing and append response
-        hideTyping();
-        appendMessage('bot', data.reply, true); // true for accepting HTML from server
-        
-        // Re-enable input
-        input.disabled = false;
-        document.getElementById('send-btn').disabled = false;
-        input.focus();
+        document.getElementById('typing').remove();
+        appendMessage('bot', data.reply);
     })
-    .catch(error => {
-        console.error('Error:', error);
-        hideTyping();
-        appendMessage('bot', '⚠️ Error connecting to server. Please try again.');
-        input.disabled = false;
-        document.getElementById('send-btn').disabled = false;
+    .catch(() => {
+        document.getElementById('typing').remove();
+        appendMessage('bot', '❌ Neural tunnel blocked.');
     });
 }
 </script>

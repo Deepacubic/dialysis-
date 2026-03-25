@@ -3,27 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Hub — NephroAI</title>
+    <title>Patient Hub — NephroAI Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
             --bg-light: #f8fafc;
             --blue-primary: #2563eb;
-            --blue-secondary: #1e40af;
+            --blue-neon: #00f2ff;
             --glass-white: rgba(255, 255, 255, 0.85);
         }
+        
         body { 
             font-family: 'Outfit', sans-serif; 
             background: var(--bg-light);
             color: #1e3a8a;
+            transition: background 0.5s ease, color 0.5s ease;
         }
+
+        /* ULTRA ANTIGRAVITY FLOATING EFFECT */
+        @keyframes antigravity {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(0.5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .float-box { animation: antigravity 6s ease-in-out infinite; }
+        .float-box-delayed { animation: antigravity 8s ease-in-out infinite 1s; }
+
         .glass { 
             background: var(--glass-white); 
             backdrop-filter: blur(24px); 
             border: 1px solid rgba(37, 99, 235, 0.1);
+            transition: all 0.4s ease;
         }
+        .glass:hover {
+            transform: scale(1.02);
+            border-color: #2563eb;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.1);
+        }
+
         .nav-link {
             display: flex;
             align-items: center;
@@ -35,18 +54,26 @@
             color: #64748b;
             transition: all 0.3s ease;
         }
-        .nav-link:hover {
-            background: rgba(37, 99, 235, 0.05);
-            color: #2563eb;
+        .nav-link:hover { background: rgba(37, 99, 235, 0.05); color: #2563eb; }
+        .nav-link.active { background: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+
+        /* Sync Status Pulse */
+        .sync-pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse-green 2s infinite;
         }
-        .nav-link.active {
-            background: #2563eb;
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="min-h-screen flex">
@@ -55,69 +82,42 @@
 <aside class="fixed top-0 left-0 w-72 glass border-r border-blue-500/10 h-full z-50 p-7 flex flex-col">
     <div class="flex items-center gap-3 mb-10">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <i class="fas fa-heartbeat text-white text-lg"></i>
+            <i class="fas fa-microchip text-white text-lg animate-pulse"></i>
         </div>
         <div>
-            <h1 class="text-xl font-black text-blue-900 tracking-tight leading-none">Nephro<span class="text-blue-600">AI</span></h1>
-            <p class="text-[9px] text-blue-500/60 font-black uppercase tracking-[0.2em]">Patient Hub</p>
+            <h1 class="orbitron text-lg font-black text-blue-900 tracking-tight leading-none uppercase">Nephro<span class="text-blue-600">AI</span></h1>
+            <p class="text-[9px] text-blue-500/60 font-black uppercase tracking-[0.2em]">Neural Clinical Node</p>
         </div>
     </div>
 
-    <!-- PATIENT HUB Group -->
     <nav class="space-y-1">
         <div class="nav-link active" onclick="showSection('hub')">
             <i class="fas fa-th-large w-4"></i> Patient Hub
         </div>
-        <a href="/health-entry" class="nav-link">
-            <i class="fas fa-plus-circle w-4"></i> Log Vitals
-        </a>
-        <a href="/food" class="nav-link">
-            <i class="fas fa-carrot w-4"></i> Nutrition Guide
-        </a>
         <a href="/diet-plan" class="nav-link">
-            <i class="fas fa-calendar-alt w-4"></i> Diet Plan
+            <i class="fas fa-calendar-alt w-4"></i> Diet Planner
         </a>
     </nav>
 
-    <!-- CLINICAL Group -->
-    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300 mb-3 ml-2 mt-8">Clinical</p>
+    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300 mb-3 ml-2 mt-8">Clinical Engine</p>
     <nav class="space-y-1">
-        <a href="/admin" class="nav-link">
-            <i class="fas fa-stethoscope w-4"></i> Clinical Control
-        </a>
-        <a href="/neural-insight" class="nav-link">
-            <i class="fas fa-brain w-4"></i> Neural Insight
-        </a>
-        <a href="/lab-analysis" class="nav-link">
-            <i class="fas fa-flask w-4"></i> Lab Analysis
-        </a>
-        <a href="/patient-sync" class="nav-link">
-            <i class="fas fa-sync-alt w-4"></i> Patient Sync
-        </a>
-    </nav>
-
-    <!-- SYSTEM Group -->
-    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300 mb-3 ml-2 mt-8">System</p>
-    <nav class="space-y-1">
-        <a href="/ai-assistant" class="nav-link">
-            <i class="fas fa-robot w-4"></i> AI Assistant
-        </a>
-        <a href="/config" class="nav-link">
-            <i class="fas fa-cog w-4"></i> Config
-        </a>
-        <a href="/anime-dashboard" class="nav-link">
-            <i class="fas fa-gamepad w-4"></i> Gaming Ops
-        </a>
+        <a href="/admin" class="nav-link"><i class="fas fa-microscope w-4"></i>Clinical Control</a>
+        <a href="/neural-insight" class="nav-link"><i class="fas fa-brain w-4"></i>Neural Insight</a>
+        <a href="/lab-analysis" class="nav-link"><i class="fas fa-flask w-4"></i>Lab Analysis</a>
     </nav>
 
     <div class="mt-auto pt-6 border-t border-blue-500/5">
+        <div class="flex items-center gap-4 px-2 mb-4">
+            <div class="sync-pulse"></div>
+            <span class="text-[9px] font-black uppercase tracking-widest text-emerald-600">Sync: Realtime Active</span>
+        </div>
         <div class="flex items-center gap-3 px-2">
             <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-black text-blue-600 border border-blue-200">
                 {{ user.name[:2]|upper }}
             </div>
             <div>
                 <p class="text-[11px] font-black text-blue-900 leading-tight">{{ user.name }}</p>
-                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">CKD Stage {{ user.ckd_stage or 'N/A' }}</p>
+                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">CKD Node Level {{ user.ckd_stage or 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -126,50 +126,55 @@
 <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
 <main class="main-content flex-1 ml-72 p-8">
     
-    <!-- PATIENT HUB -->
     <div id="section-hub" class="section active">
-        <div class="mb-10 flex justify-between items-start">
+        <div class="mb-14 flex justify-between items-start">
             <div>
-                <h2 class="text-3xl font-black text-blue-900">Patient <span class="text-blue-600">Hub</span></h2>
-                <p class="text-blue-500/60 text-sm mt-1">Welcome back. Your renal health signatures are stable.</p>
+                <h2 class="orbitron text-3xl font-black text-blue-900 uppercase">Neural <span class="text-blue-600">Analytics</span></h2>
+                <div class="flex items-center gap-3 mt-2">
+                     <div class="px-3 py-1 bg-blue-50 text-blue-600 text-[9px] font-black rounded-full border border-blue-100 uppercase tracking-widest">Identity: SECURE P-{{ user.id }}</div>
+                </div>
             </div>
-            <div class="w-48 h-32 rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10 border-4 border-white rotate-2 hover:rotate-0 transition-all duration-500">
-                <img src="/static/images/user_dialysis.jpg" alt="Clinical Live" class="w-full h-full object-cover">
+            <div class="float-box w-64 h-40 rounded-3xl overflow-hidden shadow-2xl shadow-blue-500/20 border-8 border-white group cursor-pointer transition-all duration-700 hover:rotate-2">
+                <img src="/static/images/user_dialysis.jpg" alt="Neural Feed" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {% set metrics = [
-                ('Neural Risk', latest_record.risk_score if latest_record else 'Low', 'fas fa-brain', 'blue'),
-                ('Potassium', latest_record.potassium if latest_record else '4.2', 'fas fa-atom', 'violet'),
-                ('Creatinine', latest_record.creatinine if latest_record else '1.1', 'fas fa-vial', 'indigo'),
-                ('Fluid Intake', latest_record.fluid_intake if latest_record else '1200ml', 'fas fa-tint', 'cyan')
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {% for label, val, icon, color in [
+                ('Neural Risk', latest_record.risk_score if latest_record else '42%', 'fas fa-brain', 'blue'),
+                ('Bio Potassium', latest_record.potassium if latest_record else '4.2', 'fas fa-atom', 'violet'),
+                ('Creatinine Sig', latest_record.creatinine if latest_record else '1.1', 'fas fa-vial', 'indigo'),
+                ('Fluid Hydro', latest_record.fluid_intake if latest_record else '1200ml', 'fas fa-droplet', 'cyan')
             ] %}
-            {% for label, val, icon, color in metrics %}
-            <div class="glass p-6 border-blue-500/10 shadow-sm">
-                <div class="flex justify-between items-start mb-4">
+            <div class="glass p-8 float-box-delayed">
+                <div class="flex justify-between items-start mb-6">
                     <p class="text-[10px] font-black uppercase text-blue-400 tracking-widest">{{ label }}</p>
-                    <i class="{{ icon }} text-{{ color }}-500"></i>
+                    <div class="w-10 h-10 rounded-xl bg-{{ color }}-50 flex items-center justify-center text-{{ color }}-500"><i class="{{ icon }}"></i></div>
                 </div>
-                <div class="text-2xl font-black text-blue-900">{{ val }}</div>
+                <div class="orbitron text-3xl font-black text-blue-900">{{ val }}</div>
             </div>
             {% endfor %}
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 glass p-10 border-blue-500/10 shadow-sm">
-                <h3 class="text-xl font-black text-blue-900 mb-6">Health Trends</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-2 glass p-10 shadow-xl shadow-blue-500/5">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="orbitron text-xl font-black text-blue-900 uppercase tracking-widest">Neural Trend_Line</h3>
+                </div>
                 <div class="h-64"><canvas id="healthChart"></canvas></div>
             </div>
-            <div class="glass p-8 border-blue-500/10 bg-blue-50/30">
-                <h4 class="font-black text-blue-900 mb-4 flex items-center gap-2"><i class="fas fa-robot text-blue-500"></i> AI Insights</h4>
-                <div class="space-y-3">
+            <div class="glass p-10 border-blue-100 bg-blue-50/20 relative overflow-hidden group">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/5 rounded-full filter blur-3xl group-hover:bg-blue-600/10 transition-all"></div>
+                <h4 class="orbitron font-black text-blue-900 mb-6 flex items-center gap-3"><i class="fas fa-robot text-blue-600"></i> AI Insights</h4>
+                <div class="space-y-4">
                     {% for tip in dietary_tips %}
-                    <div class="p-4 bg-white rounded-xl border border-blue-100 text-xs font-bold text-blue-700">
-                        <i class="fas fa-check-circle text-blue-400 mr-2"></i>{{ tip }}
+                    <div class="p-6 bg-white rounded-2xl border border-blue-50 text-sm font-bold text-blue-700 shadow-sm hover:border-blue-400 transition-all cursor-crosshair">
+                        <i class="fas fa-caret-right text-blue-500 mr-4"></i>{{ tip }}
                     </div>
                     {% endfor %}
                 </div>
+                <button onclick="window.location.href='/ai-assistant'" class="w-full mt-8 py-4 bg-blue-600 text-white orbitron font-black text-[10px] uppercase tracking-[0.2em] rounded-xl shadow-lg shadow-blue-500/20 hover:scale-95 transition-all">Consult Neural Agent</button>
             </div>
         </div>
     </div>
@@ -177,25 +182,23 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById('section-' + id).classList.add('active');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-    }
-
     const ctx = document.getElementById('healthChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {
             labels: {{ dates | tojson }},
             datasets: [{
-                label: 'Creatinine level',
+                label: 'Telemetry Signal',
                 data: {{ creatinine_values | tojson }},
                 borderColor: '#2563eb',
-                backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                tension: 0.4,
-                fill: true
+                borderWidth: 4,
+                backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                tension: 0.5,
+                fill: true,
+                pointRadius: 6,
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 4,
+                pointHoverRadius: 10
             }]
         },
         options: {
@@ -203,11 +206,20 @@
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { grid: { borderDash: [5, 5] } },
-                x: { grid: { display: false } }
+                y: { grid: { color: 'rgba(37, 99, 235, 0.05)' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
+
+    // Auto-Sync Simulation
+    setInterval(async () => {
+        try {
+            const r = await fetch('/api/sync/v1/patient-data');
+            const d = await r.json();
+            console.log("Telemetry Synced:", d.status);
+        } catch(e) {}
+    }, 30000);
 </script>
 
 {% include 'chatbot.html' %}

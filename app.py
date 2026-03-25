@@ -385,8 +385,27 @@ def patient_sync():
 @app.route('/config')
 def config():
     if 'user_id' not in session: return redirect(url_for('login'))
-    user = Patient.query.get(session['user_id'])
+    user = db.session.get(Patient, session['user_id'])
     return render_template('config.html', user=user)
+
+@app.route('/api/sync/v1/patient-data')
+def api_patient_sync():
+    """Neural Data Sync endpoint for Antigravity-style clinical telemetry."""
+    if 'user_id' not in session: return {"error": "Unauthorized Access Detected"}, 401
+    user = db.session.get(Patient, session['user_id'])
+    history = HealthRecord.query.filter_by(patient_id=user.id).order_by(HealthRecord.date.desc()).limit(10).all()
+    latest = history[0] if history else None
+    return {
+        "status": "synchronized_and_ready",
+        "neural_load": "12%",
+        "identity_node": {"id": user.id, "hash_name": f"Patient_{user.id}_N_AX"},
+        "biometry": {
+            "gfr": latest.gfr if latest else 0,
+            "creatinine": latest.creatinine if latest else 0,
+            "potassium": latest.potassium if latest else 0
+        },
+        "synchronization_signatures": ["REST_SYNC_01", "REALTIME_SOCKET_AVAIL"]
+    }
 
 if __name__ == '__main__':
     with app.app_context(): db.create_all()
