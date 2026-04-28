@@ -1,6 +1,6 @@
-<!-- NephroBot Ultra Floating Chat Widget -->
-<div id="NephroBot-container" class="NephroBot-container glass-mini">
-    <div class="NephroBot-header" onclick="toggleChat()">
+<!-- Clinical AI Floating Chat Widget -->
+<div id="ClinicalAI-container" class="ClinicalAI-container glass-mini">
+    <div class="ClinicalAI-header" onclick="toggleChat()">
         <div class="relative">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
                 <i class="fas fa-robot"></i>
@@ -8,13 +8,13 @@
             <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-glow"></div>
         </div>
         <div class="bot-info ml-4">
-            <h3 class="orbitron text-sm font-black text-white uppercase tracking-tight">Neural Agent</h3>
+            <h3 class="orbitron text-sm font-black text-white uppercase tracking-tight">Clinical AI</h3>
             <span class="status text-[10px] font-black uppercase text-blue-400/60 tracking-widest">v3.0 Secure Node</span>
         </div>
         <i class="fas fa-chevron-down ml-auto text-blue-400/40"></i>
     </div>
     
-    <div class="NephroBot-body no-scrollbar" id="chat-body">
+    <div class="ClinicalAI-body no-scrollbar" id="chat-body">
         <div class="chat-message bot">
             <div class="msg-content glass-bubble">
                 Neural link established. I have access to your clinical telemetry. <br><br>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div class="NephroBot-footer">
+    <div class="ClinicalAI-footer">
         <div class="relative w-full flex items-center">
             <input type="text" id="chat-input" placeholder="Neural command..." onkeypress="handleKeyPress(event)" class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-5 text-sm font-bold text-white placeholder-white/20 outline-none focus:border-blue-500 transition-all">
             <button onclick="sendMessage()" id="send-btn" class="absolute right-2 w-8 h-8 bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-600/20 active:scale-90 transition-all">
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<button id="NephroBot-trigger" class="NephroBot-trigger shadow-2xl" onclick="toggleChat()">
+<button id="ClinicalAI-trigger" class="ClinicalAI-trigger shadow-2xl" onclick="toggleChat()">
     <i class="fas fa-robot text-2xl"></i>
     <div class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-glow"></div>
 </button>
@@ -50,7 +50,7 @@
 
 .shadow-glow { box-shadow: 0 0 10px #10b981; }
 
-.NephroBot-container {
+.ClinicalAI-container {
     position: fixed;
     bottom: 100px;
     right: 24px;
@@ -71,13 +71,13 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
-.NephroBot-container.active {
+.ClinicalAI-container.active {
     transform: translateY(0) scale(1);
     opacity: 1;
     pointer-events: all;
 }
 
-.NephroBot-header {
+.ClinicalAI-header {
     background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     padding: 20px 24px;
@@ -86,7 +86,7 @@
     cursor: pointer;
 }
 
-.NephroBot-body {
+.ClinicalAI-body {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
@@ -131,13 +131,13 @@
     backdrop-blur: 10px;
 }
 
-.NephroBot-footer {
+.ClinicalAI-footer {
     padding: 20px;
     background: rgba(15, 23, 42, 0.5);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.NephroBot-trigger {
+.ClinicalAI-trigger {
     position: fixed;
     bottom: 24px;
     right: 24px;
@@ -156,7 +156,7 @@
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.NephroBot-trigger:hover {
+.ClinicalAI-trigger:hover {
     transform: translateY(-5px) scale(1.1);
     background: #3b82f6;
 }
@@ -172,7 +172,7 @@
 
 <script>
 function toggleChat() {
-    const chat = document.getElementById('NephroBot-container');
+    const chat = document.getElementById('ClinicalAI-container');
     chat.classList.toggle('active');
 }
 

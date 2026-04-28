@@ -1,8 +1,8 @@
 @echo off
-title DialyCare AI - SMART HEALTH SYSTEM
+title Dialysis Patient Monitoring & Diet Recommendation System
 color 0B
 echo ===========================================
-echo         DIALYCARE AI - DASHBOARD START      
+echo         DIALYSIS MONITORING & DIET SYSTEM - START      
 echo ===========================================
 echo.
 echo [1/3] Navigating to project directory...

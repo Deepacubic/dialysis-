@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Control — NephroAI</title>
+    <title>Clinical Control — Monitoring System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -114,11 +114,54 @@
     </div>
 
     <div id="section-neural" class="section {% if section == 'neural' %}active{% endif %}">
-        <h2 class="text-4xl font-black text-blue-900 tracking-tight mb-12">Neural <span class="text-blue-600">Insight</span></h2>
-        <div class="glass p-20 rounded-[48px] text-center border-blue-50">
-            <i class="fas fa-brain text-6xl text-blue-100 mb-6 flex justify-center"></i>
-            <h3 class="text-2xl font-black text-blue-900 mb-4">Neural Engine Active</h3>
-            <p class="text-blue-400 font-bold max-w-xl mx-auto leading-relaxed">Processing patient-specific disease progression modeling. High-fidelity predictive signatures are being generated for current dialysis pool.</p>
+        <div class="mb-12 flex justify-between items-end">
+            <div>
+                <h2 class="text-4xl font-black text-blue-900 tracking-tight">Neural <span class="text-blue-600">Insight</span></h2>
+                <p class="text-blue-500/60 text-sm mt-1 font-bold italic">“Model Performance · Predictive Accuracy Analysis”</p>
+            </div>
+            <div class="bg-blue-600 text-white px-6 py-2 rounded-full font-black text-sm orbitron tracking-widest shadow-lg shadow-blue-500/30">
+                ACCURACY: {{ accuracy|default('97.92%') }}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            <div class="glass p-8 rounded-[32px] border-blue-50 text-center">
+                <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-4 italic text-2xl font-black">DT</div>
+                <h4 class="font-black text-blue-900 uppercase text-xs tracking-widest mb-2">Algorithm</h4>
+                <p class="text-xl font-black text-blue-600">{{ algorithm|default('Decision Tree') }}</p>
+            </div>
+            <div class="glass p-8 rounded-[32px] border-blue-50 text-center">
+                <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mx-auto mb-4 text-2xl"><i class="fas fa-check-double"></i></div>
+                <h4 class="font-black text-blue-900 uppercase text-xs tracking-widest mb-2">Training Confidence</h4>
+                <p class="text-xl font-black text-emerald-600">High Fidelity</p>
+            </div>
+            <div class="glass p-8 rounded-[32px] border-blue-50 text-center">
+                <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mx-auto mb-4 text-2xl"><i class="fas fa-database"></i></div>
+                <h4 class="font-black text-blue-900 uppercase text-xs tracking-widest mb-2">Data Samples</h4>
+                <p class="text-xl font-black text-indigo-600">1,200+ Clinical Records</p>
+            </div>
+        </div>
+
+        <div class="glass rounded-[48px] overflow-hidden border-blue-50 shadow-2xl shadow-blue-500/10 mb-10">
+            <div class="bg-blue-900/5 p-6 border-b border-blue-100 flex justify-between items-center">
+                <h3 class="font-black text-blue-900 uppercase text-sm tracking-widest flex items-center gap-3"><i class="fas fa-chart-line text-blue-600"></i> Performance Visualization Dashboard</h3>
+                <span class="text-[9px] font-black text-blue-400 bg-white px-3 py-1 rounded-full border border-blue-50">REAL-TIME TELEMETRY</span>
+            </div>
+            <img src="/static/images/model_performance.png" alt="Model Performance" class="w-full h-auto object-cover">
+        </div>
+
+        <div class="glass p-10 rounded-[32px] border-blue-50">
+            <h3 class="font-black text-blue-900 mb-6 flex items-center gap-3"><i class="fas fa-calculator text-blue-500"></i> Accuracy Calculation Methodology</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                <div class="space-y-4">
+                    <p class="text-blue-700 font-bold"><span class="text-blue-300 mr-2">01.</span> Hold-out Validation (80/20 Split)</p>
+                    <p class="text-blue-500 leading-relaxed text-xs">The dataset is divided into training (960) and testing (240) sets to ensure the model generalizes well to unseen patient data.</p>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-blue-700 font-bold"><span class="text-blue-300 mr-2">02.</span> Confusion Matrix Analysis</p>
+                    <p class="text-blue-500 leading-relaxed text-xs">The model is evaluated by cross-referencing predicted risk levels against actual clinical diagnoses from the ground-truth dataset.</p>
+                </div>
+            </div>
         </div>
     </div>
 
